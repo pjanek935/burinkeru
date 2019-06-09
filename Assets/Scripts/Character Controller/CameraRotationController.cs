@@ -54,7 +54,7 @@ public class CameraRotationController : MonoBehaviour
     void updateXRotation ()
     {
         rotationX = transform.localEulerAngles.y + BurinkeruInputManager.Instance.GetRightAxis ().x * sensitivityX;
-        transform.localEulerAngles = new Vector3(transform.localEulerAngles.y, rotationX, 0);
+        transform.localEulerAngles = new Vector3(transform.localEulerAngles.x, rotationX, 0);
     }
 
     void updateYRotation ()

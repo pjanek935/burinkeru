@@ -8,10 +8,15 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
     {
         updateAxes();
 
+        updateKeys();
+    }
+
+    void updateKeys ()
+    {
         BurinkeruInputManager.InputCommand command = BurinkeruInputManager.InputCommand.NO_TYPE;
         KeyCode mappedKey = KeyCode.None;
 
-        for (int c = 0; c < pressCommands.Length; c ++)
+        for (int c = 0; c < pressCommands.Length; c++)
         {
             command = (BurinkeruInputManager.InputCommand)c;
 
@@ -21,11 +26,11 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
                 downCommands[c] = Input.GetKeyDown(mappedKey);
                 upCommands[c] = Input.GetKeyUp(mappedKey);
 
-                if (downCommands [c])
+                if (downCommands[c])
                 {
                     pressCommands[c] = true;
                 }
-                else if (upCommands [c])
+                else if (upCommands[c])
                 {
                     pressCommands[c] = false;
                 }

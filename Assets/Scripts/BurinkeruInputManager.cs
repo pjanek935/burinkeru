@@ -33,6 +33,42 @@ public class BurinkeruInputManager : MonoBehaviour
         }
     }
 
+    public bool IsCommandDown (InputCommand command, int controllerId = 0)
+    {
+        bool result = false;
+
+        if (controllerId >= 0 && controllerId < controllers.Count)
+        {
+            result = controllers[controllerId].IsCommandDown(command);
+        }
+
+        return result;
+    }
+
+    public bool IsCommandPressed(InputCommand command, int controllerId = 0)
+    {
+        bool result = false;
+
+        if (controllerId >= 0 && controllerId < controllers.Count)
+        {
+            result = controllers[controllerId].IsCommandPressed(command);
+        }
+
+        return result;
+    }
+
+    public bool IsCommandUp(InputCommand command, int controllerId = 0)
+    {
+        bool result = false;
+
+        if (controllerId >= 0 && controllerId < controllers.Count)
+        {
+            result = controllers[controllerId].IsCommandUp(command);
+        }
+
+        return result;
+    }
+
     public Vector2 GetLeftAxis(int controllerId = 0)
     {
         Vector2 result = Vector2.zero;

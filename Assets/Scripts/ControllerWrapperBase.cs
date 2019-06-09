@@ -33,6 +33,21 @@ public abstract class ControllerWrapperBase
         protected set;
     }
 
+    public bool IsCommandDown (BurinkeruInputManager.InputCommand inputCommand)
+    {
+        return downCommands[(int) inputCommand];
+    }
+
+    public bool IsCommandPressed(BurinkeruInputManager.InputCommand inputCommand)
+    {
+        return pressCommands[(int)inputCommand];
+    }
+
+    public bool IsCommandUp(BurinkeruInputManager.InputCommand inputCommand)
+    {
+        return upCommands[(int)inputCommand];
+    }
+
     public abstract void Update();
 
     void initCommandArrays ()
