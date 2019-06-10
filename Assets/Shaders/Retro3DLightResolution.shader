@@ -69,9 +69,9 @@ Shader "Retro3D/LightResoulution"
 
 					o.ScreenPos = ComputeScreenPos(UnityObjectToClipPos(v.vertex));
 
-					float aspect = _ScreenParams.x / _ScreenParams.y;
-					o.ScreenPos = TRANSFORM_TEX(o.ScreenPos, _ShadowTex);
-					o.ScreenPos.x = o.ScreenPos.x * aspect;
+					//float aspect = _ScreenParams.x / _ScreenParams.y;
+					//o.ScreenPos = TRANSFORM_TEX(o.ScreenPos, _ShadowTex);
+					//o.ScreenPos.x = o.ScreenPos.x * aspect;
 
 					TRANSFER_VERTEX_TO_FRAGMENT(o);
 					return o;
@@ -79,14 +79,14 @@ Shader "Retro3D/LightResoulution"
 
 				fixed4 frag(vertOutput vo) : SV_Target
 				{
-					float halftoneValue = tex2D(_ShadowTex, vo.ScreenPos * _MaskSize).r;
+					float halftoneValue = tex2D(_ShadowTex, vo.ScreenPos * _MaskSize);
 					float2 uv = vo.texcoord.xy / vo.texcoord.z;
 					float atten = LIGHT_ATTENUATION(vo);
 					atten = floor(atten * _LightRes) / _LightRes;
-					atten = (( atten) * float4 (0.2, 0.2, 0.2, 1));
+					atten = (( atten) * float4 (1,1, 1, 1));
 					
 					
-					return tex2D(_MainTex, uv)  * vo.color + atten;
+					return tex2D(_MainTex, uv)  * vo.color - step(atten, 0) * step(0, halftoneValue);
 				}
 
 				ENDCG
