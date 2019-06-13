@@ -3,19 +3,21 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent (typeof (CapsuleCollider))]
 public class BurinkeruCharacterController : MonoBehaviour
 {
-    [SerializeField] CharacterController baseController = null;
+    [SerializeField] float radius;
     [SerializeField] float movementSpeed = 5f;
     [SerializeField] float jumpHeight = 10f;
+    [SerializeField] float height = 0.5f;
 
+    CapsuleCollider capsuleCollider;
     CharacterControllerStateBase currentCharacterState;
     BurinkeruInputManager inputManager;
 
     static Vector3 movementAxes = new Vector3 (1f, 0f, 1f);
     public const float GRAVITY = 9.8f;
-    const float heightOffset = 0.5f;
-
+   
     Vector3 velocity = Vector3.zero;
 
     public Vector3 Velocity
@@ -45,9 +47,14 @@ public class BurinkeruCharacterController : MonoBehaviour
         private set;
     }
 
-    public float GetCharacterHeight ()
+    public float Height
     {
-        return baseController.height + heightOffset;
+        get { return height; }
+    }
+
+    private void OnValidate()
+    {
+        calculateIsGroundedRayCastLentgth();
     }
 
     void setNewState <T> () where T : CharacterControllerStateBase
@@ -64,7 +71,6 @@ public class BurinkeruCharacterController : MonoBehaviour
             enterState(newState);
             currentCharacterState = newState;
         }
-        
     }
 
     void setNewState (CharacterControllerStateBase newState)
@@ -108,10 +114,11 @@ public class BurinkeruCharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        updateIsGrounded();
+       
         updateMovement();
         applyForces();
-        
+        updateIsGrounded();
+        checkForPushback();
     }
 
     void updateMovement ()
@@ -139,7 +146,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
 
         deltaPosition.Scale(movementAxes);
-        baseController.Move(deltaPosition);
+        move(deltaPosition);
 
         if (currentCharacterState != null)
         {
@@ -149,7 +156,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void applyForces ()
     {
-        baseController.Move(velocity * Time.deltaTime);
+        move(velocity * Time.deltaTime);
 
         if (currentCharacterState != null)
         {
@@ -171,9 +178,16 @@ public class BurinkeruCharacterController : MonoBehaviour
     {
         RaycastHit hit;
 
-        if (Physics.Raycast(transform.position, transform.TransformDirection(-Vector3.up), out hit, IsGroundedRayCastLentgth))
+        if (Physics.SphereCast(transform.position, radius*0.9f, transform.TransformDirection(-Vector3.up), out hit, IsGroundedRayCastLentgth))
         {
             Debug.DrawRay(transform.position, transform.TransformDirection(-Vector3.up) * hit.distance, Color.yellow);
+
+            if (!IsGrounded)
+            {
+                float d = IsGroundedRayCastLentgth - Mathf.Abs(hit.point.y - transform.position.y) + radius;
+                //this.transform.position += new Vector3(0, d, 0);
+            }
+            
             IsGrounded = true;
         }
         else
@@ -183,8 +197,31 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
     }
 
+    void checkForPushback ()
+    {
+        Collider [] colliders = Physics.OverlapSphere(transform.position, radius);
+        Vector3 contactPoint = Vector3.zero;
+
+        for (int i = 0; i < colliders.Length; i++)
+        {
+            contactPoint = colliders[i].GetClosestPoint(transform.position);
+            makePushback(contactPoint);
+        }
+    }
+
+    void makePushback (Vector3 contactPoint)
+    {
+        Vector3 pushVector = transform.position - contactPoint;
+        transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(radius - pushVector.magnitude, 0, radius));
+    }
+
     void calculateIsGroundedRayCastLentgth()
     {
-        IsGroundedRayCastLentgth = baseController.height / 2f + heightOffset;
+        IsGroundedRayCastLentgth = height / 2f - radius;
+    }
+
+    private void move(Vector3 deltaPosition)
+    {
+        this.transform.position += deltaPosition;
     }
 }
