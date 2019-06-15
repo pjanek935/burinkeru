@@ -6,10 +6,8 @@ using UnityEngine;
 [RequireComponent (typeof (CapsuleCollider))]
 public class BurinkeruCharacterController : MonoBehaviour
 {
-    [SerializeField] float radius;
     [SerializeField] float movementSpeed = 5f;
     [SerializeField] float jumpHeight = 10f;
-    [SerializeField] float height = 0.5f;
 
     CapsuleCollider capsuleCollider;
     CharacterControllerStateBase currentCharacterState;
@@ -17,7 +15,8 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     static Vector3 movementAxes = new Vector3 (1f, 0f, 1f);
     public const float GRAVITY = 9.8f;
-   
+    const float heightOffset = 0.1f;
+
     Vector3 velocity = Vector3.zero;
 
     public Vector3 Velocity
@@ -39,22 +38,6 @@ public class BurinkeruCharacterController : MonoBehaviour
     {
         get;
         private set;
-    }
-
-    public float IsGroundedRayCastLentgth
-    {
-        get;
-        private set;
-    }
-
-    public float Height
-    {
-        get { return height; }
-    }
-
-    private void OnValidate()
-    {
-        calculateIsGroundedRayCastLentgth();
     }
 
     void setNewState <T> () where T : CharacterControllerStateBase
@@ -106,19 +89,18 @@ public class BurinkeruCharacterController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        capsuleCollider = GetComponent<CapsuleCollider>();
         inputManager = BurinkeruInputManager.Instance;
-        calculateIsGroundedRayCastLentgth();
         setNewState<InAirState>();
     }
 
     // Update is called once per frame
     void Update()
     {
-       
+        checkForPushback();
         updateMovement();
         applyForces();
         updateIsGrounded();
-        checkForPushback();
     }
 
     void updateMovement ()
@@ -171,35 +153,36 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void setVelocity (Vector3 newVelocty)
     {
-        velocity = newVelocty;
+        velocity = newVelocty; 
     }
 
     void updateIsGrounded ()
     {
-        RaycastHit hit;
+        Vector3 sphereCastPos = transform.position - Vector3.up * capsuleCollider.height / 4f;
+        float sphereCastRadius = capsuleCollider.radius;
+        Collider[] colliders = Physics.OverlapSphere(sphereCastPos, sphereCastRadius);
+        IsGrounded = false;
 
-        if (Physics.SphereCast(transform.position, radius*0.9f, transform.TransformDirection(-Vector3.up), out hit, IsGroundedRayCastLentgth))
+        for (int i = 0; i < colliders.Length; i ++)
         {
-            Debug.DrawRay(transform.position, transform.TransformDirection(-Vector3.up) * hit.distance, Color.yellow);
-
-            if (!IsGrounded)
+            if (colliders [i] != capsuleCollider)
             {
-                float d = IsGroundedRayCastLentgth - Mathf.Abs(hit.point.y - transform.position.y) + radius;
-                //this.transform.position += new Vector3(0, d, 0);
+                Vector3 contactPoint = colliders[i].GetClosestPoint(sphereCastPos);
+                Vector3 contactDirectionVector = contactPoint - sphereCastPos;
+                Vector3 pushVector = sphereCastPos - contactPoint;
+                transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(sphereCastRadius - pushVector.magnitude, 0, sphereCastRadius));
+
+                if (! (Mathf.Abs (contactDirectionVector.y) < 0.1f || Mathf.Abs (contactDirectionVector.x) > 0.4f || Math.Abs (contactDirectionVector.z) > 0.4)) //TODO magic numbers
+                {
+                    IsGrounded = true;
+                }
             }
-            
-            IsGrounded = true;
-        }
-        else
-        {
-            Debug.DrawRay(transform.position, transform.TransformDirection(-Vector3.up) * 1000, Color.white);
-            IsGrounded = false;
         }
     }
 
     void checkForPushback ()
     {
-        Collider [] colliders = Physics.OverlapSphere(transform.position, radius);
+        Collider [] colliders = Physics.OverlapSphere(transform.position, capsuleCollider.radius);
         Vector3 contactPoint = Vector3.zero;
 
         for (int i = 0; i < colliders.Length; i++)
@@ -212,12 +195,7 @@ public class BurinkeruCharacterController : MonoBehaviour
     void makePushback (Vector3 contactPoint)
     {
         Vector3 pushVector = transform.position - contactPoint;
-        transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(radius - pushVector.magnitude, 0, radius));
-    }
-
-    void calculateIsGroundedRayCastLentgth()
-    {
-        IsGroundedRayCastLentgth = height / 2f - radius;
+        transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(capsuleCollider.radius - pushVector.magnitude, 0, capsuleCollider.radius));
     }
 
     private void move(Vector3 deltaPosition)
