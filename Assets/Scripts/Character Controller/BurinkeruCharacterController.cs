@@ -10,14 +10,22 @@ public class BurinkeruCharacterController : MonoBehaviour
     [SerializeField] float defaultJumpHeight = 10f;
 
     CapsuleCollider capsuleCollider;
-    CharacterControllerStateBase currentCharacterState;
     BurinkeruInputManager inputManager;
+
+    CharacterControllerStateBase mainMovementState;
+    CrouchState crouchState;
 
     static Vector3 movementAxes = new Vector3 (1f, 0f, 1f);
     public const float GRAVITY = 9.8f;
     const float heightOffset = 0.1f;
 
     Vector3 velocity = Vector3.zero;
+
+    public Vector3 DeltaPosition
+    {
+        get;
+        private set;
+    }
 
     public Vector3 Velocity
     {
@@ -40,33 +48,38 @@ public class BurinkeruCharacterController : MonoBehaviour
         private set;
     }
 
+    public bool IsCrouching
+    {
+        get { return crouchState != null; }
+    }
+
     void setNewState <T> () where T : CharacterControllerStateBase
     {
-        if (currentCharacterState == null || typeof (T) != currentCharacterState.GetType ())
+        if (mainMovementState == null || typeof (T) != mainMovementState.GetType ())
         {
             CharacterControllerStateBase newState = (T)Activator.CreateInstance(typeof(T));
 
-            if (currentCharacterState != null)
+            if (mainMovementState != null)
             {
-                exitState(currentCharacterState);
+                exitState(mainMovementState);
             }
 
             enterState(newState);
-            currentCharacterState = newState;
+            mainMovementState = newState;
         }
     }
 
     void setNewState (CharacterControllerStateBase newState)
     {
-        if (currentCharacterState == null || newState.GetType () != currentCharacterState.GetType())
+        if (mainMovementState == null || newState.GetType () != mainMovementState.GetType())
         {
-            if (currentCharacterState != null)
+            if (mainMovementState != null)
             {
-                exitState(currentCharacterState);
+                exitState(mainMovementState);
             }
 
             enterState(newState);
-            currentCharacterState = newState;
+            mainMovementState = newState;
         }
     }
 
@@ -75,7 +88,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         state.OnSetNewStateRequested += setNewState;
         state.OnAddVelocityRequested += addVelocity;
         state.OnSetVelocityRequested += setVelocity;
-        state.Enter(currentCharacterState, inputManager, this, capsuleCollider);
+        state.Enter(mainMovementState, inputManager, this, capsuleCollider);
     }
 
     void exitState (CharacterControllerStateBase state)
@@ -97,10 +110,12 @@ public class BurinkeruCharacterController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        Vector3 startPos = transform.position;
         checkForPushback();
         updateMovement();
         applyForces();
         updateIsGrounded();
+        DeltaPosition = transform.position - startPos;
     }
 
     void updateMovement ()
@@ -108,7 +123,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         Vector3 deltaPosition = Vector3.zero;
         Vector3 forwardDirection = this.transform.forward;
         Vector3 rightDirection = this.transform.right;
-        float movementSpeed = defaultMovementSpeed * getMovementSpeedFactor();
+        float movementSpeed = getMovementSpeed();
 
         if (inputManager.IsCommandPressed (BurinkeruInputManager.InputCommand.FORWARD))
         {
@@ -128,22 +143,59 @@ public class BurinkeruCharacterController : MonoBehaviour
             deltaPosition -= (rightDirection * movementSpeed * Time.deltaTime);
         }
 
+        if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.CROUCH))
+        {
+            switchCrouch();
+        }
+
         deltaPosition.Scale(movementAxes);
         move(deltaPosition);
 
-        if (currentCharacterState != null)
+        if (mainMovementState != null)
         {
-            currentCharacterState.UpdateMovement();
+            mainMovementState.UpdateMovement();
         }
     }
 
-    float getMovementSpeedFactor ()
+    void switchCrouch ()
     {
-        float result = 1f;
-
-        if (currentCharacterState != null)
+        if (crouchState == null)
         {
-            result = currentCharacterState.GetMovementSpeedFactor();
+            EnterCrouch();
+        }
+        else
+        {
+            ExitCrouch();
+        }
+    }
+
+    public void EnterCrouch ()
+    {
+        crouchState = new CrouchState();
+        crouchState.Enter(null, inputManager, this, capsuleCollider);
+    }
+
+    public void ExitCrouch ()
+    {
+        if (crouchState != null)
+        {
+            crouchState.Exit();
+            crouchState = null;
+        }
+    }
+
+    float getMovementSpeed ()
+    {
+        float result = defaultMovementSpeed;
+
+        if (mainMovementState != null)
+        {
+            result *= mainMovementState.GetMovementSpeedFactor();
+        }
+
+        if (crouchState != null)
+        {
+            result *= crouchState.GetMovementSpeedFactor();
         }
 
         return result;
@@ -153,9 +205,9 @@ public class BurinkeruCharacterController : MonoBehaviour
     {
         move(velocity * Time.deltaTime);
 
-        if (currentCharacterState != null)
+        if (mainMovementState != null)
         {
-            currentCharacterState.ApplyForces();
+            mainMovementState.ApplyForces();
         }
     }
 

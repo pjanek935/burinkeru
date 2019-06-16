@@ -27,8 +27,12 @@ public class CrouchState : CharacterControllerStateBase
 
         Camera mainCamera = Camera.main;
         DOTween.To(() => capsuleCollider.height, x => capsuleCollider.height = x, 1f, 0.3f);
-        capsuleCollider.transform.DOLocalMoveY(capsuleCollider.transform.position.y - 0.25f, 0.3f);
         mainCamera.transform.DOLocalMoveY(0.5f, 0.3f);
+
+        if (parent.IsGrounded)
+        {
+            capsuleCollider.transform.DOLocalMoveY(capsuleCollider.transform.position.y - 0.25f, 0.3f);
+        }
     }
 
     public void ExitImmediate ()

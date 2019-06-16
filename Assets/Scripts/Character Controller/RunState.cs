@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -21,11 +22,13 @@ public class RunState : CharacterControllerStateBase
 
     protected override void onEnter()
     {
-        Camera.main.fieldOfView = 75;
+        Camera camera = Camera.main;
+        DOTween.To(() => camera.fieldOfView, x => camera.fieldOfView = x, 70f, 0.45f);
     }
 
     protected override void onExit()
     {
-        Camera.main.fieldOfView = 60;
+        Camera camera = Camera.main;
+        DOTween.To(() => camera.fieldOfView, x => camera.fieldOfView = x, 60f, 0.45f);
     }
 }

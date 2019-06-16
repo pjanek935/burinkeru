@@ -11,23 +11,6 @@ public class GroundState : CharacterControllerStateBase
     {
         if (! parent.IsGrounded)
         {
-            //bool canExitGroundState = true;
-
-            //if (groundedInternalState != null && groundedInternalState is CrouchState && groundedInternalState.IsTransitioning)
-            //{
-            //    canExitGroundState = false;
-            //}
-
-            //if (canExitGroundState)
-            //{
-            //    setNewState(new InAirState());
-            //}
-
-            if (groundedInternalState != null && groundedInternalState is CrouchState)
-            {
-                ((CrouchState)groundedInternalState).ExitImmediate();
-            }
-
             setNewState(new InAirState());
         }
     }
@@ -46,39 +29,37 @@ public class GroundState : CharacterControllerStateBase
     {
         if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.JUMP))
         {
-            if (groundedInternalState != null && groundedInternalState is CrouchState)
+            if (parent.IsCrouching)
             {
-                groundedInternalState.Exit();
+                parent.ExitCrouch();
             }
-
-            jump();
-        }
-        else if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.CROUCH))
-        {
-            switchCrouch();
+            else
+            {
+                jump();
+            }
         }
         else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.RUN))
         {
             switchRun();
         }
+
+        if (groundedInternalState != null && parent.DeltaPosition.sqrMagnitude == 0)
+        {
+            groundedInternalState.Exit();
+            groundedInternalState = null;
+        }
     }
 
     void switchRun ()
     {
-        if (groundedInternalState != null && groundedInternalState is CrouchState)
+        if (groundedInternalState == null)
         {
-            groundedInternalState.Exit();
-            groundedInternalState = null;
-        }
+            if (parent.IsCrouching)
+            {
+                parent.ExitCrouch();
+            }
 
-        if (groundedInternalState != null && groundedInternalState is RunState)
-        {
-            groundedInternalState.Exit();
-            groundedInternalState = null;
-        }
-        else
-        {
-            setNewInternalState(new RunState ());
+            setNewInternalState(new RunState());
         }
     }
 
@@ -96,7 +77,6 @@ public class GroundState : CharacterControllerStateBase
                 groundedInternalState = null;
             }
         }
-        
     }
 
     protected override void onEnter()
@@ -104,10 +84,6 @@ public class GroundState : CharacterControllerStateBase
         Vector3 currentVelocity = parent.Velocity;
         currentVelocity.y = 0;
         setVelocity(currentVelocity);
-
-        Camera mainCamera = Camera.main;
-        DOTween.To(() => capsuleCollider.height, x => capsuleCollider.height = x, 2f, 0.3f);
-        mainCamera.transform.DOLocalMoveY(1f, 0.3f);
     }
 
     protected override void onExit()
@@ -143,7 +119,7 @@ public class GroundState : CharacterControllerStateBase
 
         if (groundedInternalState != null)
         {
-            result = groundedInternalState.GetMovementSpeedFactor();
+            result *= groundedInternalState.GetMovementSpeedFactor();
         }
 
         return result;
