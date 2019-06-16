@@ -14,12 +14,20 @@ public abstract class CharacterControllerStateBase
     protected CharacterControllerStateBase previousState = null;
     protected BurinkeruInputManager inputManager;
     protected BurinkeruCharacterController parent;
+    protected CapsuleCollider capsuleCollider;
 
-    public void Enter (CharacterControllerStateBase previousState, BurinkeruInputManager inputManager, BurinkeruCharacterController parent)
+    public bool IsTransitioning
+    {
+        get;
+        protected set;
+    }
+
+    public void Enter (CharacterControllerStateBase previousState, BurinkeruInputManager inputManager, BurinkeruCharacterController parent, CapsuleCollider capsuleCollider)
     {
         this.previousState = previousState;
         this.inputManager = inputManager;
         this.parent = parent;
+        this.capsuleCollider = capsuleCollider;
         onEnter();
 
         Debug.Log("Enter state: " + this.GetType ().ToString ());
@@ -30,7 +38,7 @@ public abstract class CharacterControllerStateBase
         onExit();
     }
 
-    protected void setNewState (CharacterControllerStateBase newState)
+    protected virtual void setNewState (CharacterControllerStateBase newState)
     {
         OnSetNewStateRequested?.Invoke(newState);
     }
@@ -50,4 +58,5 @@ public abstract class CharacterControllerStateBase
 
     public abstract void UpdateMovement();
     public abstract void ApplyForces();
+    public abstract float GetMovementSpeedFactor();
 }

@@ -84,6 +84,12 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
                 result = KeyCode.LeftControl;
 
                 break;
+
+            case BurinkeruInputManager.InputCommand.RUN:
+
+                result = KeyCode.LeftShift;
+
+                break;
         }
 
         return result;

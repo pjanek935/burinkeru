@@ -11,6 +11,11 @@ public class InAirState : CharacterControllerStateBase
        
     }
 
+    public override float GetMovementSpeedFactor()
+    {
+        return 1f;
+    }
+
     public override void UpdateMovement()
     {
         float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;

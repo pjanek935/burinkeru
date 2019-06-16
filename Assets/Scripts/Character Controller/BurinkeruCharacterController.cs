@@ -6,8 +6,8 @@ using UnityEngine;
 [RequireComponent (typeof (CapsuleCollider))]
 public class BurinkeruCharacterController : MonoBehaviour
 {
-    [SerializeField] float movementSpeed = 5f;
-    [SerializeField] float jumpHeight = 10f;
+    [SerializeField] float defaultMovementSpeed = 5f;
+    [SerializeField] float defaultJumpHeight = 10f;
 
     CapsuleCollider capsuleCollider;
     CharacterControllerStateBase currentCharacterState;
@@ -26,12 +26,12 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     public float MovementSpeed
     {
-        get { return movementSpeed; }
+        get { return defaultMovementSpeed; }
     }
 
     public float JumpHeight
     {
-        get { return jumpHeight; }
+        get { return defaultJumpHeight; }
     }
 
     public bool IsGrounded
@@ -75,7 +75,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         state.OnSetNewStateRequested += setNewState;
         state.OnAddVelocityRequested += addVelocity;
         state.OnSetVelocityRequested += setVelocity;
-        state.Enter(currentCharacterState, inputManager, this);
+        state.Enter(currentCharacterState, inputManager, this, capsuleCollider);
     }
 
     void exitState (CharacterControllerStateBase state)
@@ -108,6 +108,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         Vector3 deltaPosition = Vector3.zero;
         Vector3 forwardDirection = this.transform.forward;
         Vector3 rightDirection = this.transform.right;
+        float movementSpeed = defaultMovementSpeed * getMovementSpeedFactor();
 
         if (inputManager.IsCommandPressed (BurinkeruInputManager.InputCommand.FORWARD))
         {
@@ -134,6 +135,18 @@ public class BurinkeruCharacterController : MonoBehaviour
         {
             currentCharacterState.UpdateMovement();
         }
+    }
+
+    float getMovementSpeedFactor ()
+    {
+        float result = 1f;
+
+        if (currentCharacterState != null)
+        {
+            result = currentCharacterState.GetMovementSpeedFactor();
+        }
+
+        return result;
     }
 
     void applyForces ()
