@@ -111,10 +111,12 @@ public class BurinkeruCharacterController : MonoBehaviour
     void Update()
     {
         Vector3 startPos = transform.position;
-        checkForPushback();
+
         updateMovement();
         applyForces();
         updateIsGrounded();
+        checkForPushback();
+
         DeltaPosition = transform.position - startPos;
     }
 
@@ -125,22 +127,22 @@ public class BurinkeruCharacterController : MonoBehaviour
         Vector3 rightDirection = this.transform.right;
         float movementSpeed = getMovementSpeed();
 
-        if (inputManager.IsCommandPressed (BurinkeruInputManager.InputCommand.FORWARD))
+        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
         {
-            deltaPosition += (forwardDirection * movementSpeed * Time.deltaTime);
+            deltaPosition += (forwardDirection);
         }
         else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.BACKWARD))
         {
-            deltaPosition -= (forwardDirection * movementSpeed * Time.deltaTime);
+            deltaPosition -= (forwardDirection);
         }
 
         if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.RIGHT))
         {
-            deltaPosition += (rightDirection * movementSpeed * Time.deltaTime);
+            deltaPosition += (rightDirection);
         }
         else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.LEFT))
         {
-            deltaPosition -= (rightDirection * movementSpeed * Time.deltaTime);
+            deltaPosition -= (rightDirection);
         }
 
         if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.CROUCH))
@@ -148,8 +150,19 @@ public class BurinkeruCharacterController : MonoBehaviour
             switchCrouch();
         }
 
+        deltaPosition.Normalize();
+        deltaPosition *= movementSpeed;
         deltaPosition.Scale(movementAxes);
-        move(deltaPosition);
+
+        if (IsGrounded)
+        {
+            move(deltaPosition * Time.deltaTime);
+        }
+        else
+        {
+            move(deltaPosition * Time.deltaTime / 10f);
+            velocity += deltaPosition;
+        }
 
         if (mainMovementState != null)
         {
@@ -193,7 +206,7 @@ public class BurinkeruCharacterController : MonoBehaviour
             result *= mainMovementState.GetMovementSpeedFactor();
         }
 
-        if (crouchState != null)
+        if (crouchState != null && IsGrounded)
         {
             result *= crouchState.GetMovementSpeedFactor();
         }
@@ -203,7 +216,9 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void applyForces ()
     {
+        float drag = 1f - getMovementDrag();
         move(velocity * Time.deltaTime);
+        velocity.Scale(new Vector3(drag, 1f, drag));
 
         if (mainMovementState != null)
         {
@@ -219,6 +234,18 @@ public class BurinkeruCharacterController : MonoBehaviour
     void setVelocity (Vector3 newVelocty)
     {
         velocity = newVelocty; 
+    }
+
+    float getMovementDrag ()
+    {
+        if (IsGrounded)
+        {
+            return 0.1f;
+        }
+        else
+        {
+            return 0.005f;
+        }
     }
 
     void updateIsGrounded ()

@@ -13,7 +13,7 @@ public class InAirState : CharacterControllerStateBase
 
     public override float GetMovementSpeedFactor()
     {
-        return 1f;
+        return 0.01f;
     }
 
     public override void UpdateMovement()

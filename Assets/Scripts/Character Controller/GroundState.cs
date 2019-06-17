@@ -95,6 +95,11 @@ public class GroundState : CharacterControllerStateBase
     {
         float velocityY = Mathf.Sqrt(parent.JumpHeight * 2f * BurinkeruCharacterController.GRAVITY);
         addVelocity(new Vector3 (0f, velocityY, 0f));
+        Vector3 horizontalVelocity = parent.DeltaPosition;
+        horizontalVelocity.Scale(new Vector3 (1f, 0f, 1f));
+        horizontalVelocity /= Time.deltaTime;
+        Debug.Log("hor velo: " + horizontalVelocity);
+        addVelocity(horizontalVelocity);
 
         setNewState(new InAirState ());
     }
