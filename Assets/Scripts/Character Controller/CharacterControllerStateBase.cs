@@ -14,7 +14,7 @@ public abstract class CharacterControllerStateBase
     protected CharacterControllerStateBase previousState = null;
     protected BurinkeruInputManager inputManager;
     protected BurinkeruCharacterController parent;
-    protected CapsuleCollider capsuleCollider;
+    protected CharacterComponents components;
 
     public bool IsTransitioning
     {
@@ -22,12 +22,12 @@ public abstract class CharacterControllerStateBase
         protected set;
     }
 
-    public void Enter (CharacterControllerStateBase previousState, BurinkeruInputManager inputManager, BurinkeruCharacterController parent, CapsuleCollider capsuleCollider)
+    public void Enter (CharacterControllerStateBase previousState, BurinkeruInputManager inputManager, BurinkeruCharacterController parent, CharacterComponents components)
     {
         this.previousState = previousState;
         this.inputManager = inputManager;
         this.parent = parent;
-        this.capsuleCollider = capsuleCollider;
+        this.components = components;
         onEnter();
 
         Debug.Log("Enter state: " + this.GetType ().ToString ());

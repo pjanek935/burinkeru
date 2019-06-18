@@ -8,6 +8,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 {
     [SerializeField] float defaultMovementSpeed = 5f;
     [SerializeField] float defaultJumpHeight = 10f;
+    [SerializeField] CharacterComponents components = null;
 
     CapsuleCollider capsuleCollider;
     BurinkeruInputManager inputManager;
@@ -19,7 +20,8 @@ public class BurinkeruCharacterController : MonoBehaviour
     public const float GRAVITY = 9.8f;
     const float heightOffset = 0.1f;
 
-    Vector3 velocity = Vector3.zero;
+    Vector3 forces = Vector3.zero;
+    Vector3 deltaPosition = Vector3.zero;
 
     public Vector3 DeltaPosition
     {
@@ -29,7 +31,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     public Vector3 Velocity
     {
-        get { return velocity; }
+        get { return forces; }
     }
 
     public float MovementSpeed
@@ -88,7 +90,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         state.OnSetNewStateRequested += setNewState;
         state.OnAddVelocityRequested += addVelocity;
         state.OnSetVelocityRequested += setVelocity;
-        state.Enter(mainMovementState, inputManager, this, capsuleCollider);
+        state.Enter(mainMovementState, inputManager, this, components);
     }
 
     void exitState (CharacterControllerStateBase state)
@@ -160,8 +162,23 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
         else
         {
-            move(deltaPosition * Time.deltaTime / 10f);
-            velocity += deltaPosition;
+            move(deltaPosition * Time.deltaTime);
+            //float dot = Vector3.Dot(forces.normalized, deltaPosition.normalized);
+
+            //if (dot < 0)
+            //{
+            //    move(deltaPosition * Time.deltaTime);
+            //    float dotAbs = Math.Abs(dot);
+            //    deltaPosition = deltaPosition.normalized * deltaPosition.magnitude * dotAbs;
+            //    forces += deltaPosition;
+            //}
+            //else
+            //{
+            //    float dotAbs = Math.Abs(dot);
+            //    deltaPosition = deltaPosition.normalized * deltaPosition.magnitude * (1 - dotAbs) * Time.deltaTime;
+            //    forces += deltaPosition;
+            //    move(deltaPosition * Time.deltaTime);
+            //}
         }
 
         if (mainMovementState != null)
@@ -185,7 +202,7 @@ public class BurinkeruCharacterController : MonoBehaviour
     public void EnterCrouch ()
     {
         crouchState = new CrouchState();
-        crouchState.Enter(null, inputManager, this, capsuleCollider);
+        crouchState.Enter(null, inputManager, this, components);
     }
 
     public void ExitCrouch ()
@@ -217,8 +234,9 @@ public class BurinkeruCharacterController : MonoBehaviour
     void applyForces ()
     {
         float drag = 1f - getMovementDrag();
-        move(velocity * Time.deltaTime);
-        velocity.Scale(new Vector3(drag, 1f, drag));
+        move((forces+deltaPosition) * Time.deltaTime);
+        forces.Scale(new Vector3(drag, 1f, drag));
+        deltaPosition.Scale(new Vector3(drag, 1f, drag));
 
         if (mainMovementState != null)
         {
@@ -228,12 +246,12 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void addVelocity (Vector3 velocityDelta)
     {
-        velocity += velocityDelta;
+        forces += velocityDelta;
     }
 
     void setVelocity (Vector3 newVelocty)
     {
-        velocity = newVelocty; 
+        forces = newVelocty; 
     }
 
     float getMovementDrag ()
@@ -244,7 +262,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
         else
         {
-            return 0.005f;
+            return 0.1f;
         }
     }
 

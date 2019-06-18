@@ -23,15 +23,12 @@ public class CrouchState : CharacterControllerStateBase
 
     protected override void onEnter()
     {
-        Debug.Log("Enter crouch state");
-
-        Camera mainCamera = Camera.main;
-        DOTween.To(() => capsuleCollider.height, x => capsuleCollider.height = x, 1f, 0.3f);
-        mainCamera.transform.DOLocalMoveY(0.5f, 0.3f);
+        DOTween.To(() => components.CapsuleCollider.height, x => components.CapsuleCollider.height = x, 1f, 0.3f);
+        components.Body.transform.DOLocalMoveY(0.5f, 0.3f);
 
         if (parent.IsGrounded)
         {
-            capsuleCollider.transform.DOLocalMoveY(capsuleCollider.transform.position.y - 0.25f, 0.3f);
+            components.CapsuleCollider.transform.DOLocalMoveY(components.CapsuleCollider.transform.position.y - 0.25f, 0.3f);
         }
     }
 
@@ -46,8 +43,7 @@ public class CrouchState : CharacterControllerStateBase
     protected override void onExit()
     {
         Debug.Log("Exit crouch state");
-        Camera mainCamera = Camera.main;
-        DOTween.To(() => capsuleCollider.height, x => capsuleCollider.height = x, 2f, 0.3f);
-        mainCamera.transform.DOLocalMoveY(1f, 0.3f);
+        DOTween.To(() => components.CapsuleCollider.height, x => components.CapsuleCollider.height = x, 2f, 0.3f);
+        components.Body.transform.DOLocalMoveY(1f, 0.3f);
     }
 }

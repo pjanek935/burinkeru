@@ -100,6 +100,7 @@ public class GroundState : CharacterControllerStateBase
         horizontalVelocity /= Time.deltaTime;
         Debug.Log("hor velo: " + horizontalVelocity);
         addVelocity(horizontalVelocity);
+        components.Head.AnimateJump();
 
         setNewState(new InAirState ());
     }
@@ -113,7 +114,7 @@ public class GroundState : CharacterControllerStateBase
                 groundedInternalState.Exit();
             }
 
-            newState.Enter(groundedInternalState, inputManager, parent, capsuleCollider);
+            newState.Enter(groundedInternalState, inputManager, parent, components);
             groundedInternalState = newState;
         }
     }
