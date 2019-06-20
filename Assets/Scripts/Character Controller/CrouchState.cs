@@ -13,7 +13,7 @@ public class CrouchState : CharacterControllerStateBase
 
     public override float GetMovementSpeedFactor()
     {
-        return 0.5f;
+        return CharacterControllerParameters.Instance.MovementSpeedFactorWhileCrouching;
     }
 
     public override void UpdateMovement()
@@ -32,17 +32,8 @@ public class CrouchState : CharacterControllerStateBase
         }
     }
 
-    public void ExitImmediate ()
-    {
-        //Debug.Log("Exit crouch state");
-        //Camera mainCamera = Camera.main;
-        //capsuleCollider.height = 2f;
-        //mainCamera.transform.localPosition = new Vector3(mainCamera.transform.localPosition.x, 1f, mainCamera.transform.localPosition.z);
-    }
-
     protected override void onExit()
     {
-        Debug.Log("Exit crouch state");
         DOTween.To(() => components.CapsuleCollider.height, x => components.CapsuleCollider.height = x, 2f, 0.3f);
         components.Body.transform.DOLocalMoveY(1f, 0.3f);
     }

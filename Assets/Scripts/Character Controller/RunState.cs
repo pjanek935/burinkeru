@@ -12,7 +12,7 @@ public class RunState : CharacterControllerStateBase
 
     public override float GetMovementSpeedFactor()
     {
-        return 1.5f;
+        return CharacterControllerParameters.Instance.MovementSpeedFactorWhileRunning;
     }
 
     public override void UpdateMovement()

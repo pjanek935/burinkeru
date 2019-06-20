@@ -1,7 +1,4 @@
-﻿using DG.Tweening;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GroundState : CharacterControllerStateBase
 {
@@ -27,16 +24,22 @@ public class GroundState : CharacterControllerStateBase
 
     public override void UpdateMovement()
     {
-        if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.JUMP))
+        if (groundedInternalState != null && groundedInternalState is SlideState)
         {
-            if (parent.IsCrouching)
-            {
-                parent.ExitCrouch();
-            }
-            else
-            {
-                jump();
-            }
+            groundedInternalState.UpdateMovement();
+        }
+        else
+        {
+            updateDefaultGroundMovement();
+        }
+
+        if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.CROUCH))
+        {
+            switchCrouch();
+        }
+        else if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.JUMP))
+        {
+            onJumpButtonClicked();
         }
         else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.RUN))
         {
@@ -50,33 +53,98 @@ public class GroundState : CharacterControllerStateBase
         }
     }
 
+    void updateDefaultGroundMovement ()
+    {
+        Vector3 deltaPosition = Vector3.zero;
+        Vector3 forwardDirection = parent.transform.forward;
+        Vector3 rightDirection = parent.transform.right;
+        float movementSpeed = parent.GetMovementSpeed();
+
+        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
+        {
+            deltaPosition += (forwardDirection);
+        }
+        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.BACKWARD))
+        {
+            deltaPosition -= (forwardDirection);
+        }
+
+        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.RIGHT))
+        {
+            deltaPosition += (rightDirection);
+        }
+        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.LEFT))
+        {
+            deltaPosition -= (rightDirection);
+        }
+
+        deltaPosition.Normalize();
+        deltaPosition *= movementSpeed;
+        deltaPosition.Scale(BurinkeruCharacterController.MovementAxes);
+        move(deltaPosition * Time.deltaTime);
+    }
+
+    void onJumpButtonClicked ()
+    {
+        if (parent.IsCrouching)
+        {
+            if (groundedInternalState != null && groundedInternalState is SlideState)
+            {
+                jump();
+            }
+
+            parent.ExitCrouch();
+        }
+        else
+        {
+            jump();
+        }
+    }
+
     void switchRun ()
     {
         if (groundedInternalState == null)
         {
             if (parent.IsCrouching)
             {
-                parent.ExitCrouch();
+                exitCrouch();
             }
 
             setNewInternalState(new RunState());
         }
     }
 
-    void switchCrouch ()
+    protected override void switchCrouch()
     {
-        if ((groundedInternalState != null && ! (groundedInternalState is RunState)) || groundedInternalState == null)
+        if (parent.IsCrouching)
         {
-            if (groundedInternalState == null)
-            {
-                setNewInternalState(new CrouchState());
-            }
-            else
-            {
-                groundedInternalState.Exit();
-                groundedInternalState = null;
-            }
+            exitCrouch();
         }
+        else
+        {
+            enterCrouch();
+        }
+    }
+
+    void enterCrouch ()
+    {
+        if (groundedInternalState != null && groundedInternalState is RunState)
+        {
+            slide();
+        }
+
+        parent.EnterCrouch();
+    }
+
+    void exitCrouch ()
+    {
+        if (groundedInternalState != null && groundedInternalState is SlideState)
+        {
+            groundedInternalState.Exit();
+            groundedInternalState = null;
+        }
+
+        parent.ExitCrouch();
     }
 
     protected override void onEnter()
@@ -84,6 +152,36 @@ public class GroundState : CharacterControllerStateBase
         Vector3 currentVelocity = parent.Velocity;
         currentVelocity.y = 0;
         setVelocity(currentVelocity);
+
+        switchToSlideIfNeeded ();
+    }
+
+    void switchToSlideIfNeeded ()
+    {
+        if (parent.IsCrouching)
+        {
+            Vector3 currentVelocity = parent.DeltaPosition;
+            currentVelocity.Scale(BurinkeruCharacterController.MovementAxes);
+            currentVelocity /= Time.deltaTime;
+
+            if (currentVelocity.sqrMagnitude > 10)
+            {
+                slide();
+            }
+        }
+    }
+
+    void slide ()
+    {
+        if (groundedInternalState != null)
+        {
+            groundedInternalState.Exit();
+        }
+        
+        SlideState slideState = new SlideState();
+        setReferences(slideState);
+        slideState.Enter(null, inputManager, parent, components);
+        groundedInternalState = slideState;
     }
 
     protected override void onExit()
@@ -91,14 +189,25 @@ public class GroundState : CharacterControllerStateBase
         
     }
 
+    public override float GetMovementDrag()
+    {
+        float result = CharacterControllerParameters.Instance.MovementDragOnGround;
+
+        if (groundedInternalState != null)
+        {
+            result = groundedInternalState.GetMovementDrag();
+        }
+
+        return result;
+    }
+
     void jump ()
     {
-        float velocityY = Mathf.Sqrt(parent.JumpHeight * 2f * BurinkeruCharacterController.GRAVITY);
+        float velocityY = Mathf.Sqrt(CharacterControllerParameters.Instance.DefaultJumpHeight * 2f * BurinkeruCharacterController.GRAVITY);
         addVelocity(new Vector3 (0f, velocityY, 0f));
         Vector3 horizontalVelocity = parent.DeltaPosition;
-        horizontalVelocity.Scale(new Vector3 (1f, 0f, 1f));
+        horizontalVelocity.Scale(BurinkeruCharacterController.MovementAxes);
         horizontalVelocity /= Time.deltaTime;
-        Debug.Log("hor velo: " + horizontalVelocity);
         addVelocity(horizontalVelocity);
         components.Head.AnimateJump();
 
@@ -129,5 +238,13 @@ public class GroundState : CharacterControllerStateBase
         }
 
         return result;
+    }
+
+    public override void OnSwitchToCrouch()
+    {
+        if (groundedInternalState != null && groundedInternalState is RunState)
+        {
+            slide();
+        }
     }
 }

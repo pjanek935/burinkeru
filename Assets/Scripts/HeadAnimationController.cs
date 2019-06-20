@@ -7,11 +7,11 @@ public class HeadAnimationController : MonoBehaviour
     const string LandTrigger = "Land";
     const string HardLandTrigger = "HardLand";
 
-    [SerializeField] Animator animator;
+    [SerializeField] Animator animator = null;
 
     public void AnimateJump ()
     {
-       // animator.SetTrigger("Jump");
+        //animator.SetTrigger("Jump");
     }
 
     public void AnimateLand()

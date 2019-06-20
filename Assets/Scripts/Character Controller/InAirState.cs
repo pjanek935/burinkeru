@@ -6,6 +6,7 @@ public class InAirState : CharacterControllerStateBase
 {
     int jumpCounter = 0;
     Vector3 onEnterPos;
+    Vector3 jumpDirection = Vector3.zero;
 
     public override void ApplyForces()
     {
@@ -14,11 +15,47 @@ public class InAirState : CharacterControllerStateBase
 
     public override float GetMovementSpeedFactor()
     {
-        return 1f;
+        return CharacterControllerParameters.Instance.MovementSpeedFactorInAir;
     }
 
     public override void UpdateMovement()
     {
+        Vector3 deltaPosition = Vector3.zero;
+        Vector3 forwardDirection = parent.transform.forward;
+        Vector3 rightDirection = parent.transform.right;
+        float movementSpeed = parent.GetMovementSpeed();
+
+        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
+        {
+            deltaPosition += (forwardDirection);
+        }
+        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.BACKWARD))
+        {
+            deltaPosition -= (forwardDirection);
+        }
+
+        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.RIGHT))
+        {
+            deltaPosition += (rightDirection);
+        }
+        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.LEFT))
+        {
+            deltaPosition -= (rightDirection);
+        }
+
+        deltaPosition.Normalize();
+        deltaPosition *= movementSpeed;
+        deltaPosition.Scale(BurinkeruCharacterController.MovementAxes);
+        move(deltaPosition * Time.deltaTime);
+
+        float dot = Vector3.Dot(jumpDirection, deltaPosition);
+
+
+        if (dot < 0)
+        {
+            addVelocity(deltaPosition * Mathf.Abs (dot) * Time.deltaTime);
+        }
+
         float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
         addVelocity(new Vector3(0f, gravity, 0));
 
@@ -27,7 +64,11 @@ public class InAirState : CharacterControllerStateBase
             setNewState(new GroundState());
         }
 
-        if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.JUMP) && jumpCounter == 0)
+        if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.CROUCH))
+        {
+            switchCrouch();
+        }
+        else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.JUMP) && jumpCounter == 0)
         {
             jump();
         }
@@ -41,12 +82,18 @@ public class InAirState : CharacterControllerStateBase
     protected override void onEnter()
     {
         onEnterPos = parent.transform.position;
+        jumpDirection = parent.DeltaPosition.normalized;
+        jumpDirection.Scale(BurinkeruCharacterController.MovementAxes);
+    }
+
+    public override float GetMovementDrag()
+    {
+        return CharacterControllerParameters.Instance.MovementDragInAir;
     }
 
     protected override void onExit()
     {
         Vector3 distance = parent.transform.position - onEnterPos;
-        Debug.Log("DY: " + distance.y);
 
         if (distance.y < -3.5f)
         {
@@ -61,7 +108,7 @@ public class InAirState : CharacterControllerStateBase
     void jump()
     {
         jumpCounter++;
-        float velocityY = Mathf.Sqrt(parent.JumpHeight * 2f * BurinkeruCharacterController.GRAVITY);
+        float velocityY = Mathf.Sqrt(CharacterControllerParameters.Instance.DefaultJumpHeight * 2f * BurinkeruCharacterController.GRAVITY);
         Vector3 currentVelocity = parent.Velocity;
         currentVelocity.y = velocityY;
         setVelocity (currentVelocity);

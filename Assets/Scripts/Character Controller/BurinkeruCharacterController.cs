@@ -6,22 +6,20 @@ using UnityEngine;
 [RequireComponent (typeof (CapsuleCollider))]
 public class BurinkeruCharacterController : MonoBehaviour
 {
-    [SerializeField] float defaultMovementSpeed = 5f;
-    [SerializeField] float defaultJumpHeight = 10f;
     [SerializeField] CharacterComponents components = null;
 
-    CapsuleCollider capsuleCollider;
     BurinkeruInputManager inputManager;
-
     CharacterControllerStateBase mainMovementState;
     CrouchState crouchState;
 
-    static Vector3 movementAxes = new Vector3 (1f, 0f, 1f);
-    public const float GRAVITY = 9.8f;
-    const float heightOffset = 0.1f;
+    public static Vector3 MovementAxes
+    {
+        get { return new Vector3(1f, 0f, 1f); }
+    }
 
-    Vector3 forces = Vector3.zero;
-    Vector3 deltaPosition = Vector3.zero;
+    public const float GRAVITY = 9.8f; //TODO does not suit in this class
+
+    Vector3 velocity = Vector3.zero;
 
     public Vector3 DeltaPosition
     {
@@ -31,17 +29,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     public Vector3 Velocity
     {
-        get { return forces; }
-    }
-
-    public float MovementSpeed
-    {
-        get { return defaultMovementSpeed; }
-    }
-
-    public float JumpHeight
-    {
-        get { return defaultJumpHeight; }
+        get { return velocity; }
     }
 
     public bool IsGrounded
@@ -90,6 +78,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         state.OnSetNewStateRequested += setNewState;
         state.OnAddVelocityRequested += addVelocity;
         state.OnSetVelocityRequested += setVelocity;
+        state.OnMoveRequested += move;
         state.Enter(mainMovementState, inputManager, this, components);
     }
 
@@ -98,13 +87,13 @@ public class BurinkeruCharacterController : MonoBehaviour
         state.OnSetNewStateRequested -= setNewState;
         state.OnAddVelocityRequested -= addVelocity;
         state.OnSetVelocityRequested -= setVelocity;
+        state.OnMoveRequested -= move;
         state.Exit();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        capsuleCollider = GetComponent<CapsuleCollider>();
         inputManager = BurinkeruInputManager.Instance;
         setNewState<InAirState>();
     }
@@ -124,78 +113,9 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void updateMovement ()
     {
-        Vector3 deltaPosition = Vector3.zero;
-        Vector3 forwardDirection = this.transform.forward;
-        Vector3 rightDirection = this.transform.right;
-        float movementSpeed = getMovementSpeed();
-
-        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
-        {
-            deltaPosition += (forwardDirection);
-        }
-        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.BACKWARD))
-        {
-            deltaPosition -= (forwardDirection);
-        }
-
-        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.RIGHT))
-        {
-            deltaPosition += (rightDirection);
-        }
-        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.LEFT))
-        {
-            deltaPosition -= (rightDirection);
-        }
-
-        if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.CROUCH))
-        {
-            switchCrouch();
-        }
-
-        deltaPosition.Normalize();
-        deltaPosition *= movementSpeed;
-        deltaPosition.Scale(movementAxes);
-
-        if (IsGrounded)
-        {
-            move(deltaPosition * Time.deltaTime);
-        }
-        else
-        {
-            move(deltaPosition * Time.deltaTime);
-            //float dot = Vector3.Dot(forces.normalized, deltaPosition.normalized);
-
-            //if (dot < 0)
-            //{
-            //    move(deltaPosition * Time.deltaTime);
-            //    float dotAbs = Math.Abs(dot);
-            //    deltaPosition = deltaPosition.normalized * deltaPosition.magnitude * dotAbs;
-            //    forces += deltaPosition;
-            //}
-            //else
-            //{
-            //    float dotAbs = Math.Abs(dot);
-            //    deltaPosition = deltaPosition.normalized * deltaPosition.magnitude * (1 - dotAbs) * Time.deltaTime;
-            //    forces += deltaPosition;
-            //    move(deltaPosition * Time.deltaTime);
-            //}
-        }
-
         if (mainMovementState != null)
         {
             mainMovementState.UpdateMovement();
-        }
-    }
-
-    void switchCrouch ()
-    {
-        if (crouchState == null)
-        {
-            EnterCrouch();
-        }
-        else
-        {
-            ExitCrouch();
         }
     }
 
@@ -214,9 +134,9 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
     }
 
-    float getMovementSpeed ()
+    public float GetMovementSpeed ()
     {
-        float result = defaultMovementSpeed;
+        float result = CharacterControllerParameters.Instance.DefaultMoveSpeed;
 
         if (mainMovementState != null)
         {
@@ -233,10 +153,9 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void applyForces ()
     {
-        float drag = 1f - getMovementDrag();
-        move((forces+deltaPosition) * Time.deltaTime);
-        forces.Scale(new Vector3(drag, 1f, drag));
-        deltaPosition.Scale(new Vector3(drag, 1f, drag));
+        float friction = 1f - GetMovementDrag();
+        move(velocity * Time.deltaTime);
+        velocity.Scale(new Vector3(friction, 1f, friction));
 
         if (mainMovementState != null)
         {
@@ -246,36 +165,36 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void addVelocity (Vector3 velocityDelta)
     {
-        forces += velocityDelta;
+        velocity += velocityDelta;
     }
 
     void setVelocity (Vector3 newVelocty)
     {
-        forces = newVelocty; 
+        velocity = newVelocty; 
     }
 
-    float getMovementDrag ()
+    public float GetMovementDrag ()
     {
-        if (IsGrounded)
+        float result = 1f;
+
+        if (mainMovementState != null)
         {
-            return 0.1f;
+            result = mainMovementState.GetMovementDrag();
         }
-        else
-        {
-            return 0.1f;
-        }
+
+        return result;
     }
 
     void updateIsGrounded ()
     {
-        Vector3 sphereCastPos = transform.position - Vector3.up * capsuleCollider.height / 4f;
-        float sphereCastRadius = capsuleCollider.radius;
+        Vector3 sphereCastPos = transform.position - Vector3.up * components.CapsuleCollider.height / 4f;
+        float sphereCastRadius = components.CapsuleCollider.radius;
         Collider[] colliders = Physics.OverlapSphere(sphereCastPos, sphereCastRadius);
         IsGrounded = false;
 
         for (int i = 0; i < colliders.Length; i ++)
         {
-            if (colliders [i] != capsuleCollider)
+            if (colliders [i] != components.CapsuleCollider)
             {
                 Vector3 contactPoint = colliders[i].GetClosestPoint(sphereCastPos);
                 Vector3 contactDirectionVector = contactPoint - sphereCastPos;
@@ -292,7 +211,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void checkForPushback ()
     {
-        Collider [] colliders = Physics.OverlapSphere(transform.position, capsuleCollider.radius);
+        Collider [] colliders = Physics.OverlapSphere(transform.position, components.CapsuleCollider.radius);
         Vector3 contactPoint = Vector3.zero;
 
         for (int i = 0; i < colliders.Length; i++)
@@ -305,11 +224,11 @@ public class BurinkeruCharacterController : MonoBehaviour
     void makePushback (Vector3 contactPoint)
     {
         Vector3 pushVector = transform.position - contactPoint;
-        transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(capsuleCollider.radius - pushVector.magnitude, 0, capsuleCollider.radius));
+        transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(components.CapsuleCollider.radius - pushVector.magnitude, 0, components.CapsuleCollider.radius));
     }
 
     private void move(Vector3 deltaPosition)
     {
         this.transform.position += deltaPosition;
-    }
+    } 
 }

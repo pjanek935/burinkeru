@@ -10,6 +10,7 @@ public abstract class CharacterControllerStateBase
     public delegate void CharacterControllerStateRequestVelocity(Vector3 value);
     public event CharacterControllerStateRequestVelocity OnAddVelocityRequested;
     public event CharacterControllerStateRequestVelocity OnSetVelocityRequested;
+    public event CharacterControllerStateRequestVelocity OnMoveRequested;
 
     protected CharacterControllerStateBase previousState = null;
     protected BurinkeruInputManager inputManager;
@@ -35,6 +36,7 @@ public abstract class CharacterControllerStateBase
 
     public void Exit ()
     {
+        Debug.Log("Exit state: " + this.GetType().ToString());
         onExit();
     }
 
@@ -53,9 +55,51 @@ public abstract class CharacterControllerStateBase
         OnSetVelocityRequested?.Invoke(newVelocity);
     }
 
+    protected void move (Vector3 deltaPosition)
+    {
+        if (OnMoveRequested != null)
+        {
+            OnMoveRequested(deltaPosition);
+        }
+    }
+
+    protected virtual void switchCrouch()
+    {
+        if (parent.IsCrouching)
+        {
+            parent.ExitCrouch();
+        }
+        else
+        {
+            parent.EnterCrouch();
+        }
+    }
+
+    protected void setReferences (CharacterControllerStateBase state)
+    {
+        if (state != null)
+        {
+            state.OnAddVelocityRequested += addVelocity;
+            state.OnSetVelocityRequested += setVelocity;
+            state.OnMoveRequested += move;
+        }
+    }
+
+    protected void removeReferences(CharacterControllerStateBase state)
+    {
+        if (state != null)
+        {
+            state.OnAddVelocityRequested -= addVelocity;
+            state.OnSetVelocityRequested -= setVelocity;
+            state.OnMoveRequested -= move;
+        }
+    }
+
     protected abstract void onEnter();
     protected abstract void onExit();
 
+    public virtual void OnSwitchToCrouch() { }
+    public virtual float GetMovementDrag() { return 1f; }
     public abstract void UpdateMovement();
     public abstract void ApplyForces();
     public abstract float GetMovementSpeedFactor();
