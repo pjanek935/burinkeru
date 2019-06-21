@@ -45,15 +45,9 @@ public class GroundState : CharacterControllerStateBase
         {
             switchRun();
         }
-
-        if (groundedInternalState != null && parent.DeltaPosition.sqrMagnitude == 0)
-        {
-            groundedInternalState.Exit();
-            groundedInternalState = null;
-        }
     }
 
-    void updateDefaultGroundMovement ()
+    void updateDefaultGroundMovement()
     {
         Vector3 deltaPosition = Vector3.zero;
         Vector3 forwardDirection = parent.transform.forward;
@@ -82,9 +76,15 @@ public class GroundState : CharacterControllerStateBase
         deltaPosition *= movementSpeed;
         deltaPosition.Scale(BurinkeruCharacterController.MovementAxes);
         move(deltaPosition * Time.deltaTime);
+
+        if (groundedInternalState != null && parent.DeltaPosition.sqrMagnitude == 0)
+        {
+            groundedInternalState.Exit();
+            groundedInternalState = null;
+        }
     }
 
-    void onJumpButtonClicked ()
+    void onJumpButtonClicked()
     {
         if (parent.IsCrouching)
         {
@@ -101,7 +101,7 @@ public class GroundState : CharacterControllerStateBase
         }
     }
 
-    void switchRun ()
+    void switchRun()
     {
         if (groundedInternalState == null)
         {
@@ -126,7 +126,7 @@ public class GroundState : CharacterControllerStateBase
         }
     }
 
-    void enterCrouch ()
+    void enterCrouch()
     {
         if (groundedInternalState != null && groundedInternalState is RunState)
         {
@@ -136,7 +136,7 @@ public class GroundState : CharacterControllerStateBase
         parent.EnterCrouch();
     }
 
-    void exitCrouch ()
+    void exitCrouch()
     {
         if (groundedInternalState != null && groundedInternalState is SlideState)
         {
@@ -180,8 +180,18 @@ public class GroundState : CharacterControllerStateBase
         
         SlideState slideState = new SlideState();
         setReferences(slideState);
+        slideState.OnExitSlideStateRequested += onExitSlideStateRequested;
         slideState.Enter(null, inputManager, parent, components);
         groundedInternalState = slideState;
+    }
+
+    void onExitSlideStateRequested ()
+    {
+        if (groundedInternalState != null && groundedInternalState is SlideState)
+        {
+            groundedInternalState.Exit();
+            groundedInternalState = null;
+        }
     }
 
     protected override void onExit()
@@ -238,13 +248,5 @@ public class GroundState : CharacterControllerStateBase
         }
 
         return result;
-    }
-
-    public override void OnSwitchToCrouch()
-    {
-        if (groundedInternalState != null && groundedInternalState is RunState)
-        {
-            slide();
-        }
     }
 }

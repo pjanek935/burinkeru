@@ -6434,12 +6434,13 @@ MonoBehaviour:
   movementSpeedFactorOnGround: 1
   movementSpeedFactorInAir: 0.8
   movementSpeedFactorWhileRunning: 1.5
-  movementSpeedFactorWhileCrouching: 1.5
+  movementSpeedFactorWhileCrouching: 0.5
   movementSpeedFactorWhileSliding: 0.1
   movementDragOnGround: 0.05
   maxMovementDragWhileSliding: 0.1
   movementDragWhileSlidingDelta: 0.0004
   movementDragInAir: 0.01
+  slideMagnitude: 15
 --- !u!1 &1567740788
 GameObject:
   m_ObjectHideFlags: 0

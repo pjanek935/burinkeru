@@ -10,7 +10,7 @@ public class InAirState : CharacterControllerStateBase
 
     public override void ApplyForces()
     {
-       
+        
     }
 
     public override float GetMovementSpeedFactor()
@@ -19,6 +19,22 @@ public class InAirState : CharacterControllerStateBase
     }
 
     public override void UpdateMovement()
+    {
+        move();
+        applyGravity();
+        updateState();
+
+        if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.CROUCH))
+        {
+            switchCrouch();
+        }
+        else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.JUMP) && jumpCounter == 0)
+        {
+            jump();
+        }
+    }
+
+    void move ()
     {
         Vector3 deltaPosition = Vector3.zero;
         Vector3 forwardDirection = parent.transform.forward;
@@ -47,36 +63,31 @@ public class InAirState : CharacterControllerStateBase
         deltaPosition *= movementSpeed;
         deltaPosition.Scale(BurinkeruCharacterController.MovementAxes);
         move(deltaPosition * Time.deltaTime);
-
         float dot = Vector3.Dot(jumpDirection, deltaPosition);
-
 
         if (dot < 0)
         {
-            addVelocity(deltaPosition * Mathf.Abs (dot) * Time.deltaTime);
+            addVelocity(deltaPosition * Mathf.Abs(dot) * Time.deltaTime);
         }
+    }
 
-        float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
-        addVelocity(new Vector3(0f, gravity, 0));
-
+    void updateState ()
+    {
         if (parent.IsGrounded)
         {
             setNewState(new GroundState());
-        }
-
-        if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.CROUCH))
-        {
-            switchCrouch();
-        }
-        else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.JUMP) && jumpCounter == 0)
-        {
-            jump();
         }
 
         if (parent.transform.position.y > onEnterPos.y)
         {
             onEnterPos = parent.transform.position;
         }
+    }
+
+    void applyGravity ()
+    {
+        float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
+        addVelocity(new Vector3(0f, gravity, 0));
     }
 
     protected override void onEnter()

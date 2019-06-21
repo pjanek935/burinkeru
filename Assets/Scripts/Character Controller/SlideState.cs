@@ -5,6 +5,9 @@ using UnityEngine;
 
 public class SlideState : CharacterControllerStateBase
 {
+    public delegate void SlideStateExitRequestEventHandler();
+    public event SlideStateExitRequestEventHandler OnExitSlideStateRequested;
+
     float currentDrag = 0f;
 
     protected override void onEnter()
@@ -12,9 +15,9 @@ public class SlideState : CharacterControllerStateBase
         currentDrag = 0f;
         Vector3 deltaPos = parent.DeltaPosition;
         deltaPos.Scale(BurinkeruCharacterController.MovementAxes);
-        deltaPos *= 150f;
-        Debug.Log(deltaPos);
-        addVelocity(deltaPos);
+        deltaPos.Normalize();
+        deltaPos *= CharacterControllerParameters.Instance.SlideMagnitude;
+        setVelocity(deltaPos);
     }
 
     protected override void onExit()
@@ -29,15 +32,13 @@ public class SlideState : CharacterControllerStateBase
 
     public override void UpdateMovement()
     {
-        if (currentDrag < CharacterControllerParameters.Instance.MaxMovementDragWhileSliding)
-        {
-            currentDrag += CharacterControllerParameters.Instance.MovementDragWhileSlidingDelta;
-        }
-        else
-        {
-            currentDrag = CharacterControllerParameters.Instance.MaxMovementDragWhileSliding;
-        }
+        updateDrag();
+        move();
+        exitSlideStateIfNeeded();
+    }
 
+    void move ()
+    {
         Vector3 currentMovementDirection = parent.DeltaPosition;
         currentMovementDirection.Normalize();
 
@@ -66,11 +67,31 @@ public class SlideState : CharacterControllerStateBase
 
         deltaMove.Normalize();
         deltaMove.Scale(BurinkeruCharacterController.MovementAxes);
-
         float dot = Vector3.Dot(currentMovementDirection, deltaMove);
         deltaMove = (deltaMove * movementSpeed) - (deltaMove * movementSpeed * dot);
-
         addVelocity(deltaMove);
+    }
+
+    void updateDrag ()
+    {
+        if (currentDrag < CharacterControllerParameters.Instance.MaxMovementDragWhileSliding)
+        {
+            currentDrag += CharacterControllerParameters.Instance.MovementDragWhileSlidingDelta;
+        }
+        else
+        {
+            currentDrag = CharacterControllerParameters.Instance.MaxMovementDragWhileSliding;
+        }
+    }
+
+    void exitSlideStateIfNeeded ()
+    {
+        Vector3 velocity = parent.Velocity;
+
+        if (velocity.sqrMagnitude < 1)
+        {
+            OnExitSlideStateRequested?.Invoke();
+        }
     }
 
     public override void ApplyForces()

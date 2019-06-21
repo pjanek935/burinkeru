@@ -18,6 +18,8 @@ public class CharacterControllerParameters : MonoBehaviour
     [SerializeField, Range(0f, 0.001f)] float movementDragWhileSlidingDelta = 0.0004f;
     [SerializeField, Range(0f, 1f)] float movementDragInAir= 0.01f;
 
+    [SerializeField, Range(1f, 50f)] float slideMagnitude = 15f;
+
     static CharacterControllerParameters instance = null;
 
     public float DefaultMoveSpeed
@@ -73,6 +75,11 @@ public class CharacterControllerParameters : MonoBehaviour
     public float MovementDragInAir
     {
         get { return movementDragInAir; }
+    }
+
+    public float SlideMagnitude
+    {
+        get { return slideMagnitude; }
     }
 
     public static bool IsInstanceNull ()

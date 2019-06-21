@@ -117,6 +117,11 @@ public class BurinkeruCharacterController : MonoBehaviour
         {
             mainMovementState.UpdateMovement();
         }
+
+        if (crouchState != null)
+        {
+            crouchState.UpdateMovement();
+        }
     }
 
     public void EnterCrouch ()
