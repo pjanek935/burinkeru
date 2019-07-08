@@ -20,7 +20,21 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
         {
             command = (BurinkeruInputManager.InputCommand)c;
 
-            if (command != BurinkeruInputManager.InputCommand.NO_TYPE)
+            if (command == BurinkeruInputManager.InputCommand.ATTACK)
+            {
+                downCommands[c] = Input.GetMouseButtonDown(0);
+                upCommands[c] = Input.GetMouseButtonUp(0);
+
+                if (downCommands[c])
+                {
+                    pressCommands[c] = true;
+                }
+                else if (upCommands[c])
+                {
+                    pressCommands[c] = false;
+                }
+            }
+            else if (command != BurinkeruInputManager.InputCommand.NO_TYPE)
             {
                 mappedKey = GetDefaultKeyMapping(command);
                 downCommands[c] = Input.GetKeyDown(mappedKey);

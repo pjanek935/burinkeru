@@ -82,6 +82,17 @@ public class GroundState : CharacterControllerStateBase
             groundedInternalState.Exit();
             groundedInternalState = null;
         }
+
+        float magnitude = deltaPosition.magnitude;
+
+        if (magnitude != 0)
+        {
+            components.RigAnimationController.SetWalk(true);
+        }
+        else
+        {
+            components.RigAnimationController.SetWalk(false);
+        }
     }
 
     void onJumpButtonClicked()
@@ -196,7 +207,7 @@ public class GroundState : CharacterControllerStateBase
 
     protected override void onExit()
     {
-        
+       components.RigAnimationController.SetWalk(false);
     }
 
     public override float GetMovementDrag()
@@ -220,6 +231,19 @@ public class GroundState : CharacterControllerStateBase
         horizontalVelocity /= Time.deltaTime;
         addVelocity(horizontalVelocity);
         components.Head.AnimateJump();
+
+        Vector3 velocity = parent.Velocity;
+        velocity.Scale(BurinkeruCharacterController.MovementAxes);
+        Debug.Log("Magnitude: " + velocity.magnitude);
+
+        if (velocity.magnitude > CharacterControllerParameters.Instance.MaxInAirHorizontalVelocity)
+        {
+            velocity = CharacterControllerParameters.Instance.MaxInAirHorizontalVelocity * velocity.normalized;
+            velocity.y = parent.Velocity.y;
+            setVelocity(velocity);
+        }
+
+        //Debug.Log("Magnitude: " + velocity.magnitude);
 
         setNewState(new InAirState ());
     }

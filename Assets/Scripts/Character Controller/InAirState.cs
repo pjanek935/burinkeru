@@ -34,6 +34,18 @@ public class InAirState : CharacterControllerStateBase
         }
     }
 
+    void clampHorizontalVelocity ()
+    {
+        Vector3 velocity = parent.Velocity;
+
+        if (velocity.magnitude > CharacterControllerParameters.Instance.MaxInAirHorizontalVelocity)
+        {
+            velocity = CharacterControllerParameters.Instance.MaxInAirHorizontalVelocity * velocity.normalized;
+            velocity.y = parent.Velocity.y;
+            setVelocity(velocity);
+        }
+    }
+
     void move ()
     {
         Vector3 deltaPosition = Vector3.zero;
@@ -62,13 +74,17 @@ public class InAirState : CharacterControllerStateBase
         deltaPosition.Normalize();
         deltaPosition *= movementSpeed;
         deltaPosition.Scale(BurinkeruCharacterController.MovementAxes);
-        move(deltaPosition * Time.deltaTime);
+       
         float dot = Vector3.Dot(jumpDirection, deltaPosition);
+        //deltaPosition *= (1 - Mathf.Abs(dot)) + 1;
 
         if (dot < 0)
-        {
-            addVelocity(deltaPosition * Mathf.Abs(dot) * Time.deltaTime);
+        {//addVelocity(deltaPosition * Mathf.Abs(dot) * Time.deltaTime / 10f);
         }
+
+        move(deltaPosition * Time.deltaTime);
+
+        clampHorizontalVelocity();
     }
 
     void updateState ()

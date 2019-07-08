@@ -20,6 +20,8 @@ public class CharacterControllerParameters : MonoBehaviour
 
     [SerializeField, Range(1f, 50f)] float slideMagnitude = 15f;
 
+    [SerializeField, Range(1f, 20f)] float maxInAirHorizontalVelocity = 8f;
+
     static CharacterControllerParameters instance = null;
 
     public float DefaultMoveSpeed
@@ -80,6 +82,11 @@ public class CharacterControllerParameters : MonoBehaviour
     public float SlideMagnitude
     {
         get { return slideMagnitude; }
+    }
+
+    public float MaxInAirHorizontalVelocity
+    {
+        get { return maxInAirHorizontalVelocity; }
     }
 
     public static bool IsInstanceNull ()

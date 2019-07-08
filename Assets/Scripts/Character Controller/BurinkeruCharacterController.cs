@@ -122,6 +122,11 @@ public class BurinkeruCharacterController : MonoBehaviour
         {
             crouchState.UpdateMovement();
         }
+
+        if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.ATTACK))
+        {
+            components.RigAnimationController.Attack();
+        }
     }
 
     public void EnterCrouch ()

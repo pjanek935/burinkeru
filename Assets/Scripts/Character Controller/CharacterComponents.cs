@@ -8,6 +8,7 @@ public class CharacterComponents : MonoBehaviour
     [SerializeField] GameObject body = null;
     [SerializeField] HeadAnimationController head = null;
     [SerializeField] CapsuleCollider capsuleCollider = null;
+    [SerializeField] RigAnimationController rigAnimationController = null;
 
     public Camera FPPCamera
     {
@@ -27,5 +28,10 @@ public class CharacterComponents : MonoBehaviour
     public CapsuleCollider CapsuleCollider
     {
         get { return capsuleCollider; }
+    }
+
+    public RigAnimationController RigAnimationController
+    {
+        get { return rigAnimationController; }
     }
 }

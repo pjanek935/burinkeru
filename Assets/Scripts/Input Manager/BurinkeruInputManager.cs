@@ -14,6 +14,7 @@ public class BurinkeruInputManager : MonoBehaviour
         JUMP,
         CROUCH,
         RUN,
+        ATTACK,
     }
 
     static BurinkeruInputManager instance = null;

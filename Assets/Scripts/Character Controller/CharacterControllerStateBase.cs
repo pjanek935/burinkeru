@@ -31,12 +31,12 @@ public abstract class CharacterControllerStateBase
         this.components = components;
         onEnter();
 
-        Debug.Log("Enter state: " + this.GetType ().ToString ());
+        //Debug.Log("Enter state: " + this.GetType ().ToString ());
     }
 
     public void Exit ()
     {
-        Debug.Log("Exit state: " + this.GetType().ToString());
+        //Debug.Log("Exit state: " + this.GetType().ToString());
         onExit();
     }
 
