@@ -7,6 +7,7 @@ using UnityEngine;
 public class BurinkeruCharacterController : MonoBehaviour
 {
     [SerializeField] CharacterComponents components = null;
+    [SerializeField] CombatController combatController = null;
 
     BurinkeruInputManager inputManager;
     CharacterControllerStateBase mainMovementState;
@@ -17,7 +18,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         get { return new Vector3(1f, 0f, 1f); }
     }
 
-    public const float GRAVITY = 9.8f; //TODO does not suit in this class
+    public const float GRAVITY = 15f; //TODO does not suit in this class
 
     Vector3 velocity = Vector3.zero;
 
@@ -43,6 +44,22 @@ public class BurinkeruCharacterController : MonoBehaviour
         get { return crouchState != null; }
     }
 
+    void setListenersToWeapon (WeaponBase weapon)
+    {
+        if (weapon != null)
+        {
+            weapon.OnAddVelocityRequested += addVelocity;
+            weapon.OnSetVelocityRequested += setVelocity;
+        }
+    }
+
+    void setNewWeapon ()
+    {
+        KatanaWeapon katanaWeapon = new KatanaWeapon(components.RigAnimationController, this);
+        setListenersToWeapon(katanaWeapon);
+        combatController.SetNewWeapon(katanaWeapon);
+    }
+
     void setNewState <T> () where T : CharacterControllerStateBase
     {
         if (mainMovementState == null || typeof (T) != mainMovementState.GetType ())
@@ -57,6 +74,11 @@ public class BurinkeruCharacterController : MonoBehaviour
             enterState(newState);
             mainMovementState = newState;
         }
+    }
+
+    private void Awake()
+    {
+        setNewWeapon();
     }
 
     void setNewState (CharacterControllerStateBase newState)
@@ -122,11 +144,6 @@ public class BurinkeruCharacterController : MonoBehaviour
         {
             crouchState.UpdateMovement();
         }
-
-        if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.ATTACK))
-        {
-            components.RigAnimationController.Attack();
-        }
     }
 
     public void EnterCrouch ()
@@ -142,6 +159,11 @@ public class BurinkeruCharacterController : MonoBehaviour
             crouchState.Exit();
             crouchState = null;
         }
+    }
+
+    public Vector3 GetLookDirection ()
+    {
+        return components.FPPCamera.transform.forward;
     }
 
     public float GetMovementSpeed ()

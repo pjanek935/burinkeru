@@ -33,6 +33,21 @@ public abstract class ControllerWrapperBase
         protected set;
     }
 
+    public bool [] PressCommands
+    {
+        get { return pressCommands; }
+    }
+
+    public bool [] DownCommands
+    {
+        get { return downCommands; }
+    }
+
+    public bool [] UpCommads
+    {
+        get { return upCommands; }
+    }
+
     public bool IsCommandDown (BurinkeruInputManager.InputCommand inputCommand)
     {
         return downCommands[(int) inputCommand];

@@ -94,12 +94,46 @@ public class BurinkeruInputManager : MonoBehaviour
 
         if (controllers != null && controllers.Count > 0)
         {
-            if (controllerId < 0 || controllerId > controllers.Count)
+            if (controllerId < 0 || controllerId >= controllers.Count)
             {
                 controllerId = 0;
             }
 
             result = controllers[controllerId].RightAxis;
+        }
+
+        return result;
+    }
+
+    public bool[] GetDownCommands (int controllerId = 0)
+    {
+        bool[] result = null;
+
+        if (controllers != null && controllers.Count > 0)
+        {
+            if (controllerId < 0 || controllerId >= controllers.Count)
+            {
+                controllerId = 0;
+            }
+
+            result = controllers[controllerId].DownCommands;
+        }
+
+        return result;
+    }
+
+    public bool[] GetPressedCommands(int controllerId = 0)
+    {
+        bool[] result = null;
+
+        if (controllers != null && controllers.Count > 0)
+        {
+            if (controllerId < 0 || controllerId >= controllers.Count)
+            {
+                controllerId = 0;
+            }
+
+            result = controllers[controllerId].PressCommands;
         }
 
         return result;
