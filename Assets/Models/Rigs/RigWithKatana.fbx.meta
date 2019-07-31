@@ -27,6 +27,12 @@ ModelImporter:
   - first:
       74: 8756719634912484760
     second: Rig|dab
+  - first:
+      74: -8353896337062283
+    second: Rig|Show
+  - first:
+      74: 711232249668257821
+    second: Rig|Hide
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -139,7 +145,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.14258555
-        functionName: StartCut
+        functionName: OnStartAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -157,8 +163,8 @@ ModelImporter:
       maskSource: {instanceID: 0}
       additiveReferencePoseFrame: 0
     - serializedVersion: 16
-      name: Rig|Uppercut.001
-      takeName: Rig|Uppercut.001
+      name: Rig|Uppercut
+      takeName: Rig|Uppercut
       internalID: 4574330877360130228
       firstFrame: 0
       lastFrame: 60
@@ -182,7 +188,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.1305659
-        functionName: StartCut
+        functionName: OnStartAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -225,7 +231,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.3193916
-        functionName: StartCut
+        functionName: OnStartAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -268,7 +274,7 @@ ModelImporter:
       curves: []
       events:
       - time: 0.4201521
-        functionName: StartCut
+        functionName: OnStartAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
@@ -311,11 +317,11 @@ ModelImporter:
       curves: []
       events:
       - time: 0.23087451
-        functionName: StartPierce
+        functionName: OnStartAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
-        intParameter: 3
+        intParameter: 4
         messageOptions: 0
       - time: 0.29494706
         functionName: OnEndAttack
@@ -323,6 +329,71 @@ ModelImporter:
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 3
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Rig|Show
+      takeName: Rig|Show
+      internalID: -8353896337062283
+      firstFrame: 0
+      lastFrame: 60
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: Rig|Hide
+      takeName: Rig|Hide
+      internalID: 711232249668257821
+      firstFrame: 0
+      lastFrame: 69
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 1
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.9626703
+        functionName: OnEndHide
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
         messageOptions: 0
       transformMask: []
       maskType: 3

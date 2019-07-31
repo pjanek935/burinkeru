@@ -1,38 +1,26 @@
 fileFormatVersion: 2
-guid: b4476e36235b15044affa06b40b2414c
+guid: a81cb9187eacbb74d91108b5bd6aa3e1
 ModelImporter:
   serializedVersion: 27
   internalIDToNameTable:
   - first:
       74: 1017660259052616027
-    second: RigWithRevolver|Idle
+    second: RigWithRevolver|PoseLib
   - first:
       74: -8327829011040007889
     second: RigWithRevolver|Reload
   - first:
-      74: 1513717263979871970
-    second: Rig|RigAction
-  - first:
-      74: -5735840907090563097
-    second: Rig|RigAction.001
-  - first:
       74: 3321860232212104767
     second: RigWithRevolver|Shoot
   - first:
-      74: -7094581595459533146
-    second: Rig|Swing02
-  - first:
-      74: 4728375994260505062
-    second: Rig|Swing02.001
-  - first:
-      74: 4465896939961463785
-    second: Rig|Swing02.002
-  - first:
-      74: 4574330877360130228
-    second: Rig|Uppercut
-  - first:
       74: -7264356326966739861
     second: RigWithRevolver|Walk
+  - first:
+      74: 379544672565587518
+    second: RigWithRevolver|Hide
+  - first:
+      74: -8569186087919039873
+    second: RigWithRevolver|Show
   externalObjects: {}
   materials:
     importMaterials: 1
@@ -48,8 +36,7 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: Event OnEndAttack has a time (0.957198) outside the
-      clip's valid range (0.000000..0.800000). It will never be fired
+    animationImportWarnings: 
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0
@@ -63,11 +50,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: RigWithRevolver|Idle
+      name: RigWithRevolver|PoseLib
       takeName: Rig|PoseLib
       internalID: 1017660259052616027
       firstFrame: 0
-      lastFrame: 2
+      lastFrame: 1
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -96,7 +83,7 @@ ModelImporter:
       takeName: Rig|Reload
       internalID: -8327829011040007889
       firstFrame: 0
-      lastFrame: 60
+      lastFrame: 105
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -116,7 +103,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.95719844
+      - time: 0.6350211
         functionName: OnEndAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
@@ -132,7 +119,7 @@ ModelImporter:
       takeName: Rig|Shoot
       internalID: 3321860232212104767
       firstFrame: 0
-      lastFrame: 20
+      lastFrame: 40
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -152,7 +139,7 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.7782101
+      - time: 0.31190792
         functionName: OnEndAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
@@ -168,7 +155,72 @@ ModelImporter:
       takeName: Rig|Walk
       internalID: -7264356326966739861
       firstFrame: 0
-      lastFrame: 35
+      lastFrame: 20
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 1
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: RigWithRevolver|Hide
+      takeName: Rig|Hide
+      internalID: 379544672565587518
+      firstFrame: 0
+      lastFrame: 50
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events:
+      - time: 0.9731239
+        functionName: OnEndHide
+        data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
+    - serializedVersion: 16
+      name: RigWithRevolver|Show
+      takeName: Rig|Show
+      internalID: -8569186087919039873
+      firstFrame: 0
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -195,21 +247,21 @@ ModelImporter:
     isReadable: 0
   meshes:
     lODScreenPercentages: []
-    globalScale: 1
+    globalScale: 0.5
     meshCompression: 0
     addColliders: 0
     useSRGBMaterialColor: 1
     sortHierarchyByName: 1
     importVisibility: 1
     importBlendShapes: 1
-    importCameras: 1
-    importLights: 1
+    importCameras: 0
+    importLights: 0
     swapUVChannels: 0
     generateSecondaryUV: 0
     useFileUnits: 1
     keepQuads: 0
     weldVertices: 1
-    preserveHierarchy: 0
+    preserveHierarchy: 1
     skinWeightsMode: 0
     maxBonesPerVertex: 4
     minBoneWeight: 0.001
@@ -241,7 +293,7 @@ ModelImporter:
     armStretch: 0.05
     legStretch: 0.05
     feetSpacing: 0
-    globalScale: 1
+    globalScale: 0.5
     rootMotionBoneName: 
     hasTranslationDoF: 0
     hasExtraRoot: 0

@@ -7,12 +7,9 @@ public class RigAnimationController : MonoBehaviour
 {
     public UnityAction OnAttackEnded;
     public UnityAction OnAttackStarted;
+    public UnityAction OnHideEnded;
 
-    [SerializeField] Animator animator = null;
-    [SerializeField] GameObject trailParticlePrefab = null;
-    [SerializeField] List <Transform> originTransforms = new List<Transform> ();
-    [SerializeField] GameObject pierceParticle = null;
-    [SerializeField] ObjectCutter objectCutter = null;
+    [SerializeField] protected Animator animator = null;
 
     public void SetWalk (bool walk)
     {
@@ -24,61 +21,28 @@ public class RigAnimationController : MonoBehaviour
         animator.SetTrigger("Attack");
     }
 
-    public void Uppercut ()
+    public void Hide ()
     {
-        animator.SetTrigger("Uppercut");
+        animator.SetTrigger("Hide");
     }
 
-    public void Stab()
+    public void Show()
     {
-        animator.SetTrigger("Stab");
+        animator.SetTrigger("Show");
     }
 
-    public void StartCut(int index)
+    public virtual void OnStartAttack(int index)
     {
-        //Debug.Log("Index: " + index);
-        trailParticlePrefab.transform.rotation = originTransforms[index].transform.rotation;
-        trailParticlePrefab.transform.position = originTransforms[index].position;
-
-        if (index == 0)
-        {
-           
-        }
-
-        trailParticlePrefab.transform.Rotate(new Vector3(0, -90, -125));
-
-        ParticleSystem[] particles = trailParticlePrefab.GetComponentsInChildren<ParticleSystem>();
-        
-        if (particles != null)
-        {
-            for (int i = 0; i < particles.Length; i ++)
-            {
-                particles[i].Play();
-            }
-        }
-
-        objectCutter.Cut(index);
         OnAttackStarted?.Invoke();
-
     }
 
-    public void OnEndAttack()
+    public virtual void OnEndAttack()
     {
         OnAttackEnded?.Invoke();
     }
 
-    public void StartPierce ()
+    public virtual void OnEndHide ()
     {
-        ParticleSystem[] particles = pierceParticle.GetComponentsInChildren<ParticleSystem>();
-
-        if (particles != null)
-        {
-            for (int i = 0; i < particles.Length; i++)
-            {
-                particles[i].Play();
-            }
-        }
-
-        OnAttackStarted?.Invoke();
+        OnHideEnded?.Invoke();
     }
 }

@@ -117,32 +117,37 @@ public class KatanaWeapon : WeaponBase
 
     void requestAction (KatanaAttackState action)
     {
-        if (canAttack)
+        if (rigAnimationController != null && rigAnimationController.GetType () == typeof (RigWithKatanaAnimationController))
         {
-            canAttack = false;
+            RigWithKatanaAnimationController rigWithKatanaAnimationController = (RigWithKatanaAnimationController)rigAnimationController;
 
-            switch (action)
+            if (canAttack)
             {
-                case KatanaAttackState.SIMPLE_ATTACK:
+                canAttack = false;
 
-                    CurrentState = KatanaAttackState.SIMPLE_ATTACK;
-                    rigAnimationController.Attack();
+                switch (action)
+                {
+                    case KatanaAttackState.SIMPLE_ATTACK:
 
-                    break;
+                        CurrentState = KatanaAttackState.SIMPLE_ATTACK;
+                        rigWithKatanaAnimationController.Attack();
 
-                case KatanaAttackState.STAB:
+                        break;
 
-                    CurrentState = KatanaAttackState.STAB;
-                    rigAnimationController.Stab();
+                    case KatanaAttackState.STAB:
 
-                    break;
+                        CurrentState = KatanaAttackState.STAB;
+                        rigWithKatanaAnimationController.Stab();
 
-                case KatanaAttackState.UPPERCUT:
+                        break;
 
-                    CurrentState = KatanaAttackState.UPPERCUT;
-                    rigAnimationController.Uppercut();
+                    case KatanaAttackState.UPPERCUT:
 
-                    break;
+                        CurrentState = KatanaAttackState.UPPERCUT;
+                        rigWithKatanaAnimationController.Uppercut();
+
+                        break;
+                }
             }
         }
     }
