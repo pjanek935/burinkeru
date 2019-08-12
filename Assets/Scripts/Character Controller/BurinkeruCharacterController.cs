@@ -53,13 +53,6 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
     }
 
-    void setNewWeapon ()
-    {
-        KatanaWeapon katanaWeapon = new KatanaWeapon(components.RigAnimationController, this);
-        setListenersToWeapon(katanaWeapon);
-        combatController.SetNewWeapon(katanaWeapon);
-    }
-
     void setNewState <T> () where T : CharacterControllerStateBase
     {
         if (mainMovementState == null || typeof (T) != mainMovementState.GetType ())
@@ -78,7 +71,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     private void Awake()
     {
-        setNewWeapon();
+        combatController.OnSetListenersToWeaponRequested += setListenersToWeapon;
     }
 
     void setNewState (CharacterControllerStateBase newState)
@@ -164,6 +157,11 @@ public class BurinkeruCharacterController : MonoBehaviour
     public Vector3 GetLookDirection ()
     {
         return components.FPPCamera.transform.forward;
+    }
+
+    public Vector3 GetUpwardDirection()
+    {
+        return components.FPPCamera.transform.up;
     }
 
     public float GetMovementSpeed ()

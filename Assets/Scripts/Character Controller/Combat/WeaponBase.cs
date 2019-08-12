@@ -8,18 +8,67 @@ public abstract class WeaponBase
     public event VelocityEventHandler OnAddVelocityRequested;
     public event VelocityEventHandler OnSetVelocityRequested;
 
-    protected RigAnimationController rigAnimationController;
+    protected RigManager rigManager;
     protected BurinkeruCharacterController characterController;
+    protected ParticlesManager particleManager;
 
-    public WeaponBase (RigAnimationController rigAnimationController, BurinkeruCharacterController characterController)
+    protected List<KeyValuePair<int, CombatActionDefinition>> actionDefinitions = new List<KeyValuePair<int, CombatActionDefinition>>();
+    protected const int DEFAULT_STATE_INDEX = 0;
+
+    public int CurrentStateIndex
     {
-        this.rigAnimationController = rigAnimationController;
-        this.characterController = characterController;
+        get;
+        protected set;
     }
 
-    public virtual bool CheckForInput (InputBuffer inputBuffer)
+    public bool CanAttack
     {
-        return false;
+        get;
+        protected set;
+    }
+
+    public virtual void Init (RigManager rigManager, BurinkeruCharacterController characterController, ParticlesManager particleManager)
+    {
+        this.rigManager = rigManager;
+        this.characterController = characterController;
+        this.particleManager = particleManager;
+        CanAttack = true;
+
+        initActionsDefinitions();
+    }
+
+    public bool CheckForInput (InputBuffer inputBuffer)
+    {
+        bool result = false;
+        int detectedActionIndex = getDetectedActionIndex(inputBuffer);
+
+        if (detectedActionIndex != DEFAULT_STATE_INDEX)
+        {
+            requestAction(detectedActionIndex);
+            result = true;
+        }
+
+        return result;
+    }
+
+    protected int getDetectedActionIndex(InputBuffer inputBuffer)
+    {
+        int detectedActionIndex = DEFAULT_STATE_INDEX;
+        int lastDefinitionLength = 0;
+
+        foreach (KeyValuePair<int, CombatActionDefinition> entry in actionDefinitions)
+        {
+            if (inputBuffer.Matches(entry.Value))
+            {
+                if (entry.Value.Count > lastDefinitionLength)
+                {
+                    detectedActionIndex = entry.Key;
+                    lastDefinitionLength = entry.Value.Count;
+                }
+            }
+        }
+
+        return detectedActionIndex;
     }
 
     protected void addVelocity (Vector3 dVelocity)
@@ -31,4 +80,7 @@ public abstract class WeaponBase
     {
         OnSetVelocityRequested?.Invoke(velocity);
     }
+
+    protected abstract void initActionsDefinitions();
+    protected abstract void requestAction(int actionIndex);
 }

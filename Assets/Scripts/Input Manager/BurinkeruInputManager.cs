@@ -15,6 +15,7 @@ public class BurinkeruInputManager : MonoBehaviour
         CROUCH,
         RUN,
         ATTACK,
+        RELOAD,
     }
 
     static BurinkeruInputManager instance = null;

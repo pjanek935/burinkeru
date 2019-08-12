@@ -30,8 +30,11 @@ public class ObjectCutter : MonoBehaviour
                     for (int j = 0; j < newGameObjects.Length; j++)
                     {
                         newObjectsList.Add(newGameObjects[j]);
-                        newGameObjects[j].AddComponent<Rigidbody>();
+                        Rigidbody rb = newGameObjects[j].AddComponent<Rigidbody>();
                         newGameObjects[j].AddComponent<BoxCollider>();
+                        newGameObjects[j].AddComponent<Hitable>();
+
+                        rb.AddForce(Vector3.up*5, ForceMode.Impulse);
                     }
 
                     Destroy(objects[i]);

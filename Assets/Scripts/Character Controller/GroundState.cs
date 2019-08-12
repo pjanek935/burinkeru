@@ -87,11 +87,11 @@ public class GroundState : CharacterControllerStateBase
 
         if (magnitude != 0)
         {
-            components.RigAnimationController.SetWalk(true);
+            components.RigManager.CurrentRig.SetWalk(true);
         }
         else
         {
-            components.RigAnimationController.SetWalk(false);
+            components.RigManager.CurrentRig.SetWalk(false);
         }
     }
 
@@ -207,7 +207,7 @@ public class GroundState : CharacterControllerStateBase
 
     protected override void onExit()
     {
-       components.RigAnimationController.SetWalk(false);
+       components.RigManager.CurrentRig.SetWalk(false);
     }
 
     public override float GetMovementDrag()

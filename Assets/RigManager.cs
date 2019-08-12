@@ -4,17 +4,35 @@ using UnityEngine;
 
 public class RigManager : MonoBehaviour
 {
+    public delegate void OnNewRigSetEventHandler();
+    public event OnNewRigSetEventHandler OnNewRigSet;
+
     [SerializeField] RigWithKatanaAnimationController rigWithKatana;
     [SerializeField] RigWithGunAnimationController rigWithRevolver;
 
     RigAnimationController currentRig;
     RigAnimationController nextRig = null;
-    
+
+    public RigAnimationController CurrentRig
+    {
+        get { return currentRig; }
+        set { CurrentRig = value; }
+    }
+
+    public RigWithKatanaAnimationController RigWithKatana
+    {
+        get { return rigWithKatana; }
+        set { rigWithKatana = value; }
+    }
+
+    public RigWithGunAnimationController RigWithRevolver
+    {
+        get { return rigWithRevolver; }
+        set { rigWithRevolver = value; }
+    }
 
     private void Awake()
     {
-        currentRig = rigWithKatana;
-
         rigWithRevolver.OnHideEnded += onHideEnded;
         rigWithKatana.OnHideEnded += onHideEnded;
     }
@@ -23,8 +41,18 @@ public class RigManager : MonoBehaviour
     {
         if (currentRig != rigWithKatana)
         {
-            currentRig.Hide();
-            nextRig = rigWithKatana;
+            if (currentRig != null)
+            {
+                currentRig.Hide();
+                nextRig = rigWithKatana;
+            }
+            else
+            {
+                currentRig = rigWithKatana;
+                currentRig.gameObject.SetActive(true);
+                nextRig = null;
+                OnNewRigSet?.Invoke();
+            }
         }
     }
 
@@ -32,8 +60,18 @@ public class RigManager : MonoBehaviour
     {
         if (currentRig != rigWithRevolver)
         {
-            currentRig.Hide();
-            nextRig = rigWithRevolver;
+            if (currentRig != null)
+            {
+                currentRig.Hide();
+                nextRig = rigWithRevolver;
+            }
+            else
+            {
+                currentRig = rigWithRevolver;
+                currentRig.gameObject.SetActive(true);
+                nextRig = null;
+                OnNewRigSet?.Invoke();
+            }
         }
     }
 
@@ -43,17 +81,7 @@ public class RigManager : MonoBehaviour
         nextRig.gameObject.SetActive(true);
         currentRig = nextRig;
         nextRig = null;
-    }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown (KeyCode.Alpha1))
-        {
-            SwitchToKatana();
-        }
-        else if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            SwitchToRevolver(); 
-        }
+        OnNewRigSet?.Invoke();
     }
 }

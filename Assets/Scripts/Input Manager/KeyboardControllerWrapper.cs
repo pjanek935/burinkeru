@@ -7,7 +7,6 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
     public override void Update()
     {
         updateAxes();
-
         updateKeys();
     }
 
@@ -102,6 +101,12 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
             case BurinkeruInputManager.InputCommand.RUN:
 
                 result = KeyCode.LeftShift;
+
+                break;
+
+            case BurinkeruInputManager.InputCommand.RELOAD:
+
+                result = KeyCode.R;
 
                 break;
         }

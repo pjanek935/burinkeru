@@ -9,71 +9,55 @@ public class KatanaWeapon : WeaponBase
         NONE = 0, SLASH_1, SLASH_2, SLASH_3, UPPERCUT, STAB, SIMPLE_ATTACK
     }
 
-    List<KeyValuePair<KatanaAttackState, CombatActionDefinition>> actionDefinitions = new List<KeyValuePair<KatanaAttackState, CombatActionDefinition>>();
-
-    bool canAttack = true;
+    RigWithKatanaAnimationController rigAnmationController;
 
     public KatanaAttackState CurrentState
     {
-        get;
-        private set;
+        get { return (KatanaAttackState)CurrentStateIndex; }
     }
 
-    public KatanaWeapon (RigAnimationController rigAnimationController, BurinkeruCharacterController characterController)
-        : base (rigAnimationController, characterController)
+    public override void Init(RigManager rigManager, BurinkeruCharacterController characterController, ParticlesManager particlesManager)
     {
-        initActionDefinitions();
-        rigAnimationController.OnAttackEnded += onAttackEnded;
-        rigAnimationController.OnAttackStarted += onAttackStarted;
+        base.Init(rigManager, characterController, particlesManager);
+
+        rigAnmationController = rigManager.RigWithKatana;
+        rigAnmationController.OnAttackEnded += onAttackEnded;
+        rigAnmationController.OnAttackStarted += onAttackStarted;
     }
 
-    void initActionDefinitions ()
+    protected override void initActionsDefinitions ()
     {
         CombatActionDefinition stab = new CombatActionDefinition();
         stab.Add(BurinkeruInputManager.InputCommand.FORWARD);
         stab.Add(BurinkeruInputManager.InputCommand.FORWARD);
         stab.Add(BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<KatanaAttackState, CombatActionDefinition> (KatanaAttackState.STAB, stab));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.STAB, stab));
 
         CombatActionDefinition stab2 = new CombatActionDefinition();
         stab2.Add(BurinkeruInputManager.InputCommand.FORWARD);
         stab2.Add(BurinkeruInputManager.InputCommand.FORWARD, BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<KatanaAttackState, CombatActionDefinition> (KatanaAttackState.STAB, stab2));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.STAB, stab2));
 
         CombatActionDefinition uppercut = new CombatActionDefinition();
         uppercut.Add(BurinkeruInputManager.InputCommand.FORWARD);
         uppercut.Add(BurinkeruInputManager.InputCommand.BACKWARD);
         uppercut.Add(BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<KatanaAttackState, CombatActionDefinition> (KatanaAttackState.UPPERCUT, uppercut));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.UPPERCUT, uppercut));
 
         CombatActionDefinition uppercut2 = new CombatActionDefinition();
         uppercut2.Add(BurinkeruInputManager.InputCommand.FORWARD);
         uppercut2.Add(BurinkeruInputManager.InputCommand.BACKWARD, BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<KatanaAttackState, CombatActionDefinition> (KatanaAttackState.UPPERCUT, uppercut2));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.UPPERCUT, uppercut2));
 
         CombatActionDefinition simpleAttact = new CombatActionDefinition();
         simpleAttact.Add(BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<KatanaAttackState, CombatActionDefinition> (KatanaAttackState.SIMPLE_ATTACK, simpleAttact));
-    }
-
-    public override bool CheckForInput(InputBuffer inputBuffer)
-    {
-        bool result = false;
-        KatanaAttackState detectedAction = getDetectedAction(inputBuffer);
-
-        if (detectedAction != KatanaAttackState.NONE)
-        {
-            requestAction(detectedAction);
-            result = true;
-        }
-
-        return result;
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.SIMPLE_ATTACK, simpleAttact));
     }
 
     void onAttackEnded ()
     {
         Debug.Log("onAttackEnded");
-        canAttack = true;
+        CanAttack = true;
     }
 
     void onAttackStarted ()
@@ -113,63 +97,47 @@ public class KatanaWeapon : WeaponBase
 
                 break;
         }
+
+        CurrentStateIndex = DEFAULT_STATE_INDEX;
     }
 
-    void requestAction (KatanaAttackState action)
+    protected override void requestAction (int actionIndex)
     {
-        if (rigAnimationController != null && rigAnimationController.GetType () == typeof (RigWithKatanaAnimationController))
-        {
-            RigWithKatanaAnimationController rigWithKatanaAnimationController = (RigWithKatanaAnimationController)rigAnimationController;
+        KatanaAttackState action = (KatanaAttackState)actionIndex;
 
-            if (canAttack)
+        if (rigAnmationController != null && rigAnmationController == rigManager.CurrentRig)
+        {
+            RigWithKatanaAnimationController rigWithKatanaAnimationController = (RigWithKatanaAnimationController)rigManager.CurrentRig;
+
+            if (CanAttack)
             {
-                canAttack = false;
+                CanAttack = false;
 
                 switch (action)
                 {
                     case KatanaAttackState.SIMPLE_ATTACK:
 
-                        CurrentState = KatanaAttackState.SIMPLE_ATTACK;
+                        CurrentStateIndex =  (int)KatanaAttackState.SIMPLE_ATTACK;
                         rigWithKatanaAnimationController.Attack();
 
                         break;
 
                     case KatanaAttackState.STAB:
 
-                        CurrentState = KatanaAttackState.STAB;
+                        CurrentStateIndex = (int)KatanaAttackState.STAB;
                         rigWithKatanaAnimationController.Stab();
 
                         break;
 
                     case KatanaAttackState.UPPERCUT:
 
-                        CurrentState = KatanaAttackState.UPPERCUT;
+                        CurrentStateIndex = (int)KatanaAttackState.UPPERCUT;
                         rigWithKatanaAnimationController.Uppercut();
 
                         break;
                 }
             }
         }
-    }
-
-    KatanaAttackState getDetectedAction (InputBuffer inputBuffer)
-    {
-        KatanaAttackState detectedAction = KatanaAttackState.NONE;
-        int lastDefinitionLength = 0;
-
-        foreach (KeyValuePair <KatanaAttackState, CombatActionDefinition> entry in actionDefinitions)
-        {
-            if (inputBuffer.Matches(entry.Value))
-            {
-                if (entry.Value.Count > lastDefinitionLength)
-                {
-                    detectedAction = entry.Key;
-                    lastDefinitionLength = entry.Value.Count;
-                }
-            }
-        }
-
-        return detectedAction;
     }
 
     void makeSimpleAttack ()
