@@ -18,11 +18,13 @@ public class SlideState : CharacterControllerStateBase
         deltaPos.Normalize();
         deltaPos *= CharacterControllerParameters.Instance.SlideMagnitude;
         setVelocity(deltaPos);
+
+        components.RigManager.CurrentRig.SetSlide(true);
     }
 
     protected override void onExit()
     {
-
+        components.RigManager.CurrentRig.SetSlide(false);
     }
 
     public override float GetMovementDrag()

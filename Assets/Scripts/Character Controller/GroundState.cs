@@ -83,15 +83,18 @@ public class GroundState : CharacterControllerStateBase
             groundedInternalState = null;
         }
 
-        float magnitude = deltaPosition.magnitude;
+        if ( !(groundedInternalState is SlideState))
+        {
+            float magnitude = deltaPosition.magnitude;
 
-        if (magnitude != 0)
-        {
-            components.RigManager.CurrentRig.SetWalk(true);
-        }
-        else
-        {
-            components.RigManager.CurrentRig.SetWalk(false);
+            if (magnitude != 0)
+            {
+                components.RigManager.CurrentRig.SetWalk(true);
+            }
+            else
+            {
+                components.RigManager.CurrentRig.SetWalk(false);
+            }
         }
     }
 

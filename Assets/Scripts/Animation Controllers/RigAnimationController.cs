@@ -15,7 +15,17 @@ public class RigAnimationController : MonoBehaviour
     {
         animator.SetBool("Walk", walk);
     }
-    
+
+    public void SetSlide(bool slide)
+    {
+        animator.SetBool("Slide", slide);
+    }
+
+    public void SetWalkSpeed (float walkSpeed)
+    {
+        animator.SetFloat("WalkSpeed", walkSpeed);
+    }
+
     public void Attack ()
     {
         animator.SetTrigger("Attack");
