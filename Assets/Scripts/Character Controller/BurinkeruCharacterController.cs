@@ -39,6 +39,19 @@ public class BurinkeruCharacterController : MonoBehaviour
         private set;
     }
 
+    public bool IsSliding ()
+    {
+        bool result = false;
+
+        if (mainMovementState != null && mainMovementState is GroundState)
+        {
+            GroundState groundState = (GroundState)mainMovementState;
+            result = groundState.IsSliding();
+        }
+
+        return result;
+    }
+
     public bool IsCrouching
     {
         get { return crouchState != null; }

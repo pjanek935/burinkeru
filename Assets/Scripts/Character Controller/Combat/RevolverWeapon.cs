@@ -66,9 +66,24 @@ public class RevolverWeapon : WeaponBase
     void shoot()
     {
         Bullets--;
-        Vector3 forward = rigAnmationController.GunTransform.forward;
-        Vector3 upward = rigAnmationController.GunTransform.up;
-        Vector3 position = rigAnmationController.GunTransform.position;
+
+        Vector3 forward = Vector3.forward;
+        Vector3 upward = Vector3.up;
+        Vector3 position = Vector3.zero;
+
+        if (characterController.IsSliding())
+        {
+            forward = rigAnmationController.GunTransformWhileSliding.forward;
+            upward = rigAnmationController.GunTransformWhileSliding.up;
+            position = rigAnmationController.GunTransformWhileSliding.position;
+        }
+        else
+        {
+            forward = rigAnmationController.GunTransform.forward;
+            upward = rigAnmationController.GunTransform.up;
+            position = rigAnmationController.GunTransform.position;
+        }
+
         particleManager.Shoot(position, forward, upward);
     }
 

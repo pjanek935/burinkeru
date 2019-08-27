@@ -22,6 +22,18 @@ public class GroundState : CharacterControllerStateBase
         base.setNewState(newState);
     }
 
+    public bool IsSliding ()
+    {
+        bool result = false;
+
+        if (groundedInternalState != null && groundedInternalState is SlideState)
+        {
+            result = true;
+        }
+
+        return result;
+    }
+
     public override void UpdateMovement()
     {
         if (groundedInternalState != null && groundedInternalState is SlideState)
