@@ -43,6 +43,7 @@ public class RevolverWeapon : WeaponBase
         {
             case RevolverAttackState.RELOAD:
 
+                Debug.Log("Reload");
                 Bullets = MAX_BULLETS;
 
                 break;

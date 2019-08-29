@@ -16,6 +16,11 @@ public class RigAnimationController : MonoBehaviour
         animator.SetBool("Walk", walk);
     }
 
+    public void SetInAir (bool inAir)
+    {
+        animator.SetBool("InAir", inAir);
+    }
+
     public void SetSlide(bool slide)
     {
         animator.SetBool("Slide", slide);

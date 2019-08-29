@@ -13,8 +13,15 @@ public class CombatController : MonoBehaviour
     [SerializeField] ParticlesManager particlesManager;
 
     WeaponBase currentWeapon;
+    KatanaWeapon katanaWeapon;
+    RevolverWeapon revolverWeapon;
     InputBuffer inputBuffer;
-    bool changingWeapon = false;
+
+    public bool IsChangingWeapon
+    {
+        get;
+        private set;
+    }
 
     private void Awake()
     {
@@ -23,32 +30,13 @@ public class CombatController : MonoBehaviour
 
     void onNewRigSet ()
     {
-        currentWeapon.Init(rigManager, characterController, particlesManager);
-        changingWeapon = false;
+        IsChangingWeapon = false;
     }
 
     private void Start()
     {
-        inputBuffer = new InputBuffer();
-        inputBuffer.OnNewInputInserted += onNewInputInserted;
-
-        setNewWeapon(new KatanaWeapon ());
-    }
-
-    void setNewWeapon (WeaponBase weapon)
-    {
-        changingWeapon = true;
-        currentWeapon = weapon;
-        OnSetListenersToWeaponRequested?.Invoke(weapon);
-        
-        if (weapon.GetType () == typeof (KatanaWeapon))
-        {
-            rigManager.SwitchToKatana();
-        }
-        else if (weapon.GetType () == typeof (RevolverWeapon))
-        {
-            rigManager.SwitchToRevolver();
-        }
+        init();
+        setNewWeapon(katanaWeapon);
     }
 
     private void Update()
@@ -65,23 +53,57 @@ public class CombatController : MonoBehaviour
             }
         }
 
-
-        if (!changingWeapon)
+        if (!IsChangingWeapon)
         {
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                if (currentWeapon.GetType () != typeof (KatanaWeapon))
+                if (currentWeapon.GetType() != typeof(KatanaWeapon))
                 {
-                    setNewWeapon(new KatanaWeapon());
+                    setNewWeapon(katanaWeapon);
                 }
             }
             else if (Input.GetKeyDown(KeyCode.Alpha2))
             {
                 if (currentWeapon.GetType() != typeof(RevolverWeapon))
                 {
-                    setNewWeapon(new RevolverWeapon());
+                    setNewWeapon(revolverWeapon);
                 }
             }
+        }
+    }
+
+    void init ()
+    {
+        inputBuffer = new InputBuffer();
+        inputBuffer.OnNewInputInserted += onNewInputInserted;
+
+        initAllWeapons();
+    }
+
+    void initAllWeapons ()
+    {
+        katanaWeapon = new KatanaWeapon();
+        revolverWeapon = new RevolverWeapon();
+
+        OnSetListenersToWeaponRequested?.Invoke(katanaWeapon);
+        OnSetListenersToWeaponRequested?.Invoke(revolverWeapon);
+
+        katanaWeapon.Init(rigManager, characterController, particlesManager);
+        revolverWeapon.Init(rigManager, characterController, particlesManager);
+    }
+
+    void setNewWeapon (WeaponBase weapon)
+    {
+        IsChangingWeapon = true;
+        currentWeapon = weapon;
+        
+        if (weapon.GetType () == typeof (KatanaWeapon))
+        {
+            rigManager.SwitchToKatana();
+        }
+        else if (weapon.GetType () == typeof (RevolverWeapon))
+        {
+            rigManager.SwitchToRevolver();
         }
     }
 

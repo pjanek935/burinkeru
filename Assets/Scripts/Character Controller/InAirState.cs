@@ -111,6 +111,11 @@ public class InAirState : CharacterControllerStateBase
         onEnterPos = parent.transform.position;
         jumpDirection = parent.DeltaPosition.normalized;
         jumpDirection.Scale(BurinkeruCharacterController.MovementAxes);
+
+        if (components.RigManager.CurrentRig != null)
+        {
+            components.RigManager.CurrentRig.SetInAir(true);
+        }
     }
 
     public override float GetMovementDrag()
@@ -130,6 +135,8 @@ public class InAirState : CharacterControllerStateBase
         {
             components.Head.AnimateLand();
         }
+
+        components.RigManager.CurrentRig.SetInAir(false);
     }
 
     void jump()
