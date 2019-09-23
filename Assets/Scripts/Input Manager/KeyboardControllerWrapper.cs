@@ -6,8 +6,8 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
 {
     public override void Update()
     {
-        updateAxes();
         updateKeys();
+        updateAxes();
     }
 
     void updateKeys ()
@@ -23,6 +23,20 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
             {
                 downCommands[c] = Input.GetMouseButtonDown(0);
                 upCommands[c] = Input.GetMouseButtonUp(0);
+
+                if (downCommands[c])
+                {
+                    pressCommands[c] = true;
+                }
+                else if (upCommands[c])
+                {
+                    pressCommands[c] = false;
+                }
+            }
+            else if (command == BurinkeruInputManager.InputCommand.BLINK)
+            {
+                downCommands[c] = Input.GetMouseButtonDown(1);
+                upCommands[c] = Input.GetMouseButtonUp(1);
 
                 if (downCommands[c])
                 {
@@ -54,6 +68,11 @@ public class KeyboardControllerWrapper : ControllerWrapperBase
     void updateAxes ()
     {
         RightAxis = new Vector2(Input.GetAxis("Mouse X"), Input.GetAxis("Mouse Y"));
+        float leftX = pressCommands[(int)BurinkeruInputManager.InputCommand.RIGHT] ? 1f : 0f;
+        leftX -= pressCommands[(int)BurinkeruInputManager.InputCommand.LEFT] ? 1f : 0f;
+        float leftY = pressCommands[(int)BurinkeruInputManager.InputCommand.FORWARD] ? 1f : 0f;
+        leftY -= pressCommands[(int)BurinkeruInputManager.InputCommand.BACKWARD] ? 1f : 0f;
+        LeftAxis = new Vector2(leftX, leftY);
     }
 
     public static KeyCode GetDefaultKeyMapping (BurinkeruInputManager.InputCommand inputCommand)

@@ -21,8 +21,15 @@ public class BurinkeruCharacterController : MonoBehaviour
     public const float GRAVITY = 15f; //TODO does not suit in this class
 
     Vector3 velocity = Vector3.zero;
+    Vector3 blinkingVelocity = Vector3.zero;
 
     public Vector3 DeltaPosition
+    {
+        get;
+        private set;
+    }
+
+    public bool IsBlinking
     {
         get;
         private set;
@@ -141,6 +148,8 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void updateMovement ()
     {
+        updateBlinking();
+
         if (mainMovementState != null)
         {
             mainMovementState.UpdateMovement();
@@ -149,6 +158,46 @@ public class BurinkeruCharacterController : MonoBehaviour
         if (crouchState != null)
         {
             crouchState.UpdateMovement();
+        }
+    }
+
+    void updateBlinking ()
+    {
+        if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.BLINK))
+        {
+            blink();
+        }
+    }
+
+    void blink ()
+    {
+        Vector3 forwardDirection = transform.forward;
+        Vector3 rightDirection = transform.right;
+        Vector3 deltaPosition = Vector3.zero;
+
+        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
+        {
+            deltaPosition += (forwardDirection);
+        }
+        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.BACKWARD))
+        {
+            deltaPosition -= (forwardDirection);
+        }
+
+        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.RIGHT))
+        {
+            deltaPosition += (rightDirection);
+        }
+        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.LEFT))
+        {
+            deltaPosition -= (rightDirection);
+        }
+
+        if (deltaPosition.magnitude > 0.1f)
+        {
+            velocity.y = 0;
+            IsBlinking = true;
+            blinkingVelocity = deltaPosition * 20f;
         }
     }
 
@@ -197,8 +246,20 @@ public class BurinkeruCharacterController : MonoBehaviour
     void applyForces ()
     {
         float friction = 1f - GetMovementDrag();
-        move(velocity * Time.deltaTime);
+        Vector3 velocitySum = velocity;
+        velocitySum += blinkingVelocity;
+
+        move(velocitySum * Time.deltaTime);
         velocity.Scale(new Vector3(friction, 1f, friction));
+        blinkingVelocity.Scale(Vector3.one * .9f);
+
+        if (IsBlinking)
+        {
+            if (blinkingVelocity.magnitude < 1f)
+            {
+                IsBlinking = false;
+            }
+        }
 
         if (mainMovementState != null)
         {
