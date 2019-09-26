@@ -9,6 +9,7 @@ public class CharacterComponents : MonoBehaviour
     [SerializeField] HeadAnimationController head = null;
     [SerializeField] CapsuleCollider capsuleCollider = null;
     [SerializeField] RigManager rigManager = null;
+    [SerializeField] CameraFOVAnimator cameraFOVAnimator;
 
     public Camera FPPCamera
     {
@@ -33,5 +34,10 @@ public class CharacterComponents : MonoBehaviour
     public RigManager RigManager
     {
         get { return rigManager; }
+    }
+
+    public CameraFOVAnimator CameraFOVAnimator
+    {
+        get { return cameraFOVAnimator; }
     }
 }

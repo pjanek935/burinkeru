@@ -8,6 +8,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 {
     [SerializeField] CharacterComponents components = null;
     [SerializeField] CombatController combatController = null;
+    [SerializeField] BlinkingController blinkingController;
 
     BurinkeruInputManager inputManager;
     CharacterControllerStateBase mainMovementState;
@@ -21,7 +22,6 @@ public class BurinkeruCharacterController : MonoBehaviour
     public const float GRAVITY = 15f; //TODO does not suit in this class
 
     Vector3 velocity = Vector3.zero;
-    Vector3 blinkingVelocity = Vector3.zero;
 
     public Vector3 DeltaPosition
     {
@@ -31,8 +31,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     public bool IsBlinking
     {
-        get;
-        private set;
+        get { return blinkingController.IsBlinking; }
     }
 
     public Vector3 Velocity
@@ -131,6 +130,7 @@ public class BurinkeruCharacterController : MonoBehaviour
     {
         inputManager = BurinkeruInputManager.Instance;
         setNewState<InAirState>();
+        blinkingController.OnBlink += onBlink;
     }
 
     // Update is called once per frame
@@ -148,7 +148,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void updateMovement ()
     {
-        updateBlinking();
+        blinkingController.UpdateBlinkingInput();
 
         if (mainMovementState != null)
         {
@@ -161,44 +161,9 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
     }
 
-    void updateBlinking ()
+    void onBlink ()
     {
-        if (inputManager.IsCommandDown (BurinkeruInputManager.InputCommand.BLINK))
-        {
-            blink();
-        }
-    }
-
-    void blink ()
-    {
-        Vector3 forwardDirection = transform.forward;
-        Vector3 rightDirection = transform.right;
-        Vector3 deltaPosition = Vector3.zero;
-
-        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
-        {
-            deltaPosition += (forwardDirection);
-        }
-        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.BACKWARD))
-        {
-            deltaPosition -= (forwardDirection);
-        }
-
-        if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.RIGHT))
-        {
-            deltaPosition += (rightDirection);
-        }
-        else if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.LEFT))
-        {
-            deltaPosition -= (rightDirection);
-        }
-
-        if (deltaPosition.magnitude > 0.1f)
-        {
-            velocity.y = 0;
-            IsBlinking = true;
-            blinkingVelocity = deltaPosition * 20f;
-        }
+        velocity = Vector3.zero;
     }
 
     public void EnterCrouch ()
@@ -247,19 +212,10 @@ public class BurinkeruCharacterController : MonoBehaviour
     {
         float friction = 1f - GetMovementDrag();
         Vector3 velocitySum = velocity;
-        velocitySum += blinkingVelocity;
-
+        velocitySum += blinkingController.BlinkingVelocity;
         move(velocitySum * Time.deltaTime);
         velocity.Scale(new Vector3(friction, 1f, friction));
-        blinkingVelocity.Scale(Vector3.one * .9f);
-
-        if (IsBlinking)
-        {
-            if (blinkingVelocity.magnitude < 1f)
-            {
-                IsBlinking = false;
-            }
-        }
+        blinkingController.UpdateBlinkingForces();
 
         if (mainMovementState != null)
         {
@@ -308,6 +264,7 @@ public class BurinkeruCharacterController : MonoBehaviour
                 if (! (Mathf.Abs (contactDirectionVector.y) < 0.1f || Mathf.Abs (contactDirectionVector.x) > 0.4f || Math.Abs (contactDirectionVector.z) > 0.4)) //TODO magic numbers
                 {
                     IsGrounded = true;
+                    blinkingController.ResetCounter();
                 }
             }
         }

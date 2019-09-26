@@ -23,14 +23,14 @@ public class RunState : CharacterControllerStateBase
     protected override void onEnter()
     {
         Camera camera = Camera.main;
-        DOTween.To(() => camera.fieldOfView, x => camera.fieldOfView = x, 70f, 0.45f);
+        components.CameraFOVAnimator.SetFOV(75f);
         components.RigManager.CurrentRig.SetWalkSpeed(1.2f);
     }
 
     protected override void onExit()
     {
         Camera camera = Camera.main;
-        DOTween.To(() => camera.fieldOfView, x => camera.fieldOfView = x, 60f, 0.45f);
+        components.CameraFOVAnimator.ResetToDefault();
         components.RigManager.CurrentRig.SetWalkSpeed(1f);
     }
 }

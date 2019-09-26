@@ -53,7 +53,7 @@ public class GroundState : CharacterControllerStateBase
         {
             onJumpButtonClicked();
         }
-        else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.RUN))
+        else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.RUN) && ! parent.IsBlinking)
         {
             switchRun();
         }
