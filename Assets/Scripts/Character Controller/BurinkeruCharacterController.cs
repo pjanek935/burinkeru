@@ -9,10 +9,12 @@ public class BurinkeruCharacterController : MonoBehaviour
     [SerializeField] CharacterComponents components = null;
     [SerializeField] CombatController combatController = null;
     [SerializeField] BlinkingController blinkingController;
+    [SerializeField] Collider thisCollider;
 
     BurinkeruInputManager inputManager;
     CharacterControllerStateBase mainMovementState;
     CrouchState crouchState;
+    int layerMaskToCheckForPushback = 0;
 
     public static Vector3 MovementAxes
     {
@@ -91,6 +93,7 @@ public class BurinkeruCharacterController : MonoBehaviour
     private void Awake()
     {
         combatController.OnSetListenersToWeaponRequested += setListenersToWeapon;
+        layerMaskToCheckForPushback = LayerMask.GetMask("Default");
     }
 
     void setNewState (CharacterControllerStateBase newState)
@@ -139,6 +142,12 @@ public class BurinkeruCharacterController : MonoBehaviour
         Vector3 startPos = transform.position;
 
         updateMovement();
+
+        if (IsBlinking)
+        {
+            checkForPushback();
+        }
+
         applyForces();
         updateIsGrounded();
         checkForPushback();
@@ -261,7 +270,9 @@ public class BurinkeruCharacterController : MonoBehaviour
                 Vector3 pushVector = sphereCastPos - contactPoint;
                 transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(sphereCastRadius - pushVector.magnitude, 0, sphereCastRadius));
 
-                if (! (Mathf.Abs (contactDirectionVector.y) < 0.1f || Mathf.Abs (contactDirectionVector.x) > 0.4f || Math.Abs (contactDirectionVector.z) > 0.4)) //TODO magic numbers
+                if (! (Mathf.Abs (contactDirectionVector.y) < 0.1f 
+                    || Mathf.Abs (contactDirectionVector.x) > 0.4f 
+                    || Math.Abs (contactDirectionVector.z) > 0.4)) //TODO magic numbers
                 {
                     IsGrounded = true;
                     blinkingController.ResetCounter();
@@ -272,20 +283,27 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void checkForPushback ()
     {
-        Collider [] colliders = Physics.OverlapSphere(transform.position, components.CapsuleCollider.radius);
+        Collider [] colliders = Physics.OverlapSphere(transform.position, components.CapsuleCollider.radius, layerMaskToCheckForPushback);
         Vector3 contactPoint = Vector3.zero;
 
         for (int i = 0; i < colliders.Length; i++)
         {
             contactPoint = colliders[i].GetClosestPoint(transform.position);
             makePushback(contactPoint);
+
+            if (IsBlinking)
+            {
+                velocity = Vector3.Scale(velocity, new Vector3(0f, 1f, 0f));
+                blinkingController.ForceStop();
+            }
         }
     }
 
     void makePushback (Vector3 contactPoint)
     {
         Vector3 pushVector = transform.position - contactPoint;
-        transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(components.CapsuleCollider.radius - pushVector.magnitude, 0, components.CapsuleCollider.radius));
+        transform.position += Vector3.ClampMagnitude(pushVector,
+            Mathf.Clamp(components.CapsuleCollider.radius - pushVector.magnitude, 0, components.CapsuleCollider.radius));
     }
 
     private void move(Vector3 deltaPosition)

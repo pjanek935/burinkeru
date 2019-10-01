@@ -62,12 +62,19 @@ public class BlinkingController : MonoBehaviour
 
     public bool CanBlink ()
     {
-        return BlinkCounter < 3;
+        return BlinkCounter < 3 && ! IsBlinking;
     }
 
     public void ResetCounter ()
     {
         BlinkCounter = 0;
+    }
+
+    public void ForceStop ()
+    {
+        IsBlinking = false;
+        components.CameraFOVAnimator.ResetToDefault(0.45f);
+        BlinkingVelocity = Vector3.zero;
     }
 
     void blink()

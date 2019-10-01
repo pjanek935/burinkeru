@@ -110,6 +110,4 @@ public class CharacterControllerParameters : MonoBehaviour
             instance = this;
         }
     }
-
-
 }
