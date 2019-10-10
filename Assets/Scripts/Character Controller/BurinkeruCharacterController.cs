@@ -9,6 +9,7 @@ public class BurinkeruCharacterController : MonoBehaviour
     [SerializeField] CharacterComponents components = null;
     [SerializeField] CombatController combatController = null;
     [SerializeField] BlinkingController blinkingController;
+    [SerializeField] WallRunController wallRunController;
     [SerializeField] Collider thisCollider;
 
     BurinkeruInputManager inputManager;
@@ -34,6 +35,11 @@ public class BurinkeruCharacterController : MonoBehaviour
     public bool IsBlinking
     {
         get { return blinkingController.IsBlinking; }
+    }
+
+    public bool IsWallRunning
+    {
+        get { return wallRunController.IsWallRunning; }
     }
 
     public Vector3 Velocity
@@ -69,8 +75,8 @@ public class BurinkeruCharacterController : MonoBehaviour
     {
         if (weapon != null)
         {
-            weapon.OnAddVelocityRequested += addVelocity;
-            weapon.OnSetVelocityRequested += setVelocity;
+            weapon.OnAddVelocityRequested += AddVelocity;
+            weapon.OnSetVelocityRequested += SetVelocity;
         }
     }
 
@@ -113,18 +119,18 @@ public class BurinkeruCharacterController : MonoBehaviour
     void enterState (CharacterControllerStateBase state)
     {
         state.OnSetNewStateRequested += setNewState;
-        state.OnAddVelocityRequested += addVelocity;
-        state.OnSetVelocityRequested += setVelocity;
-        state.OnMoveRequested += move;
+        state.OnAddVelocityRequested += AddVelocity;
+        state.OnSetVelocityRequested += SetVelocity;
+        state.OnMoveRequested += Move;
         state.Enter(mainMovementState, inputManager, this, components);
     }
 
     void exitState (CharacterControllerStateBase state)
     {
         state.OnSetNewStateRequested -= setNewState;
-        state.OnAddVelocityRequested -= addVelocity;
-        state.OnSetVelocityRequested -= setVelocity;
-        state.OnMoveRequested -= move;
+        state.OnAddVelocityRequested -= AddVelocity;
+        state.OnSetVelocityRequested -= SetVelocity;
+        state.OnMoveRequested -= Move;
         state.Exit();
     }
 
@@ -222,7 +228,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         float friction = 1f - GetMovementDrag();
         Vector3 velocitySum = velocity;
         velocitySum += blinkingController.BlinkingVelocity;
-        move(velocitySum * Time.deltaTime);
+        Move(velocitySum * Time.deltaTime);
         velocity.Scale(new Vector3(friction, 1f, friction));
         blinkingController.UpdateBlinkingForces();
 
@@ -232,12 +238,12 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
     }
 
-    void addVelocity (Vector3 velocityDelta)
+    public void AddVelocity (Vector3 velocityDelta)
     {
         velocity += velocityDelta;
     }
 
-    void setVelocity (Vector3 newVelocty)
+    public void SetVelocity (Vector3 newVelocty)
     {
         velocity = newVelocty; 
     }
@@ -306,7 +312,7 @@ public class BurinkeruCharacterController : MonoBehaviour
             Mathf.Clamp(components.CapsuleCollider.radius - pushVector.magnitude, 0, components.CapsuleCollider.radius));
     }
 
-    private void move(Vector3 deltaPosition)
+    public void Move(Vector3 deltaPosition)
     {
         this.transform.position += deltaPosition;
     } 

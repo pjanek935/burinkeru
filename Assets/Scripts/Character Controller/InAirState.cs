@@ -102,7 +102,7 @@ public class InAirState : CharacterControllerStateBase
 
     void applyGravity ()
     {
-        if (! parent.IsBlinking)
+        if (! parent.IsBlinking && !parent.IsWallRunning)
         {
             float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
             addVelocity(new Vector3(0f, gravity, 0));

@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using DG.Tweening;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -22,5 +23,15 @@ public class HeadAnimationController : MonoBehaviour
     public void AnimateHardLand()
     {
         animator.SetTrigger(HardLandTrigger);
+    }
+
+    public void AnimateWallRunLeft ()
+    {
+
+    }
+
+    public void AnimateWallRunRight ()
+    {
+        //transform.DOLocalRotate (transform.eulerAngles + )
     }
 }

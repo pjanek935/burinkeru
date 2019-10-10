@@ -246,10 +246,8 @@ public class GroundState : CharacterControllerStateBase
         horizontalVelocity /= Time.deltaTime;
         addVelocity(horizontalVelocity);
         components.Head.AnimateJump();
-
         Vector3 velocity = parent.Velocity;
         velocity.Scale(BurinkeruCharacterController.MovementAxes);
-        Debug.Log("Magnitude: " + velocity.magnitude);
 
         if (velocity.magnitude > CharacterControllerParameters.Instance.MaxInAirHorizontalVelocity)
         {
@@ -257,8 +255,6 @@ public class GroundState : CharacterControllerStateBase
             velocity.y = parent.Velocity.y;
             setVelocity(velocity);
         }
-
-        //Debug.Log("Magnitude: " + velocity.magnitude);
 
         setNewState(new InAirState ());
     }
