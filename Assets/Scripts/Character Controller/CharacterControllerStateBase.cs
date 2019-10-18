@@ -30,13 +30,10 @@ public abstract class CharacterControllerStateBase
         this.parent = parent;
         this.components = components;
         onEnter();
-
-        //Debug.Log("Enter state: " + this.GetType ().ToString ());
     }
 
     public void Exit ()
     {
-        //Debug.Log("Exit state: " + this.GetType().ToString());
         onExit();
     }
 
@@ -47,20 +44,17 @@ public abstract class CharacterControllerStateBase
 
     protected void addVelocity (Vector3 velocityDelta)
     {
-        OnAddVelocityRequested?.Invoke(velocityDelta);
+        parent.AddVelocity(velocityDelta);
     }
 
     protected void setVelocity (Vector3 newVelocity)
     {
-        OnSetVelocityRequested?.Invoke(newVelocity);
+        parent.SetVelocity(newVelocity);
     }
 
     protected void move (Vector3 deltaPosition)
     {
-        if (OnMoveRequested != null)
-        {
-            OnMoveRequested(deltaPosition);
-        }
+        parent.Move(deltaPosition);
     }
 
     protected virtual void switchCrouch()

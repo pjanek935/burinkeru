@@ -7,6 +7,10 @@ public class InAirState : CharacterControllerStateBase
     int jumpCounter = 0;
     Vector3 onEnterPos;
     Vector3 jumpDirection = Vector3.zero;
+    WallRunState wallRunState = null;
+
+    bool wallRunToLastColliderAllowed = true;
+    Collider lastWallRunCollider = null;
 
     public override void ApplyForces()
     {
@@ -28,10 +32,121 @@ public class InAirState : CharacterControllerStateBase
         {
             switchCrouch();
         }
-        else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.JUMP) && jumpCounter == 0)
+        else if (inputManager.IsCommandDown(BurinkeruInputManager.InputCommand.JUMP))
+        {
+            if (wallRunState == null)
+            {
+                bool wallRunSuccess = tryToWallRun();
+
+                if (! wallRunSuccess)
+                {
+                    tryToJump();
+                }
+            }
+            else
+            {
+                bool jumped = tryToJump();
+
+                if (jumped)
+                {
+                    stopWallRun();
+                }
+            }
+        }
+        else if (inputManager.IsCommandUp (BurinkeruInputManager.InputCommand.JUMP))
+        {
+            if (wallRunState != null)
+            {
+                bool isJumpAllowed = wallRunState.JumpAllowed;
+                stopWallRun();
+
+                if (isJumpAllowed)
+                {
+                    tryToJump();
+                }
+            }
+        }
+
+        if (wallRunState != null)
+        {
+            wallRunState.UpdateMovement();
+        }
+    }
+
+    void stopWallRun ()
+    {
+        if (wallRunState != null)
+        {
+            if (wallRunState.IsActive)
+            {
+                jumpCounter = 0;
+            }
+
+            wallRunState.Exit();
+            wallRunState = null;
+            wallRunToLastColliderAllowed = false;
+            parent.StartCoroutine(wallRunDelay ());
+        }
+    }
+
+    bool tryToWallRun()
+    {
+        bool success = false;
+        WallRunState.WallRunRaycastResult result = WallRunState.RaycastWalls(parent.transform);
+
+        if (result.Success)
+        {
+            if (lastWallRunCollider == null ||
+                (lastWallRunCollider != result.Hit.collider) ||
+                (lastWallRunCollider == result.Hit.collider && wallRunToLastColliderAllowed))
+            {
+                lastWallRunCollider = result.Hit.collider;
+
+                Vector3 lookDirection = parent.GetLookDirection();
+                float dot = Vector3.Dot(lookDirection, result.Direction);
+                success = true;
+                Vector3 v = parent.GetLookDirection();
+                Vector3 n = result.Hit.normal;
+                Vector3 vtn = Vector3.Cross(v, n);
+                Vector3 res = Vector3.Cross(n, vtn);
+                res.y *= 0.1f;
+
+                result.RunDirection = res;
+
+                wallRunState = new WallRunState(result);
+                wallRunState.Enter(this, inputManager, parent, components);
+                wallRunState.RequestExit += onExitRequested;
+
+                Debug.DrawRay(result.Hit.point, res * 10, Color.magenta, 1f);
+            }
+        }
+
+        return success;
+    }
+
+    IEnumerator wallRunDelay ()
+    {
+        yield return new WaitForSeconds(0.5f);
+
+        wallRunToLastColliderAllowed = true;
+    }
+
+    void onExitRequested ()
+    {
+        stopWallRun();
+    }
+
+    bool tryToJump ()
+    {
+        bool result = false;
+
+        if (jumpCounter < 1)
         {
             jump();
+            result = true;
         }
+
+        return result;
     }
 
     void clampHorizontalVelocity ()
@@ -48,10 +163,22 @@ public class InAirState : CharacterControllerStateBase
 
     void move ()
     {
-        Vector3 deltaPosition = Vector3.zero;
+        if (wallRunState == null)
+        {
+            Vector3 deltaPosition = getMoveDirection();
+            float movementSpeed = parent.GetMovementSpeed();
+            deltaPosition *= movementSpeed;
+            move(deltaPosition * Time.deltaTime);
+        }
+       
+        clampHorizontalVelocity();
+    }
+
+    Vector3 getMoveDirection ()
+    {
         Vector3 forwardDirection = parent.transform.forward;
         Vector3 rightDirection = parent.transform.right;
-        float movementSpeed = parent.GetMovementSpeed();
+        Vector3 deltaPosition = Vector3.zero;
 
         if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
         {
@@ -72,19 +199,9 @@ public class InAirState : CharacterControllerStateBase
         }
 
         deltaPosition.Normalize();
-        deltaPosition *= movementSpeed;
         deltaPosition.Scale(BurinkeruCharacterController.MovementAxes);
-       
-        float dot = Vector3.Dot(jumpDirection, deltaPosition);
-        //deltaPosition *= (1 - Mathf.Abs(dot)) + 1;
 
-        if (dot < 0)
-        {//addVelocity(deltaPosition * Mathf.Abs(dot) * Time.deltaTime / 10f);
-        }
-
-        move(deltaPosition * Time.deltaTime);
-
-        clampHorizontalVelocity();
+        return deltaPosition;
     }
 
     void updateState ()
@@ -102,7 +219,7 @@ public class InAirState : CharacterControllerStateBase
 
     void applyGravity ()
     {
-        if (! parent.IsBlinking && !parent.IsWallRunning)
+        if (! parent.IsBlinking && wallRunState == null)
         {
             float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
             addVelocity(new Vector3(0f, gravity, 0));
@@ -128,6 +245,8 @@ public class InAirState : CharacterControllerStateBase
 
     protected override void onExit()
     {
+        stopWallRun();
+
         Vector3 distance = parent.transform.position - onEnterPos;
 
         if (distance.y < -3.5f)

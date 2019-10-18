@@ -9,7 +9,6 @@ public class BurinkeruCharacterController : MonoBehaviour
     [SerializeField] CharacterComponents components = null;
     [SerializeField] CombatController combatController = null;
     [SerializeField] BlinkingController blinkingController;
-    [SerializeField] WallRunController wallRunController;
     [SerializeField] Collider thisCollider;
 
     BurinkeruInputManager inputManager;
@@ -35,11 +34,6 @@ public class BurinkeruCharacterController : MonoBehaviour
     public bool IsBlinking
     {
         get { return blinkingController.IsBlinking; }
-    }
-
-    public bool IsWallRunning
-    {
-        get { return wallRunController.IsWallRunning; }
     }
 
     public Vector3 Velocity

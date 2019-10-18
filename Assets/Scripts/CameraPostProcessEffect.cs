@@ -5,10 +5,12 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class CameraPostProcessEffect : MonoBehaviour
 {
-    [SerializeField] Material material = null;
+    [SerializeField] protected Material material = null;
 
     void OnRenderImage(RenderTexture source, RenderTexture destination)
     {
+        preRenderImage(source, destination);
+
         if (material != null)
         {
             Graphics.Blit(source, destination, material);
@@ -17,5 +19,10 @@ public class CameraPostProcessEffect : MonoBehaviour
         {
             Graphics.Blit(source, destination);
         }
+    }
+
+    protected virtual void preRenderImage (RenderTexture source, RenderTexture destination)
+    {
+
     }
 }

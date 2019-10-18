@@ -10,6 +10,7 @@ public class CharacterComponents : MonoBehaviour
     [SerializeField] CapsuleCollider capsuleCollider = null;
     [SerializeField] RigManager rigManager = null;
     [SerializeField] CameraFOVAnimator cameraFOVAnimator;
+    [SerializeField] SpineAnimationController spineAnimationController;
 
     public Camera FPPCamera
     {
@@ -39,5 +40,10 @@ public class CharacterComponents : MonoBehaviour
     public CameraFOVAnimator CameraFOVAnimator
     {
         get { return cameraFOVAnimator; }
+    }
+
+    public SpineAnimationController SpineAnimationController
+    {
+        get { return spineAnimationController; }
     }
 }
