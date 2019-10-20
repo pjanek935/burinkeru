@@ -13,7 +13,7 @@ public class SlideState : CharacterControllerStateBase
     protected override void onEnter()
     {
         currentDrag = 0f;
-        Vector3 deltaPos = parent.DeltaPosition;
+        Vector3 deltaPos = characterController.DeltaPosition;
         deltaPos.Scale(BurinkeruCharacterController.MovementAxes);
         deltaPos.Normalize();
         deltaPos *= CharacterControllerParameters.Instance.SlideMagnitude;
@@ -41,13 +41,13 @@ public class SlideState : CharacterControllerStateBase
 
     void move ()
     {
-        Vector3 currentMovementDirection = parent.DeltaPosition;
+        Vector3 currentMovementDirection = characterController.DeltaPosition;
         currentMovementDirection.Normalize();
 
         Vector3 deltaMove = Vector3.zero;
-        Vector3 forwardDirection = parent.transform.forward;
-        Vector3 rightDirection = parent.transform.right;
-        float movementSpeed = parent.GetMovementSpeed();
+        Vector3 forwardDirection = characterController.transform.forward;
+        Vector3 rightDirection = characterController.transform.right;
+        float movementSpeed = characterController.GetMovementSpeed();
 
         if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
         {
@@ -88,7 +88,7 @@ public class SlideState : CharacterControllerStateBase
 
     void exitSlideStateIfNeeded ()
     {
-        Vector3 velocity = parent.Velocity;
+        Vector3 velocity = characterController.Velocity;
 
         if (velocity.sqrMagnitude < 1)
         {

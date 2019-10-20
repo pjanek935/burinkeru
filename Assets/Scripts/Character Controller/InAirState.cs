@@ -11,6 +11,7 @@ public class InAirState : CharacterControllerStateBase
 
     bool wallRunToLastColliderAllowed = true;
     Collider lastWallRunCollider = null;
+    CharacterControllerParameters parameters;
 
     public override void ApplyForces()
     {
@@ -85,14 +86,14 @@ public class InAirState : CharacterControllerStateBase
             wallRunState.Exit();
             wallRunState = null;
             wallRunToLastColliderAllowed = false;
-            parent.StartCoroutine(wallRunDelay ());
+            characterController.StartCoroutine(wallRunDelay ());
         }
     }
 
     bool tryToWallRun()
     {
         bool success = false;
-        WallRunState.WallRunRaycastResult result = WallRunState.RaycastWalls(parent.transform);
+        WallRunState.WallRunRaycastResult result = WallRunState.RaycastWalls(characterController.transform);
 
         if (result.Success)
         {
@@ -102,10 +103,10 @@ public class InAirState : CharacterControllerStateBase
             {
                 lastWallRunCollider = result.Hit.collider;
 
-                Vector3 lookDirection = parent.GetLookDirection();
+                Vector3 lookDirection = characterController.GetLookDirection();
                 float dot = Vector3.Dot(lookDirection, result.Direction);
                 success = true;
-                Vector3 v = parent.GetLookDirection();
+                Vector3 v = characterController.GetLookDirection();
                 Vector3 n = result.Hit.normal;
                 Vector3 vtn = Vector3.Cross(v, n);
                 Vector3 res = Vector3.Cross(n, vtn);
@@ -114,7 +115,7 @@ public class InAirState : CharacterControllerStateBase
                 result.RunDirection = res;
 
                 wallRunState = new WallRunState(result);
-                wallRunState.Enter(this, inputManager, parent, components);
+                wallRunState.Enter(this, inputManager, characterController, components);
                 wallRunState.RequestExit += onExitRequested;
 
                 Debug.DrawRay(result.Hit.point, res * 10, Color.magenta, 1f);
@@ -140,7 +141,7 @@ public class InAirState : CharacterControllerStateBase
     {
         bool result = false;
 
-        if (jumpCounter < 1)
+        if (jumpCounter < parameters.MaxJumpsInAir)
         {
             jump();
             result = true;
@@ -151,12 +152,12 @@ public class InAirState : CharacterControllerStateBase
 
     void clampHorizontalVelocity ()
     {
-        Vector3 velocity = parent.Velocity;
+        Vector3 velocity = characterController.Velocity;
 
         if (velocity.magnitude > CharacterControllerParameters.Instance.MaxInAirHorizontalVelocity)
         {
             velocity = CharacterControllerParameters.Instance.MaxInAirHorizontalVelocity * velocity.normalized;
-            velocity.y = parent.Velocity.y;
+            velocity.y = characterController.Velocity.y;
             setVelocity(velocity);
         }
     }
@@ -166,7 +167,7 @@ public class InAirState : CharacterControllerStateBase
         if (wallRunState == null)
         {
             Vector3 deltaPosition = getMoveDirection();
-            float movementSpeed = parent.GetMovementSpeed();
+            float movementSpeed = characterController.GetMovementSpeed();
             deltaPosition *= movementSpeed;
             move(deltaPosition * Time.deltaTime);
         }
@@ -176,8 +177,8 @@ public class InAirState : CharacterControllerStateBase
 
     Vector3 getMoveDirection ()
     {
-        Vector3 forwardDirection = parent.transform.forward;
-        Vector3 rightDirection = parent.transform.right;
+        Vector3 forwardDirection = characterController.transform.forward;
+        Vector3 rightDirection = characterController.transform.right;
         Vector3 deltaPosition = Vector3.zero;
 
         if (inputManager.IsCommandPressed(BurinkeruInputManager.InputCommand.FORWARD))
@@ -206,20 +207,20 @@ public class InAirState : CharacterControllerStateBase
 
     void updateState ()
     {
-        if (parent.IsGrounded)
+        if (characterController.IsGrounded)
         {
             setNewState(new GroundState());
         }
 
-        if (parent.transform.position.y > onEnterPos.y)
+        if (characterController.transform.position.y > onEnterPos.y)
         {
-            onEnterPos = parent.transform.position;
+            onEnterPos = characterController.transform.position;
         }
     }
 
     void applyGravity ()
     {
-        if (! parent.IsBlinking && wallRunState == null)
+        if (! characterController.IsBlinking && wallRunState == null)
         {
             float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
             addVelocity(new Vector3(0f, gravity, 0));
@@ -228,8 +229,10 @@ public class InAirState : CharacterControllerStateBase
 
     protected override void onEnter()
     {
-        onEnterPos = parent.transform.position;
-        jumpDirection = parent.DeltaPosition.normalized;
+        Debug.Log("Inair enter");
+        parameters = CharacterControllerParameters.Instance;
+        onEnterPos = characterController.transform.position;
+        jumpDirection = characterController.DeltaPosition.normalized;
         jumpDirection.Scale(BurinkeruCharacterController.MovementAxes);
 
         if (components.RigManager.CurrentRig != null)
@@ -247,7 +250,7 @@ public class InAirState : CharacterControllerStateBase
     {
         stopWallRun();
 
-        Vector3 distance = parent.transform.position - onEnterPos;
+        Vector3 distance = characterController.transform.position - onEnterPos;
 
         if (distance.y < -3.5f)
         {
@@ -265,7 +268,7 @@ public class InAirState : CharacterControllerStateBase
     {
         jumpCounter++;
         float velocityY = Mathf.Sqrt(CharacterControllerParameters.Instance.DefaultJumpHeight * 2f * BurinkeruCharacterController.GRAVITY);
-        Vector3 currentVelocity = parent.Velocity;
+        Vector3 currentVelocity = characterController.Velocity;
         currentVelocity.y = velocityY;
         setVelocity (currentVelocity);
     }

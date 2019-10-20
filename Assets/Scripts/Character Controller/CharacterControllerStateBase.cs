@@ -7,14 +7,9 @@ public abstract class CharacterControllerStateBase
     public delegate void CharacterControllerStateRequestNewState(CharacterControllerStateBase newState);
     public event CharacterControllerStateRequestNewState OnSetNewStateRequested;
 
-    public delegate void CharacterControllerStateRequestVelocity(Vector3 value);
-    public event CharacterControllerStateRequestVelocity OnAddVelocityRequested;
-    public event CharacterControllerStateRequestVelocity OnSetVelocityRequested;
-    public event CharacterControllerStateRequestVelocity OnMoveRequested;
-
     protected CharacterControllerStateBase previousState = null;
     protected BurinkeruInputManager inputManager;
-    protected BurinkeruCharacterController parent;
+    protected BurinkeruCharacterController characterController;
     protected CharacterComponents components;
 
     public bool IsTransitioning
@@ -27,8 +22,9 @@ public abstract class CharacterControllerStateBase
     {
         this.previousState = previousState;
         this.inputManager = inputManager;
-        this.parent = parent;
+        this.characterController = parent;
         this.components = components;
+
         onEnter();
     }
 
@@ -39,53 +35,33 @@ public abstract class CharacterControllerStateBase
 
     protected virtual void setNewState (CharacterControllerStateBase newState)
     {
-        OnSetNewStateRequested?.Invoke(newState);
+        characterController.SetNewState(newState);
     }
 
     protected void addVelocity (Vector3 velocityDelta)
     {
-        parent.AddVelocity(velocityDelta);
+        characterController.AddVelocity(velocityDelta);
     }
 
     protected void setVelocity (Vector3 newVelocity)
     {
-        parent.SetVelocity(newVelocity);
+        characterController.SetVelocity(newVelocity);
     }
 
     protected void move (Vector3 deltaPosition)
     {
-        parent.Move(deltaPosition);
+        characterController.Move(deltaPosition);
     }
 
     protected virtual void switchCrouch()
     {
-        if (parent.IsCrouching)
+        if (characterController.IsCrouching)
         {
-            parent.ExitCrouch();
+            characterController.ExitCrouch();
         }
         else
         {
-            parent.EnterCrouch();
-        }
-    }
-
-    protected void setReferences (CharacterControllerStateBase state)
-    {
-        if (state != null)
-        {
-            state.OnAddVelocityRequested += addVelocity;
-            state.OnSetVelocityRequested += setVelocity;
-            state.OnMoveRequested += move;
-        }
-    }
-
-    protected void removeReferences(CharacterControllerStateBase state)
-    {
-        if (state != null)
-        {
-            state.OnAddVelocityRequested -= addVelocity;
-            state.OnSetVelocityRequested -= setVelocity;
-            state.OnMoveRequested -= move;
+            characterController.EnterCrouch();
         }
     }
 

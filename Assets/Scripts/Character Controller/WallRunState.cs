@@ -23,12 +23,11 @@ public class WallRunState : CharacterControllerStateBase
         public Vector3 RunDirection;
     }
 
-    const float RAYCAST_LENGTH = 1f;
-    const float START_DELAY = 0.1f;
-    const float ALLOW_JUMP_DELAY = 0.5f;
     float counter = 0f;
     WallRunRaycastResult hitResult;
     Collider collider;
+    float velocity = 0;
+    CharacterControllerParameters parameters;
 
     public bool IsActive
     {
@@ -47,6 +46,7 @@ public class WallRunState : CharacterControllerStateBase
         this.hitResult = hitResult;
         collider = hitResult.ObjectThatWasHit.GetComponent<Collider>();
         IsActive = false;
+        parameters = CharacterControllerParameters.Instance;
     }
 
     public override void ApplyForces()
@@ -65,7 +65,7 @@ public class WallRunState : CharacterControllerStateBase
         {
             if (IsActive)
             {
-                move (hitResult.RunDirection * 10f * Time.deltaTime);
+                move (hitResult.RunDirection * velocity * Time.deltaTime);
             }
         }
         else
@@ -75,9 +75,7 @@ public class WallRunState : CharacterControllerStateBase
 
         if (! IsActive)
         {
-            counter += Time.deltaTime;
-
-            if (counter >= START_DELAY)
+            if (counter >= parameters.WallRunDelay && IsActive == false)
             {
                 IsActive = true;
                 enter();
@@ -85,13 +83,18 @@ public class WallRunState : CharacterControllerStateBase
         }
         else if (JumpAllowed)
         {
-            counter += Time.deltaTime;
-
-            if (counter >= ALLOW_JUMP_DELAY)
+            if (counter >= parameters.WallRunAllowJumpTime && JumpAllowed)
             {
                 JumpAllowed = false;
             }
         }
+
+        if (counter >= parameters.WallRunDuration)
+        {
+            applyGravity();
+        }
+
+        counter += Time.deltaTime;
     }
 
     bool checkIfTouchesWall ()
@@ -103,21 +106,21 @@ public class WallRunState : CharacterControllerStateBase
         {
             case WallRunType.LEFT:
 
-                direction = -parent.transform.right;
+                direction = -characterController.transform.right;
 
                 break;
 
             case WallRunType.RIGH:
 
-                direction = parent.transform.right;
+                direction = characterController.transform.right;
 
                 break;
         }
 
         RaycastHit raycastHit;
-        Ray ray = new Ray(parent.transform.position, direction);
+        Ray ray = new Ray(characterController.transform.position, direction);
 
-        if (collider.Raycast(ray, out raycastHit, RAYCAST_LENGTH))
+        if (collider.Raycast(ray, out raycastHit, parameters.WallRunRaycastLength))
         {
             result = true;
         }
@@ -130,13 +133,22 @@ public class WallRunState : CharacterControllerStateBase
         IsActive = false;
         JumpAllowed = true;
         counter = 0f;
+        Vector3 speed = characterController.Velocity;
+        speed.y = 0;
+        velocity = speed.sqrMagnitude + characterController.GetMovementSpeed ();
+    }
+
+    void applyGravity()
+    {
+        float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
+        addVelocity(new Vector3(0f, gravity, 0));
     }
 
     void enter ()
     {
-        Vector3 velocity = parent.Velocity;
+        Vector3 velocity = characterController.Velocity;
         velocity.y = 0;
-        parent.SetVelocity(velocity);
+        characterController.SetVelocity(velocity);
 
         switch (hitResult.WallRunType)
         {
@@ -199,7 +211,7 @@ public class WallRunState : CharacterControllerStateBase
         float result = -1f;
         objectThatWasHit = null;
 
-        if (Physics.Raycast(transform.position, direction, out hit, RAYCAST_LENGTH, LayerMask.GetMask("Default")))
+        if (Physics.Raycast(transform.position, direction, out hit, CharacterControllerParameters.Instance.WallRunRaycastLength, LayerMask.GetMask("Default")))
         {
             result = hit.distance;
             objectThatWasHit = hit.collider.gameObject;

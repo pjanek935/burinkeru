@@ -15,6 +15,7 @@ public class BurinkeruCharacterController : MonoBehaviour
     CharacterControllerStateBase mainMovementState;
     CrouchState crouchState;
     int layerMaskToCheckForPushback = 0;
+    Vector3 externalDeltaPosition = Vector3.zero;
 
     public static Vector3 MovementAxes
     {
@@ -96,7 +97,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         layerMaskToCheckForPushback = LayerMask.GetMask("Default");
     }
 
-    void setNewState (CharacterControllerStateBase newState)
+    public void SetNewState (CharacterControllerStateBase newState)
     {
         if (mainMovementState == null || newState.GetType () != mainMovementState.GetType())
         {
@@ -112,19 +113,11 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void enterState (CharacterControllerStateBase state)
     {
-        state.OnSetNewStateRequested += setNewState;
-        state.OnAddVelocityRequested += AddVelocity;
-        state.OnSetVelocityRequested += SetVelocity;
-        state.OnMoveRequested += Move;
         state.Enter(mainMovementState, inputManager, this, components);
     }
 
     void exitState (CharacterControllerStateBase state)
     {
-        state.OnSetNewStateRequested -= setNewState;
-        state.OnAddVelocityRequested -= AddVelocity;
-        state.OnSetVelocityRequested -= SetVelocity;
-        state.OnMoveRequested -= Move;
         state.Exit();
     }
 
@@ -149,6 +142,7 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
 
         applyForces();
+        updatePosition();
         updateIsGrounded();
         checkForPushback();
 
@@ -168,6 +162,12 @@ public class BurinkeruCharacterController : MonoBehaviour
         {
             crouchState.UpdateMovement();
         }
+    }
+
+    void updatePosition ()
+    {
+        transform.position += externalDeltaPosition;
+        externalDeltaPosition = Vector3.zero;
     }
 
     void onBlink ()
@@ -308,6 +308,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     public void Move(Vector3 deltaPosition)
     {
-        this.transform.position += deltaPosition;
+        //this.transform.position += deltaPosition;
+        externalDeltaPosition += deltaPosition;
     } 
 }

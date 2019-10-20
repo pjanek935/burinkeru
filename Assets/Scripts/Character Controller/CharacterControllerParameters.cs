@@ -22,6 +22,13 @@ public class CharacterControllerParameters : MonoBehaviour
 
     [SerializeField, Range(1f, 20f)] float maxInAirHorizontalVelocity = 8f;
 
+    [SerializeField, Range(0, 3)] int maxJumpsInAir = 1;
+
+    [SerializeField, Range(0f, 2f)] float wallRunRayCastLength = 0.85f;
+    [SerializeField, Range(0f, 1f)] float wallRunDelay = 0.1f;
+    [SerializeField, Range(0f, 1f)] float wallRunAllowJumpTime = 0.5f;
+    [SerializeField, Range(0f, 5f)] float wallRunDuration = 1f;
+
     static CharacterControllerParameters instance = null;
 
     public float DefaultMoveSpeed
@@ -87,6 +94,31 @@ public class CharacterControllerParameters : MonoBehaviour
     public float MaxInAirHorizontalVelocity
     {
         get { return maxInAirHorizontalVelocity; }
+    }
+
+    public float WallRunDuration
+    {
+        get { return wallRunDuration; }
+    }
+
+    public float WallRunRaycastLength
+    {
+        get { return wallRunRayCastLength; }
+    }
+
+    public int MaxJumpsInAir
+    {
+        get { return maxJumpsInAir; }
+    }
+
+    public float WallRunDelay
+    {
+        get { return wallRunDelay; }
+    }
+
+    public float WallRunAllowJumpTime
+    {
+        get { return wallRunAllowJumpTime; }
     }
 
     public static bool IsInstanceNull ()
