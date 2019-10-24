@@ -16,6 +16,7 @@ public class BurinkeruCharacterController : MonoBehaviour
     CrouchState crouchState;
     int layerMaskToCheckForPushback = 0;
     Vector3 externalDeltaPosition = Vector3.zero;
+    SpecialAbility specialAbility = new BulletTime();
 
     public static Vector3 MovementAxes
     {
@@ -147,6 +148,18 @@ public class BurinkeruCharacterController : MonoBehaviour
         checkForPushback();
 
         DeltaPosition = transform.position - startPos;
+
+        if (Input.GetKeyDown (KeyCode.F))
+        {
+            if (specialAbility.IsActive)
+            {
+                specialAbility.Exit();
+            }
+            else
+            {
+                specialAbility.Enter(components);
+            }
+        }
     }
 
     void updateMovement ()

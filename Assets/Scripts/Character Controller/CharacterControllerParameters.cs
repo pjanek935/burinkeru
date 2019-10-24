@@ -33,7 +33,7 @@ public class CharacterControllerParameters : MonoBehaviour
 
     public float DefaultMoveSpeed
     {
-        get { return defaultMoveSpeed; }
+        get { return defaultMoveSpeed / (Time.timeScale); }
     }
 
     public float DefaultJumpHeight

@@ -11,6 +11,7 @@ public class CharacterComponents : MonoBehaviour
     [SerializeField] RigManager rigManager = null;
     [SerializeField] CameraFOVAnimator cameraFOVAnimator;
     [SerializeField] SpineAnimationController spineAnimationController;
+    [SerializeField] ScanEffect scanEffect;
 
     public Camera FPPCamera
     {
@@ -45,5 +46,10 @@ public class CharacterComponents : MonoBehaviour
     public SpineAnimationController SpineAnimationController
     {
         get { return spineAnimationController; }
+    }
+
+    public ScanEffect ScanEffect
+    {
+        get { return scanEffect; }
     }
 }

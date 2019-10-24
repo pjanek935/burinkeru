@@ -67,4 +67,6 @@
 
 
 		}
+
+			Fallback "VertexLit"
 }
