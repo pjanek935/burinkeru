@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DistortionPostProcessEffect : CameraPostProcessEffect
+public class ColorInversionPostProcessEffect : CameraPostProcessEffect
 {
     [SerializeField, Range (0f, 1f)] public float strength = 0.5f;
 

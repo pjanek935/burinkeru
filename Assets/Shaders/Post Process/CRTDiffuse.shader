@@ -1,4 +1,4 @@
-﻿Shader "Custom/CRTDiffuse" 
+﻿Shader "PostProcess/CRTDiffuse" 
 {
 	Properties
 	{

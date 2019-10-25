@@ -1,4 +1,4 @@
-﻿Shader "Custom/Dither"
+﻿Shader "PostProcess/Dither"
 {
 	Properties
 	{

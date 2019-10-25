@@ -1,4 +1,4 @@
-﻿Shader "Custom/CRTDistortion"
+﻿Shader "PostProcess/CRTDistortion"
 {
 	Properties
 	{

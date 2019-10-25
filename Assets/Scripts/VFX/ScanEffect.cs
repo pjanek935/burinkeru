@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class ScanEffect : MonoBehaviour
 {
-    [SerializeField] DistortionPostProcessEffect distortion;
+    [SerializeField] ColorInversionPostProcessEffect distortion;
     public Transform ScannerOrigin;
     public Material EffectMaterial;
     public float ScanDistance;

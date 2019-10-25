@@ -12,6 +12,7 @@ public class CharacterComponents : MonoBehaviour
     [SerializeField] CameraFOVAnimator cameraFOVAnimator;
     [SerializeField] SpineAnimationController spineAnimationController;
     [SerializeField] ScanEffect scanEffect;
+    [SerializeField] BlinkShadePostProcessEffect blinkShadePostProcessEffect;
 
     public Camera FPPCamera
     {
@@ -51,5 +52,10 @@ public class CharacterComponents : MonoBehaviour
     public ScanEffect ScanEffect
     {
         get { return scanEffect; }
+    }
+
+    public BlinkShadePostProcessEffect BlinkShadePostProcessEffect
+    {
+        get { return blinkShadePostProcessEffect; }
     }
 }

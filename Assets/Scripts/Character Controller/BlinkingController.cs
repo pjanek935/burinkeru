@@ -48,14 +48,14 @@ public class BlinkingController : MonoBehaviour
 
     public void UpdateBlinkingForces()
     {
-        BlinkingVelocity = BlinkingVelocity * 0.9f;
+        BlinkingVelocity = BlinkingVelocity * 0.85f;
 
         if (IsBlinking)
         {
             if (BlinkingVelocity.magnitude < 1f)
             {
                 IsBlinking = false;
-                components.CameraFOVAnimator.ResetToDefault(0.45f);
+                components.BlinkShadePostProcessEffect.StopEffect();
             }
         }
     }
@@ -73,7 +73,7 @@ public class BlinkingController : MonoBehaviour
     public void ForceStop ()
     {
         IsBlinking = false;
-        components.CameraFOVAnimator.ResetToDefault(0.45f);
+        components.BlinkShadePostProcessEffect.StopEffect();
         BlinkingVelocity = Vector3.zero;
     }
 
@@ -105,10 +105,10 @@ public class BlinkingController : MonoBehaviour
         if (deltaPosition.magnitude > 0.1f)
         {
             IsBlinking = true;
-            BlinkingVelocity = deltaPosition * 20f;
+            BlinkingVelocity = deltaPosition * 100f;
 
             OnBlink?.Invoke();
-            components.CameraFOVAnimator.SetFOV(65f, 0.1f);
+            components.BlinkShadePostProcessEffect.StartEffect();
         }
     }
 }
