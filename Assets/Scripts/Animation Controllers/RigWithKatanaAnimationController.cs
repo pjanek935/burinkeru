@@ -6,6 +6,7 @@ public class RigWithKatanaAnimationController : RigAnimationController
 {
     [SerializeField] GameObject trailParticlePrefab = null;
     [SerializeField] List<Transform> originTransforms = new List<Transform>();
+    [SerializeField] List<ActivatableHitter> hitters = new List<ActivatableHitter>();
     [SerializeField] GameObject pierceParticle = null;
     [SerializeField] ObjectCutter objectCutter = null;
 
@@ -25,7 +26,7 @@ public class RigWithKatanaAnimationController : RigAnimationController
             }
         }
 
-        objectCutter.Cut(index);
+        hitters[index].Activate();
 
         base.OnStartAttack(index);
     }

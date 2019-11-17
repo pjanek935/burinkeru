@@ -60,4 +60,9 @@ public class RigAnimationController : MonoBehaviour
     {
         OnHideEnded?.Invoke();
     }
+
+    public void SetTimeFactor (float timeFactor)
+    {
+        animator.SetFloat("TimeFactor", timeFactor);
+    }
 }

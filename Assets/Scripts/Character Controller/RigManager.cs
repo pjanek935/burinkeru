@@ -84,4 +84,10 @@ public class RigManager : MonoBehaviour
 
         OnNewRigSet?.Invoke();
     }
+
+    public void SetTimeFactor (float timeFactor)
+    {
+        rigWithKatana.SetTimeFactor(timeFactor);
+        rigWithRevolver.SetTimeFactor(timeFactor);
+    }
 }

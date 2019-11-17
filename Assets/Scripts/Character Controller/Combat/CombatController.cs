@@ -16,7 +16,6 @@ public class CombatController : MonoBehaviour
     KatanaWeapon katanaWeapon;
     RevolverWeapon revolverWeapon;
     InputBuffer inputBuffer;
-
     public bool IsChangingWeapon
     {
         get;

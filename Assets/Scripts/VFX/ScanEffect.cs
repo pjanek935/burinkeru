@@ -5,15 +5,19 @@ using UnityEngine;
 public class ScanEffect : MonoBehaviour
 {
     [SerializeField] ColorInversionPostProcessEffect distortion;
-    public Transform ScannerOrigin;
-    public Material EffectMaterial;
-    public float ScanDistance;
+    [SerializeField] Transform scannerOrigin;
+    [SerializeField] Material effectMaterial;
+    [SerializeField] float maxDistance = 200f;
 
-    private Camera _camera;
+    float scanDistance;
+    new Camera camera;
     bool direction = true;
 
-    // Demo Code
-    bool _scanning;
+    public bool IsScanning
+    {
+        get;
+        private set;
+    }
 
     void Start()
     {
@@ -22,27 +26,32 @@ public class ScanEffect : MonoBehaviour
 
     public void StartEffect ()
     {
-        _scanning = true;
+        IsScanning = true;
         direction = true;
-        ScanDistance = 0;
+        scanDistance = 0;
         distortion.strength = 0;
     }
 
     public void EndEffect ()
     {
-        _scanning = true;
+        IsScanning = true;
         direction = false;
-        ScanDistance = 400;
+
+        if (scanDistance > maxDistance / 2f)
+        {
+            scanDistance = maxDistance / 2f;
+        }
+
         distortion.strength = 1f;
     }
 
     void Update()
     {
-        if (_scanning)
+        if (IsScanning)
         {
             if (direction)
             {
-                ScanDistance += Time.deltaTime * 200;
+                scanDistance += Time.deltaTime * 200;
                 distortion.strength += Time.deltaTime * 6;
 
                 if (distortion.strength > 1)
@@ -50,16 +59,16 @@ public class ScanEffect : MonoBehaviour
                     distortion.strength = 1;
                 }
 
-                if (ScanDistance > 400)
+                if (scanDistance > 400)
                 {
-                    _scanning = false;
+                    IsScanning = false;
                 }
             }
             else
             {
-                ScanDistance -= Time.deltaTime * 400;
+                scanDistance -= Time.deltaTime * 400;
 
-                if (ScanDistance < 50)
+                if (scanDistance < 50)
                 {
                     distortion.strength -= Time.deltaTime * 6;
 
@@ -69,10 +78,10 @@ public class ScanEffect : MonoBehaviour
                     }
                 }
 
-                if (ScanDistance < 0)
+                if (scanDistance < 0)
                 {
-                    _scanning = false;
-                    ScanDistance = 0;
+                    IsScanning = false;
+                    scanDistance = 0;
                     distortion.strength = 0;
                 }
 
@@ -83,45 +92,45 @@ public class ScanEffect : MonoBehaviour
 
     void OnEnable()
     {
-        _camera = GetComponent<Camera>();
-        _camera.depthTextureMode = DepthTextureMode.Depth;
+        camera = GetComponent<Camera>();
+        camera.depthTextureMode = DepthTextureMode.Depth;
     }
 
     [ImageEffectOpaque]
     void OnRenderImage(RenderTexture src, RenderTexture dst)
     {
-        EffectMaterial.SetVector("_WorldSpaceScannerPos", ScannerOrigin.position);
-        EffectMaterial.SetFloat("_ScanDistance", ScanDistance);
-        RaycastCornerBlit(src, dst, EffectMaterial);
+        effectMaterial.SetVector("_WorldSpaceScannerPos", scannerOrigin.position);
+        effectMaterial.SetFloat("_ScanDistance", scanDistance);
+        RaycastCornerBlit(src, dst, effectMaterial);
     }
 
     void RaycastCornerBlit(RenderTexture source, RenderTexture dest, Material mat)
     {
         // Compute Frustum Corners
-        float camFar = _camera.farClipPlane;
-        float camFov = _camera.fieldOfView;
-        float camAspect = _camera.aspect;
+        float camFar = camera.farClipPlane;
+        float camFov = camera.fieldOfView;
+        float camAspect = camera.aspect;
 
         float fovWHalf = camFov * 0.5f;
 
-        Vector3 toRight = _camera.transform.right * Mathf.Tan(fovWHalf * Mathf.Deg2Rad) * camAspect;
-        Vector3 toTop = _camera.transform.up * Mathf.Tan(fovWHalf * Mathf.Deg2Rad);
+        Vector3 toRight = camera.transform.right * Mathf.Tan(fovWHalf * Mathf.Deg2Rad) * camAspect;
+        Vector3 toTop = camera.transform.up * Mathf.Tan(fovWHalf * Mathf.Deg2Rad);
 
-        Vector3 topLeft = (_camera.transform.forward - toRight + toTop);
+        Vector3 topLeft = (camera.transform.forward - toRight + toTop);
         float camScale = topLeft.magnitude * camFar;
 
         topLeft.Normalize();
         topLeft *= camScale;
 
-        Vector3 topRight = (_camera.transform.forward + toRight + toTop);
+        Vector3 topRight = (camera.transform.forward + toRight + toTop);
         topRight.Normalize();
         topRight *= camScale;
 
-        Vector3 bottomRight = (_camera.transform.forward + toRight - toTop);
+        Vector3 bottomRight = (camera.transform.forward + toRight - toTop);
         bottomRight.Normalize();
         bottomRight *= camScale;
 
-        Vector3 bottomLeft = (_camera.transform.forward - toRight - toTop);
+        Vector3 bottomLeft = (camera.transform.forward - toRight - toTop);
         bottomLeft.Normalize();
         bottomLeft *= camScale;
 

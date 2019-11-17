@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class BulletTime : SpecialAbility
 {
-    const float SLOW_MO_FACTOR = 0.5f;
+    const float SLOW_MO_FACTOR = 0.25f;
     const float FIXED_DELTA_TIME = 0.02f;
 
     protected override void onEnter()
@@ -12,6 +12,7 @@ public class BulletTime : SpecialAbility
         Time.timeScale = SLOW_MO_FACTOR;
         Time.fixedDeltaTime = FIXED_DELTA_TIME * Time.timeScale;
         components.ScanEffect.StartEffect();
+        components.RigManager.SetTimeFactor((1f/SLOW_MO_FACTOR));
     }
 
     protected override void onExit()
@@ -19,5 +20,6 @@ public class BulletTime : SpecialAbility
         Time.timeScale = 1f;
         Time.fixedDeltaTime = FIXED_DELTA_TIME;
         components.ScanEffect.EndEffect();
+        components.RigManager.SetTimeFactor(1f);
     }
 }

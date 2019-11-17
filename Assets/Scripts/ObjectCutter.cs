@@ -32,7 +32,7 @@ public class ObjectCutter : MonoBehaviour
                         newObjectsList.Add(newGameObjects[j]);
                         Rigidbody rb = newGameObjects[j].AddComponent<Rigidbody>();
                         newGameObjects[j].AddComponent<BoxCollider>();
-                        newGameObjects[j].AddComponent<Hitable>();
+                        newGameObjects[j].AddComponent<Hittable>();
 
                         rb.AddForce(Vector3.up*5, ForceMode.Impulse);
                     }
