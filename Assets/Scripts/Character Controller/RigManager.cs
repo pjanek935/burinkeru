@@ -35,6 +35,7 @@ public class RigManager : MonoBehaviour
     {
         rigWithRevolver.OnHideEnded += onHideEnded;
         rigWithKatana.OnHideEnded += onHideEnded;
+        TimeManager.Instance.OnTimeFactorChanged += onTimeFactorChanged;
     }
 
     public void SwitchToKatana ()
@@ -85,8 +86,9 @@ public class RigManager : MonoBehaviour
         OnNewRigSet?.Invoke();
     }
 
-    public void SetTimeFactor (float timeFactor)
+    void onTimeFactorChanged ()
     {
+        float timeFactor = 1f / TimeManager.Instance.TimeFactor;
         rigWithKatana.SetTimeFactor(timeFactor);
         rigWithRevolver.SetTimeFactor(timeFactor);
     }

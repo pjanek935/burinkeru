@@ -9,12 +9,14 @@ public class Cuttable : MonoBehaviour
     Hittable hittable;
     int childIndex = 0;
     List<ActivatableHitter> registeredHitters = new List<ActivatableHitter>();
+    bool isFrozen = false;
 
-    const int maxChildren = 10;
+    const int maxChildren = 20;
 
     private void Awake()
     {
         hittable = GetComponent<Hittable>();
+        TimeManager.Instance.OnTimeFactorChanged += onTimeFactorChanged;
 
         if (hittable != null)
         {
@@ -29,6 +31,7 @@ public class Cuttable : MonoBehaviour
         {
             hittable.OnHitterEnter -= onHitterEnter;
             hittable.OnHitterExit -= onHitterExit;
+            TimeManager.Instance.OnTimeFactorChanged -= onTimeFactorChanged;
         }
 
         unregisterAll();
@@ -37,6 +40,19 @@ public class Cuttable : MonoBehaviour
     public void SetChildIndex (int index)
     {
         this.childIndex = index;
+    }
+
+    void onTimeFactorChanged()
+    {
+        if (! TimeManager.Instance.IsSlowMotionOn && isFrozen)
+        {
+            Rigidbody rb = GetComponent<Rigidbody>();
+
+            if (rb != null)
+            {
+                rb.isKinematic = false;
+            }
+        }
     }
 
     void onHitterEnter (Hitter hitter)
@@ -98,11 +114,13 @@ public class Cuttable : MonoBehaviour
             {
                 newObjectsList.Add(newGameObjects[i]);
                 Rigidbody rb = newGameObjects[i].AddComponent<Rigidbody>();
-                //rb.isKinematic = true;
                 newGameObjects[i].AddComponent<BoxCollider>();
                 newGameObjects[i].AddComponent<Hittable>();
                 Cuttable cuttable = newGameObjects[i].AddComponent<Cuttable>();
                 cuttable.SetChildIndex(this.childIndex + newGameObjects.Length);
+
+                rb.isKinematic = TimeManager.Instance.IsSlowMotionOn;
+                cuttable.isFrozen = TimeManager.Instance.IsSlowMotionOn;
             }
         }
 
