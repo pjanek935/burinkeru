@@ -9,7 +9,6 @@ public class BurinkeruCharacterController : MonoBehaviour
     [SerializeField] CharacterComponents components = null;
     [SerializeField] CombatController combatController = null;
     [SerializeField] BlinkingController blinkingController;
-    [SerializeField] Collider thisCollider;
 
     BurinkeruInputManager inputManager;
     CharacterControllerStateBase mainMovementState;
@@ -271,21 +270,21 @@ public class BurinkeruCharacterController : MonoBehaviour
     {
         Vector3 sphereCastPos = transform.position - Vector3.up * components.CapsuleCollider.height / 4f;
         float sphereCastRadius = components.CapsuleCollider.radius;
-        Collider[] colliders = Physics.OverlapSphere(sphereCastPos, sphereCastRadius);
+        Collider[] colliders = Physics.OverlapSphere(sphereCastPos, sphereCastRadius, layerMaskToCheckForPushback);
         IsGrounded = false;
 
-        for (int i = 0; i < colliders.Length; i ++)
+        for (int i = 0; i < colliders.Length; i++)
         {
-            if (colliders [i] != components.CapsuleCollider)
+            if (colliders[i] != components.CapsuleCollider)
             {
                 Vector3 contactPoint = colliders[i].GetClosestPoint(sphereCastPos);
                 Vector3 contactDirectionVector = contactPoint - sphereCastPos;
                 Vector3 pushVector = sphereCastPos - contactPoint;
                 transform.position += Vector3.ClampMagnitude(pushVector, Mathf.Clamp(sphereCastRadius - pushVector.magnitude, 0, sphereCastRadius));
 
-                if (! (Mathf.Abs (contactDirectionVector.y) < 0.1f 
-                    || Mathf.Abs (contactDirectionVector.x) > 0.4f 
-                    || Math.Abs (contactDirectionVector.z) > 0.4)) //TODO magic numbers
+                if (!(Mathf.Abs(contactDirectionVector.y) < 0.1f
+                    || Mathf.Abs(contactDirectionVector.x) > 0.4f
+                    || Math.Abs(contactDirectionVector.z) > 0.4)) //TODO magic numbers
                 {
                     IsGrounded = true;
                     blinkingController.ResetCounter();
@@ -296,7 +295,7 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void checkForPushback ()
     {
-        Collider [] colliders = Physics.OverlapSphere(transform.position, components.CapsuleCollider.radius, layerMaskToCheckForPushback);
+        Collider[] colliders = Physics.OverlapSphere(transform.position, components.CapsuleCollider.radius, layerMaskToCheckForPushback);
         Vector3 contactPoint = Vector3.zero;
 
         for (int i = 0; i < colliders.Length; i++)

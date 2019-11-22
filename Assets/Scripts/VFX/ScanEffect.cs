@@ -8,6 +8,8 @@ public class ScanEffect : MonoBehaviour
     [SerializeField] Transform scannerOrigin;
     [SerializeField] Material effectMaterial;
     [SerializeField] float maxDistance = 200f;
+    [SerializeField] float forwardSpeed = 400f;
+    [SerializeField] float backwardSpeed = 400f;
 
     float scanDistance;
     new Camera camera;
@@ -51,7 +53,7 @@ public class ScanEffect : MonoBehaviour
         {
             if (direction)
             {
-                scanDistance += Time.deltaTime * 200;
+                scanDistance += Time.deltaTime * forwardSpeed;
                 distortion.strength += Time.deltaTime * 6;
 
                 if (distortion.strength > 1)
@@ -66,7 +68,7 @@ public class ScanEffect : MonoBehaviour
             }
             else
             {
-                scanDistance -= Time.deltaTime * 400;
+                scanDistance -= Time.deltaTime * backwardSpeed;
 
                 if (scanDistance < 50)
                 {

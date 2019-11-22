@@ -4,41 +4,22 @@ using UnityEngine;
 
 public class ParticlesManager : MonoBehaviour
 {
-    [SerializeField] GameObject bulletParticlePrefab;
-    [SerializeField] int maxBulletParticles = 10;
+    [SerializeField] ParticlesManagerBase bulletsManager;
+    [SerializeField] SlashParticleManager slashTrailManager;
+    [SerializeField] ParticlesManagerBase slowMotionTrailsManager;
 
-    Queue<GameObject> bulletParticles;
-
-    private void Awake()
+    public ParticlesManagerBase BulletsManager
     {
-        initBulletParticlesIfNeeded();
+        get { return bulletsManager; }
     }
 
-    void initBulletParticlesIfNeeded ()
+    public SlashParticleManager SlashTrailManager
     {
-        if (bulletParticles == null)
-        {
-            bulletParticles = new Queue<GameObject>();
-
-            for (int i = 0; i < maxBulletParticles; i ++)
-            {
-                GameObject newGameObject = Instantiate(bulletParticlePrefab);
-                newGameObject.transform.SetParent(this.transform, false);
-                bulletParticles.Enqueue(newGameObject);
-            }
-        }
+        get { return slashTrailManager; }
     }
 
-    public void Shoot (Vector3 position, Vector3 forward, Vector3 upward)
+    public ParticlesManagerBase SlowMotionTrailsManager
     {
-        initBulletParticlesIfNeeded();
-        GameObject bullet = bulletParticles.Dequeue();
-        
-        bullet.transform.rotation = Quaternion.LookRotation(upward, forward);
-        bullet.SetActive(true);
-        bullet.transform.position = position;
-        bullet.GetComponent<ParticleSystem>().Play();
-
-        bulletParticles.Enqueue(bullet);
+        get { return slowMotionTrailsManager; }
     }
 }

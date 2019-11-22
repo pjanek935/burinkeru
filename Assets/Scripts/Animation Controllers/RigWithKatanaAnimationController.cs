@@ -4,28 +4,27 @@ using UnityEngine;
 
 public class RigWithKatanaAnimationController : RigAnimationController
 {
-    [SerializeField] GameObject trailParticlePrefab = null;
+    [SerializeField] ParticlesManager particlesManager;
     [SerializeField] List<Transform> originTransforms = new List<Transform>();
     [SerializeField] List<ActivatableHitter> hitters = new List<ActivatableHitter>();
     [SerializeField] GameObject pierceParticle = null;
-    [SerializeField] ObjectCutter objectCutter = null;
 
     public override void OnStartAttack(int index)
     {
-        trailParticlePrefab.transform.rotation = originTransforms[index].transform.rotation;
-        trailParticlePrefab.transform.position = originTransforms[index].position;
-        trailParticlePrefab.transform.Rotate(new Vector3(0, -90, -125));
 
-        ParticleSystem[] particles = trailParticlePrefab.GetComponentsInChildren<ParticleSystem>();
+        Quaternion rotation = originTransforms[index].rotation;
+        Vector3 postion = originTransforms[index].position;
 
-        if (particles != null)
+        if (TimeManager.Instance.IsSlowMotionOn)
         {
-            for (int i = 0; i < particles.Length; i++)
-            {
-                particles[i].Play();
-            }
+            particlesManager.SlowMotionTrailsManager.ShootParticle(postion, originTransforms[index].forward, originTransforms[index].up);
+            particlesManager.SlashTrailManager.RegisterNewSlash (postion, originTransforms[index].forward, originTransforms[index].up);
         }
-
+        else
+        {
+            particlesManager.SlashTrailManager.ShootParticle(postion, originTransforms[index].forward, originTransforms[index].up);
+        }
+        
         hitters[index].Activate();
 
         base.OnStartAttack(index);

@@ -10,11 +10,13 @@ public class Cuttable : MonoBehaviour
     int childIndex = 0;
     List<ActivatableHitter> registeredHitters = new List<ActivatableHitter>();
     bool isFrozen = false;
+    ParticlesManager particlesManager;
 
     const int maxChildren = 20;
 
     private void Awake()
     {
+        particlesManager = GameObject.FindObjectOfType<ParticlesManager>();
         hittable = GetComponent<Hittable>();
         TimeManager.Instance.OnTimeFactorChanged += onTimeFactorChanged;
 
