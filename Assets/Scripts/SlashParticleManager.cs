@@ -52,7 +52,11 @@ public class SlashParticleManager : ParticlesManagerBase
         for (int i = 0; i < registeredSlashes.Count; i ++)
         {
             GameObject particle = base.ShootParticle(registeredSlashes[i].Position, registeredSlashes[i].Forward, registeredSlashes[i].Upward);
-            particle.layer = LayerMask.NameToLayer("Default");
+
+            if (particle != null)
+            {
+                particle.layer = LayerMask.NameToLayer("Default");
+            }
 
             yield return new WaitForSeconds(delayBetweenSlahses);
         }
@@ -73,7 +77,11 @@ public class SlashParticleManager : ParticlesManagerBase
     public override GameObject ShootParticle(Vector3 position, Vector3 forward, Vector3 upward)
     {
         GameObject result = base.ShootParticle(position, forward, upward);
-        result.layer = LayerMask.NameToLayer("Rig");
+
+        if (result != null)
+        {
+            result.layer = LayerMask.NameToLayer("Rig");
+        }
 
         return result;
     }

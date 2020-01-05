@@ -15,7 +15,7 @@ public class ParticlesManagerBase : MonoBehaviour
     }
     protected void initParticlesIfNeeded()
     {
-        if (particlesQueue == null)
+        if (particlesQueue == null && particlePrefab != null)
         {
             particlesQueue = new Queue<GameObject>();
 
@@ -30,23 +30,30 @@ public class ParticlesManagerBase : MonoBehaviour
 
     public virtual GameObject ShootParticle (Vector3 position, Vector3 forward, Vector3 upward)
     {
-        initParticlesIfNeeded();
-        GameObject particle = particlesQueue.Dequeue();
+        GameObject particle = null;
 
-        particle.transform.rotation = Quaternion.LookRotation(upward, forward);
-        particle.SetActive(true);
-        particle.transform.position = position;
-        ParticleSystem[] particles = particle.GetComponentsInChildren<ParticleSystem>();
-
-        if (particles != null)
+        if (particlePrefab != null)
         {
-            for (int i = 0; i < particles.Length; i++)
-            {
-                particles[i].Play();
-            }
-        }
+            initParticlesIfNeeded();
+            particle = particlesQueue.Dequeue();
 
-        particlesQueue.Enqueue(particle);
+            particle.transform.rotation = Quaternion.LookRotation(upward, forward);
+            particle.SetActive(true);
+            particle.transform.position = position;
+            ParticleSystem[] particles = particle.GetComponentsInChildren<ParticleSystem>();
+
+            if (particles != null)
+            {
+                for (int i = 0; i < particles.Length; i++)
+                {
+                    particles[i].Play();
+                }
+            }
+
+            particlesQueue.Enqueue(particle);
+
+           
+        }
 
         return particle;
     }
