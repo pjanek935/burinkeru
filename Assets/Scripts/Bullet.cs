@@ -6,9 +6,14 @@ public class Bullet : Projectile
 {
     [SerializeField] List<ParticleSystem> onHitParticles = new List<ParticleSystem>();
 
-    private void OnCollisionEnter(Collision collision)
+    protected override void OnCollisionEnter(Collision collision)
     {
-        playOnHitParticles();
+        if (IsActive)
+        {
+            playOnHitParticles();
+        }
+
+        base.OnCollisionEnter(collision);
     }
 
     void playOnHitParticles ()
@@ -23,5 +28,9 @@ public class Bullet : Projectile
                 }
             }
         }
+    }
+    public override float GetBaseSpeed()
+    {
+        return 200f;
     }
 }

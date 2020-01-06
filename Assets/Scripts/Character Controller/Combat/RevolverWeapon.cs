@@ -85,7 +85,7 @@ public class RevolverWeapon : WeaponBase
             position = rigAnmationController.GunTransform.position;
         }
 
-        particleManager.BulletsManager.ShootParticle(position, forward, upward);
+        particleManager.BulletsManager.Shoot(position, forward, upward);
     }
 
     protected override void initActionsDefinitions()

@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class ParticlesManager : MonoBehaviour
 {
-    [SerializeField] ParticlesManagerBase bulletsManager;
+    [SerializeField] ProjectileManager bulletsManager;
     [SerializeField] SlashParticleManager slashTrailManager;
     [SerializeField] ParticlesManagerBase slowMotionTrailsManager;
 
-    public ParticlesManagerBase BulletsManager
+    public ProjectileManager BulletsManager
     {
         get { return bulletsManager; }
     }
