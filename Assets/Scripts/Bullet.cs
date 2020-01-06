@@ -31,6 +31,6 @@ public class Bullet : Projectile
     }
     public override float GetBaseSpeed()
     {
-        return 200f;
+        return 400f;
     }
 }
