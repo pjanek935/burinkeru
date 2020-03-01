@@ -5,9 +5,13 @@ using UnityEngine.Events;
 
 public class RigAnimationController : MonoBehaviour
 {
+    public delegate void CustomEventHandler(string parameter);
+    public event CustomEventHandler OnCustomEvent;
+
     public UnityAction OnAttackEnded;
     public UnityAction OnAttackStarted;
     public UnityAction OnHideEnded;
+
 
     [SerializeField] protected Animator animator = null;
 
@@ -59,6 +63,11 @@ public class RigAnimationController : MonoBehaviour
     public virtual void OnEndHide ()
     {
         OnHideEnded?.Invoke();
+    }
+
+    public virtual void OnOtherEvent (string parameter)
+    {
+        OnCustomEvent?.Invoke(parameter);
     }
 
     public void SetTimeFactor (float timeFactor)

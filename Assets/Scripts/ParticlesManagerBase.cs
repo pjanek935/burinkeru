@@ -22,7 +22,7 @@ public class ParticlesManagerBase : MonoBehaviour
             for (int i = 0; i < maxParticles; i++)
             {
                 GameObject newGameObject = Instantiate(particlePrefab);
-                newGameObject.transform.SetParent(this.transform, false);
+                newGameObject.transform.SetParent(getParentTransform (), worldPositionStays ());
                 particlesQueue.Enqueue(newGameObject);
             }
         }
@@ -51,10 +51,18 @@ public class ParticlesManagerBase : MonoBehaviour
             }
 
             particlesQueue.Enqueue(particle);
-
-           
         }
 
         return particle;
+    }
+
+    protected virtual Transform getParentTransform ()
+    {
+        return this.transform;
+    }
+
+    protected virtual bool worldPositionStays ()
+    {
+        return false;
     }
 }

@@ -41,7 +41,7 @@ public class Projectile : MonoBehaviour
         deactivate();
     }
 
-    protected void activate ()
+    protected virtual void activate ()
     {
         if (model != null)
         {

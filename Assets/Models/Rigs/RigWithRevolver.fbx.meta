@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: a81cb9187eacbb74d91108b5bd6aa3e1
 ModelImporter:
-  serializedVersion: 27
+  serializedVersion: 26
   internalIDToNameTable:
   - first:
       74: 1017660259052616027
@@ -109,9 +109,30 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.7151899
+      - time: 0.279754
+        functionName: OnOtherEvent
+        data: Reload
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.88299805
         functionName: OnEndAttack
         data: 
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.1803102
+        functionName: OnOtherEvent
+        data: ShowClip
+        objectReferenceParameter: {instanceID: 0}
+        floatParameter: 0
+        intParameter: 0
+        messageOptions: 0
+      - time: 0.54631203
+        functionName: OnOtherEvent
+        data: HideClip
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
@@ -367,6 +388,7 @@ ModelImporter:
     normalSmoothingSource: 0
   referencedClips: []
   importAnimation: 1
+  copyAvatar: 0
   humanDescription:
     serializedVersion: 3
     human: []
@@ -386,7 +408,6 @@ ModelImporter:
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   animationType: 2
   humanoidOversampling: 1
-  avatarSetup: 0
   additionalBone: 0
   userData: 
   assetBundleName: 

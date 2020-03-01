@@ -6,6 +6,8 @@ public class RigWithGunAnimationController : RigAnimationController
 {
     [SerializeField] Transform gunTransform;
     [SerializeField] Transform gunTransformWhileSliding;
+    [SerializeField] Transform clipOriginTransform;
+    [SerializeField] GameObject clipGameObject;
 
     public Transform GunTransform
     {
@@ -17,6 +19,15 @@ public class RigWithGunAnimationController : RigAnimationController
         get { return gunTransformWhileSliding; }
     }
 
+    public Transform ClipOriginTransform
+    {
+        get { return clipOriginTransform; }
+    }
+
+    public GameObject ClipGameObject
+    {
+        get { return clipGameObject; }
+    }
 
     public void Reload()
     {

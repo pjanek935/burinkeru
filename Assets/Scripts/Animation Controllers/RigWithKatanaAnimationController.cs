@@ -11,21 +11,27 @@ public class RigWithKatanaAnimationController : RigAnimationController
 
     public override void OnStartAttack(int index)
     {
-
-        Quaternion rotation = originTransforms[index].rotation;
-        Vector3 postion = originTransforms[index].position;
-
-        if (TimeManager.Instance.IsSlowMotionOn)
+        if (index >= 0 && index < originTransforms.Count && originTransforms [index] != null)
         {
-            particlesManager.SlowMotionTrailsManager.ShootParticle(postion, originTransforms[index].forward, originTransforms[index].up);
-            particlesManager.SlashTrailManager.RegisterNewSlash (postion, originTransforms[index].forward, originTransforms[index].up);
-        }
-        else
-        {
-            particlesManager.SlashTrailManager.ShootParticle(postion, originTransforms[index].forward, originTransforms[index].up);
+            Vector3 postion = originTransforms[index].position;
+            Vector3 forward = originTransforms[index].forward;
+            Vector3 up = originTransforms[index].up;
+
+            if (TimeManager.Instance.IsSlowMotionOn)
+            {
+                particlesManager.SlowMotionTrailsManager.ShootParticle(postion, forward, up);
+                particlesManager.SlashTrailManager.RegisterNewSlash(postion, forward, up);
+            }
+            else
+            {
+                particlesManager.SlashTrailManager.ShootParticle(postion, forward, up);
+            }
         }
         
-        hitters[index].Activate();
+        if (index >= 0 && index < hitters.Count && hitters [index] != null)
+        {
+            hitters[index].Activate();
+        }
 
         base.OnStartAttack(index);
     }

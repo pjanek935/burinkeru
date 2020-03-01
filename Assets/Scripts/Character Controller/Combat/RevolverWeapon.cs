@@ -30,6 +30,7 @@ public class RevolverWeapon : WeaponBase
         rigAnmationController = rigManager.RigWithRevolver;
         rigAnmationController.OnAttackEnded += onAttackEnded;
         rigAnmationController.OnAttackStarted += onAttackStarted;
+        rigAnmationController.OnCustomEvent += onCustomEvent;
 
         Bullets = MAX_BULLETS;
     }
@@ -50,6 +51,29 @@ public class RevolverWeapon : WeaponBase
         }
     }
 
+    void onCustomEvent (string parameter)
+    {
+        if (! string.IsNullOrEmpty (parameter))
+        {
+            if (string.Equals (parameter, "Reload"))
+            {
+                Vector3 forward = rigAnmationController.ClipOriginTransform.forward;
+                Vector3 upward = rigAnmationController.ClipOriginTransform.up;
+                Vector3 position = rigAnmationController.ClipOriginTransform.position;
+
+                particleManager.ClipParticleManager.ShootParticle(position, upward, forward);
+            }
+            else if (string.Equals(parameter, "ShowClip"))
+            {
+                rigAnmationController.ClipGameObject.SetActive(true);
+            }
+            else if (string.Equals(parameter, "HideClip"))
+            {
+                rigAnmationController.ClipGameObject.SetActive(false);
+            }
+        }
+    }
+
     void onAttackStarted()
     {
         Debug.Log("onAttackStarted: " + CurrentState);
@@ -57,8 +81,6 @@ public class RevolverWeapon : WeaponBase
         switch (CurrentState)
         {
             case RevolverAttackState.SHOOT:
-
-                shoot();
 
                 break;
         }
@@ -117,6 +139,7 @@ public class RevolverWeapon : WeaponBase
                         {
                             CurrentStateIndex = (int)RevolverAttackState.SHOOT;
                             rigAnmationController.Attack();
+                            shoot();
                         }
                         else
                         {

@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : Projectile
 {
     [SerializeField] List<ParticleSystem> onHitParticles = new List<ParticleSystem>();
+    [SerializeField] TrailRenderer trailRenderer;
 
     protected override void OnCollisionEnter(Collision collision)
     {
@@ -14,6 +15,12 @@ public class Bullet : Projectile
         }
 
         base.OnCollisionEnter(collision);
+    }
+
+    protected override void activate()
+    {
+        trailRenderer.Clear();
+        base.activate();
     }
 
     void playOnHitParticles ()
