@@ -6,13 +6,17 @@ public class ClipParticleManager : ParticlesManagerBase
 {
     [SerializeField] Transform parentTransform;
 
+    Coroutine currentCoroutine;
+
+    const float visibleDuration = 1f;
+    const float randRange = 0.1f;
+
     public Vector3 BaseVelocity
     {
         get;
         set;
     }
 
-    const float randRange = 0.1f;
     public override GameObject ShootParticle(Vector3 position, Vector3 forward, Vector3 upward)
     {
         GameObject particle = base.ShootParticle(position, forward, upward);
@@ -34,6 +38,9 @@ public class ClipParticleManager : ParticlesManagerBase
             rigidbody.AddTorque(randTorque, ForceMode.Impulse);
         }
 
+        stopCoroutine();
+        currentCoroutine = StartCoroutine(waitAndDisable (particle));
+
         return particle;
     }
 
@@ -45,5 +52,24 @@ public class ClipParticleManager : ParticlesManagerBase
     protected override bool worldPositionStays()
     {
         return true;
+    }
+
+    IEnumerator waitAndDisable (GameObject gameObject)
+    {
+        yield return new WaitForSeconds(visibleDuration);
+
+        if (gameObject != null)
+        {
+            gameObject.SetActive(false);
+        }
+    }
+
+    void stopCoroutine ()
+    {
+        if (currentCoroutine != null)
+        {
+            StopCoroutine(currentCoroutine);
+            currentCoroutine = null;
+        }
     }
 }
