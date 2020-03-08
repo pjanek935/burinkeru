@@ -8,6 +8,7 @@ public class ParticlesManager : MonoBehaviour
     [SerializeField] SlashParticleManager slashTrailManager;
     [SerializeField] ParticlesManagerBase slowMotionTrailsManager;
     [SerializeField] ClipParticleManager clipParticleManager;
+    [SerializeField] ParticlesManagerBase smokeParticleManager;
 
     public ProjectileManager BulletsManager
     {
@@ -27,5 +28,10 @@ public class ParticlesManager : MonoBehaviour
     public ClipParticleManager ClipParticleManager
     {
         get { return clipParticleManager; }
+    }
+
+    public ParticlesManagerBase SmokeParticleManager
+    {
+        get { return smokeParticleManager; }
     }
 }

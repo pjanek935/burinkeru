@@ -108,6 +108,7 @@ public class RevolverWeapon : WeaponBase
         }
 
         particleManager.BulletsManager.Shoot(position, forward, upward);
+        particleManager.SmokeParticleManager.ShootParticle(position + upward * 1.5f, upward, -forward);
     }
 
     protected override void initActionsDefinitions()
