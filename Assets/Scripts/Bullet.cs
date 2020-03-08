@@ -6,6 +6,7 @@ public class Bullet : Projectile
 {
     [SerializeField] List<ParticleSystem> onHitParticles = new List<ParticleSystem>();
     [SerializeField] TrailRenderer trailRenderer;
+    [SerializeField] TimeBasedTrailRenderer timeBasedTrailRenderer;
 
     protected override void OnCollisionEnter(Collision collision)
     {
@@ -20,6 +21,9 @@ public class Bullet : Projectile
     protected override void activate()
     {
         trailRenderer.Clear();
+        timeBasedTrailRenderer.Clear();
+        timeBasedTrailRenderer.Shoot();
+
         base.activate();
     }
 
