@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class ClipParticleManager : ParticlesManagerBase
 {
-    [SerializeField] Transform parentTransform;
-
     Coroutine currentCoroutine;
 
     const float visibleDuration = 1f;
@@ -42,11 +40,6 @@ public class ClipParticleManager : ParticlesManagerBase
         currentCoroutine = StartCoroutine(waitAndDisable (particle));
 
         return particle;
-    }
-
-    protected override Transform getParentTransform()
-    {
-        return parentTransform;
     }
 
     protected override bool worldPositionStays()

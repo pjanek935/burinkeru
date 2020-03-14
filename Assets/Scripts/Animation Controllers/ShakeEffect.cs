@@ -9,12 +9,35 @@ public class ShakeEffect : MonoBehaviour
     [SerializeField] float d = 2;
     [SerializeField] float maxRange = 100f;
 
+    public static ShakeEffect Instance
+    {
+        get { return instance; }
+    }
+
+    static ShakeEffect instance;
     float randomSeed = 0f;
     float magnitude = 0;
 
     private void Awake()
     {
+        if (instance != null)
+        {
+            Debug.LogError("Nie moze byc dwoch instancji klasy ShakeEffect na scenie!");
+        }
+        else
+        {
+            instance = this;
+        }
+
         randomSeed = Random.Range(0f, 1f);
+    }
+
+    private void OnDestroy()
+    {
+        if (instance == this)
+        {
+            instance = null;
+        }
     }
 
     private void Update()

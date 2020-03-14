@@ -109,6 +109,7 @@ public class RevolverWeapon : WeaponBase
 
         particleManager.BulletsManager.Shoot(position, forward, upward);
         particleManager.SmokeParticleManager.ShootParticle(position + upward * 1.5f, upward, -forward);
+        ShakeEffect.Instance.Shake(0.25f);
     }
 
     protected override void initActionsDefinitions()

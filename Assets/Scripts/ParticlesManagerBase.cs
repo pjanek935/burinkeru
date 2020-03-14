@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class ParticlesManagerBase : MonoBehaviour
 {
+    [SerializeField] protected Transform parentTransform;
     [SerializeField] protected GameObject particlePrefab;
     [SerializeField] protected int maxParticles = 10;
 
@@ -58,7 +59,18 @@ public class ParticlesManagerBase : MonoBehaviour
 
     protected virtual Transform getParentTransform ()
     {
-        return this.transform;
+        Transform result = null;
+
+        if (parentTransform != null)
+        {
+            result = parentTransform;
+        }
+        else
+        {
+            result = this.transform;
+        }
+
+        return result;
     }
 
     protected virtual bool worldPositionStays ()
