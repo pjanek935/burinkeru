@@ -10,20 +10,17 @@ public class Cuttable : MonoBehaviour
     int childIndex = 0;
     List<ActivatableHitter> registeredHitters = new List<ActivatableHitter>();
     bool isFrozen = false;
-    ParticlesManager particlesManager;
 
     const int maxChildren = 20;
 
     private void Awake()
     {
-        particlesManager = GameObject.FindObjectOfType<ParticlesManager>();
         hittable = GetComponent<Hittable>();
         TimeManager.Instance.OnTimeFactorChanged += onTimeFactorChanged;
 
         if (hittable != null)
         {
-            hittable.OnHitterEnter += onHitterEnter;
-            hittable.OnHitterExit += onHitterExit;
+            hittable.OnHitterActivated += onHitterActivated;
         }
     }
 
@@ -31,12 +28,17 @@ public class Cuttable : MonoBehaviour
     {
         if (hittable != null)
         {
-            hittable.OnHitterEnter -= onHitterEnter;
-            hittable.OnHitterExit -= onHitterExit;
+            hittable.OnHitterActivated -= onHitterActivated;
             TimeManager.Instance.OnTimeFactorChanged -= onTimeFactorChanged;
         }
+    }
 
-        unregisterAll();
+    void onHitterActivated (ActivatableHitter hitter)
+    {
+        if (hitter.HitterType == HitterType.SWORD)
+        {
+            cut(hitter.transform);
+        }
     }
 
     public void SetChildIndex (int index)
@@ -55,44 +57,6 @@ public class Cuttable : MonoBehaviour
                 rb.isKinematic = false;
             }
         }
-    }
-
-    void onHitterEnter (Hitter hitter)
-    {
-        if (hitter.HitterType == HitterType.SWORD && hitter is ActivatableHitter)
-        {
-            ActivatableHitter activatableHitter = (ActivatableHitter)hitter;
-
-            if (! registeredHitters.Contains (activatableHitter))
-            {
-                activatableHitter.OnActivate += cut;
-                registeredHitters.Add(activatableHitter);
-            }
-        }
-    }
-
-    void onHitterExit (Hitter hitter)
-    {
-        if (hitter.HitterType == HitterType.SWORD && hitter is ActivatableHitter)
-        {
-            ActivatableHitter activatableHitter = (ActivatableHitter)hitter;
-
-            if (registeredHitters.Contains(activatableHitter))
-            {
-                activatableHitter.OnActivate -= cut;
-                registeredHitters.Remove(activatableHitter);
-            }
-        }
-    }
-
-    void unregisterAll ()
-    {
-        for (int i = 0; i < registeredHitters.Count; i ++)
-        {
-            registeredHitters[i].OnActivate -= cut;
-        }
-
-        registeredHitters.Clear();
     }
 
     void cut(Transform plane)

@@ -5,12 +5,25 @@ using UnityEngine;
 public class Projectile : MonoBehaviour
 {
     [SerializeField] GameObject model;
-    [SerializeField] Rigidbody rigidbody;
+    [SerializeField] protected new Rigidbody rigidbody;
 
     public bool IsActive
     {
         get;
         private set;
+    }
+
+    private void Awake()
+    {
+        TimeManager.Instance.OnTimeFactorChanged += onTimeFactorChanged;
+    }
+
+    void onTimeFactorChanged ()
+    {
+        if (IsActive)
+        {
+            setSpeed();
+        }
     }
 
     public virtual void Shoot (Vector3 origin, Vector3 forward, Vector3 up)
@@ -20,21 +33,25 @@ public class Projectile : MonoBehaviour
         this.transform.position = origin;
 
         activate();
+        setSpeed();
+    }
 
+    void setSpeed ()
+    {
         float speed = GetBaseSpeed();
+
+        if (TimeManager.Instance.IsSlowMotionOn)
+        {
+            speed *= GetSlowMoFactor();
+        }
+
         Vector3 deltaMove = this.transform.forward * speed;
         rigidbody.velocity = deltaMove;
     }
 
     public virtual float GetBaseSpeed (){ return 10f; }
 
-    //private void Update()
-    //{
-    //    if (IsActive)
-    //    {
-
-    //    }
-    //}
+    public virtual float GetSlowMoFactor() { return 0.1f; }
 
     protected virtual void OnCollisionEnter(Collision collision)
     {

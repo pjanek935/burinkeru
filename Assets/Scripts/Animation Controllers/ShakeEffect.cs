@@ -55,7 +55,22 @@ public class ShakeEffect : MonoBehaviour
     public void Shake (float magnitude)
     {
         this.magnitude += magnitude;
-        magnitude = Mathf.Clamp01(magnitude);
+        this.magnitude = Mathf.Clamp01(this.magnitude);
+    }
+
+    public void ShakeIfNotShaking(float magnitude)
+    {
+        if (this.magnitude < float.Epsilon)
+        {
+            this.magnitude += magnitude;
+            this.magnitude = Mathf.Clamp01(this.magnitude);
+        }
+    }
+
+    public void ShakeAndClampToGivenValue(float magnitude)
+    {
+        this.magnitude += magnitude;
+        this.magnitude = Mathf.Clamp(this.magnitude, 0, magnitude);
     }
 
     public void Shake (Vector3 origin)

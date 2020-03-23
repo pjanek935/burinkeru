@@ -5,10 +5,38 @@ using UnityEngine;
 public class ParticlesManager : MonoBehaviour
 {
     [SerializeField] ProjectileManager bulletsManager;
+    [SerializeField] SlowMoSlashParticleManager slowMotionTrailsManager;
     [SerializeField] SlashParticleManager slashTrailManager;
-    [SerializeField] ParticlesManagerBase slowMotionTrailsManager;
     [SerializeField] ClipParticleManager clipParticleManager;
     [SerializeField] ParticlesManagerBase smokeParticleManager;
+    [SerializeField] OnHitParticleManager swordOnHitParticleManager;
+
+    static ParticlesManager instance;
+
+    public static ParticlesManager Instance
+    {
+        get { return instance; }
+    }
+
+    private void Awake()
+    {
+        if (instance != null)
+        {
+            Debug.Log("Nie moga istniec dwie instancje ParticlesManager na scenie");
+        }
+        else
+        {
+            instance = this;
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (this == instance)
+        {
+            instance = null;
+        }
+    }
 
     public ProjectileManager BulletsManager
     {
@@ -20,7 +48,7 @@ public class ParticlesManager : MonoBehaviour
         get { return slashTrailManager; }
     }
 
-    public ParticlesManagerBase SlowMotionTrailsManager
+    public SlowMoSlashParticleManager SlowMotionTrailsManager
     {
         get { return slowMotionTrailsManager; }
     }
@@ -33,5 +61,10 @@ public class ParticlesManager : MonoBehaviour
     public ParticlesManagerBase SmokeParticleManager
     {
         get { return smokeParticleManager; }
+    }
+
+    public OnHitParticleManager SwordOnHitParticleManager
+    {
+        get { return swordOnHitParticleManager; }
     }
 }

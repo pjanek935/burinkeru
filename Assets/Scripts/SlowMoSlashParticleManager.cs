@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlashParticleManager : ParticlesManagerBase
+public class SlowMoSlashParticleManager : ParticlesManagerBase
 {
     struct RegisteredSlash
     {
@@ -13,6 +13,7 @@ public class SlashParticleManager : ParticlesManagerBase
 
     [SerializeField] float initialDelay = 0.1f;
     [SerializeField] float delayBetweenSlahses = 0.04f;
+    [SerializeField] SlashParticleManager slashParticleManager;
 
     List<RegisteredSlash> registeredSlashes = new List<RegisteredSlash>();
 
@@ -26,13 +27,22 @@ public class SlashParticleManager : ParticlesManagerBase
         TimeManager.Instance.OnTimeFactorChanged -= onTimeFactorChanged;
     }
 
-    public void RegisterNewSlash (Vector3 pos, Vector3 forward, Vector3 upward)
+    public void RegisterNewSlash (int index)
     {
-        RegisteredSlash newSlash;
-        newSlash.Position = pos;
-        newSlash.Forward = forward;
-        newSlash.Upward = upward;
-        registeredSlashes.Add(newSlash);
+        List<Transform> originTransforms = slashParticleManager.OriginTransforms;
+
+        if (index >= 0 && index < originTransforms.Count && originTransforms[index] != null)
+        {
+            Vector3 pos = originTransforms[index].position;
+            Vector3 forward = originTransforms[index].forward;
+            Vector3 up = originTransforms[index].up;
+
+            RegisteredSlash newSlash;
+            newSlash.Position = pos;
+            newSlash.Forward = forward;
+            newSlash.Upward = up;
+            registeredSlashes.Add(newSlash);
+        }
     }
 
     void onTimeFactorChanged ()

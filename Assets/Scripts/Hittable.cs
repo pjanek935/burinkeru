@@ -4,14 +4,14 @@ using UnityEngine;
 
 public class Hittable : MonoBehaviour
 {
-    public delegate void HittableEventHandler(Hitter hitter);
-    public event HittableEventHandler OnHitterEnter;
-    public event HittableEventHandler OnHitterExit;
+    public delegate void HitterEventHandler(Hitter hitter);
+    public event HitterEventHandler OnHitterEnter;
+    public event HitterEventHandler OnHitterExit;
 
-    private void Awake()
-    {
-        
-    }
+    public delegate void ActivatableHitterEventHandler(ActivatableHitter hitter);
+    public event ActivatableHitterEventHandler OnHitterActivated;
+
+    protected List<ActivatableHitter> registeredHitters = new List<ActivatableHitter>();
 
     void OnParticleCollision(GameObject other)
     {
@@ -50,7 +50,29 @@ public class Hittable : MonoBehaviour
         if (hitter != null)
         {
             OnHitterEnter?.Invoke(hitter);
+
+            if (hitter.GetType() == typeof(ActivatableHitter))
+            {
+                ActivatableHitter activatableHitter = (ActivatableHitter)hitter;
+
+                if (activatableHitter.IsActive)
+                {
+                    onHitterActivated(activatableHitter);
+                }
+                else if (! registeredHitters.Contains(activatableHitter))
+                {
+                    activatableHitter.OnActivate += onHitterActivated;
+                    registeredHitters.Add(activatableHitter);
+                }
+            }
         }
+    }
+
+    void onHitterActivated (ActivatableHitter hitter)
+    {
+        OnHitterActivated?.Invoke(hitter);
+        ShakeEffect.Instance.ShakeAndClampToGivenValue(0.5f);
+        ParticlesManager.Instance.SwordOnHitParticleManager.ShootParticle();
     }
 
     private void OnTriggerExit(Collider other)
@@ -60,6 +82,33 @@ public class Hittable : MonoBehaviour
         if (hitter != null)
         {
             OnHitterExit?.Invoke(hitter);
+
+            if (hitter is ActivatableHitter)
+            {
+                ActivatableHitter activatableHitter = (ActivatableHitter)hitter;
+
+                if (registeredHitters.Contains(activatableHitter))
+                {
+                    activatableHitter.OnActivate -= onHitterActivated;
+                    int index = registeredHitters.IndexOf(activatableHitter);
+                    registeredHitters.RemoveAt(index);
+                }
+            }
         }
+    }
+
+    private void OnDestroy()
+    {
+        unregisterAll();
+    }
+
+    void unregisterAll()
+    {
+        for (int i = 0; i < registeredHitters.Count; i++)
+        {
+            registeredHitters[i].OnActivate -= onHitterActivated;
+        }
+
+        registeredHitters.Clear();
     }
 }
