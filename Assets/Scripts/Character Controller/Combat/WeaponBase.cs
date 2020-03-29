@@ -81,6 +81,21 @@ public abstract class WeaponBase
         OnSetVelocityRequested?.Invoke(velocity);
     }
 
+    protected void hangInAirIfNeeded ()
+    {
+        if (!characterController.IsGrounded)
+        {
+            Vector3 velocity = characterController.Velocity;
+
+            if (velocity.y < 0)
+            {
+                velocity.y = 4.5f;
+            }
+
+            characterController.SetVelocity (velocity);
+        }
+    }
+
     protected abstract void initActionsDefinitions();
     protected abstract void requestAction(int actionIndex);
 }

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
-    [SerializeField] GameObject model;
+    [SerializeField] MeshRenderer model;
     [SerializeField] protected new Rigidbody rigidbody;
 
     public bool IsActive
@@ -13,7 +13,7 @@ public class Projectile : MonoBehaviour
         private set;
     }
 
-    private void Awake()
+    protected void Awake()
     {
         TimeManager.Instance.OnTimeFactorChanged += onTimeFactorChanged;
     }
@@ -36,7 +36,7 @@ public class Projectile : MonoBehaviour
         setSpeed();
     }
 
-    void setSpeed ()
+    protected void setSpeed ()
     {
         float speed = GetBaseSpeed();
 
@@ -62,18 +62,18 @@ public class Projectile : MonoBehaviour
     {
         if (model != null)
         {
-            model.gameObject.SetActive(true);
+            model.enabled = true;
         }
 
         this.gameObject.SetActive(true);
         IsActive = true;
     }
 
-    protected void deactivate ()
+    protected virtual void deactivate ()
     {
         if (model != null)
         {
-            model.gameObject.SetActive(false);
+            model.enabled = false;
         }
 
         rigidbody.velocity = Vector3.zero;

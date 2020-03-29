@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Hittable component recives event and reacts to components with Hitter component.
+/// </summary>
 public class Hittable : MonoBehaviour
 {
     public delegate void HitterEventHandler(Hitter hitter);
+    public delegate void ActivatableHitterEventHandler (ActivatableHitter hitter);
+
     public event HitterEventHandler OnHitterEnter;
     public event HitterEventHandler OnHitterExit;
-
-    public delegate void ActivatableHitterEventHandler(ActivatableHitter hitter);
     public event ActivatableHitterEventHandler OnHitterActivated;
 
     protected List<ActivatableHitter> registeredHitters = new List<ActivatableHitter>();

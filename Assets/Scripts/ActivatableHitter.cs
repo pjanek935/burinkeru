@@ -2,6 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// ActivatableHitter is a collider that can be handled differently, depending on
+/// whether it is active or not. Eg. a sword is a collider that deals damage only when is
+/// activated (in attack phase).
+/// </summary>
 public class ActivatableHitter : Hitter
 {
     public delegate void SwordSlashHitterEventHandler(ActivatableHitter hitter);
@@ -44,9 +49,6 @@ public class ActivatableHitter : Hitter
 
     void onTriggerOrCollisionEnter (Vector3 position)
     {
-        if (this.HitterType == HitterType.SWORD)
-        {
-            
-        }
+
     }
 }

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class CharacterControllerParameters : MonoBehaviour
 {
+    [SerializeField, Range (1, 50)] float gravity = 30f;
+
     [SerializeField, Range (0, 10)] float defaultMoveSpeed = 5f;
     [SerializeField, Range (0, 10)] float defaultJumpHeight = 2f;
 
@@ -29,7 +31,16 @@ public class CharacterControllerParameters : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float wallRunAllowJumpTime = 0.5f;
     [SerializeField, Range(0f, 5f)] float wallRunDuration = 1f;
 
+    [SerializeField, Range (50f, 1000f)] float blinkingSpeed = 1f;
+    [SerializeField, Range (1, 5)] int maxBlinksInAir = 2;
+    [SerializeField, Range (0.1f, 1f)] float blinkingDrag = 0.85f;
+
     static CharacterControllerParameters instance = null;
+
+    public float Gravity
+    {
+        get { return gravity; }
+    }
 
     public float DefaultMoveSpeed
     {
@@ -119,6 +130,21 @@ public class CharacterControllerParameters : MonoBehaviour
     public float WallRunAllowJumpTime
     {
         get { return wallRunAllowJumpTime; }
+    }
+
+    public float BlinkingSpeed
+    {
+        get { return blinkingSpeed; }
+    }
+
+    public int MaxBlinksInAir
+    {
+        get { return maxBlinksInAir; }
+    }
+
+    public float BlinkingDrag
+    {
+        get { return blinkingDrag; }
     }
 
     public static bool IsInstanceNull ()

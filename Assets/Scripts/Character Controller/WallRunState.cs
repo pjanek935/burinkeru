@@ -140,7 +140,7 @@ public class WallRunState : CharacterControllerStateBase
 
     void applyGravity()
     {
-        float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
+        float gravity = -CharacterControllerParameters.Instance.Gravity * Time.deltaTime;
         addVelocity(new Vector3(0f, gravity, 0));
     }
 

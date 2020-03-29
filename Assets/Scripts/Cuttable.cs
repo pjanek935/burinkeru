@@ -3,15 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof (Hittable))]
+/// <summary>
+/// Cuttable components' meshes can be cut by hitters marked as HitterType.BLADE.
+/// </summary>
+[RequireComponent (typeof (Hittable))]
 public class Cuttable : MonoBehaviour
 {
     Hittable hittable;
     int childIndex = 0;
-    List<ActivatableHitter> registeredHitters = new List<ActivatableHitter>();
     bool isFrozen = false;
 
-    const int maxChildren = 20;
+    const int maxChildren = 100;
 
     private void Awake()
     {
@@ -35,7 +37,7 @@ public class Cuttable : MonoBehaviour
 
     void onHitterActivated (ActivatableHitter hitter)
     {
-        if (hitter.HitterType == HitterType.SWORD)
+        if (hitter.HitterType == HitterType.BLADE)
         {
             cut(hitter.transform);
         }

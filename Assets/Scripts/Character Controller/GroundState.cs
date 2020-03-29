@@ -238,7 +238,7 @@ public class GroundState : CharacterControllerStateBase
 
     void jump ()
     {
-        float velocityY = Mathf.Sqrt(CharacterControllerParameters.Instance.DefaultJumpHeight * 2f * BurinkeruCharacterController.GRAVITY);
+        float velocityY = Mathf.Sqrt(CharacterControllerParameters.Instance.DefaultJumpHeight * 2f * CharacterControllerParameters.Instance.Gravity);
         addVelocity(new Vector3 (0f, velocityY, 0f));
         Vector3 horizontalVelocity = characterController.DeltaPosition;
         horizontalVelocity.Scale(BurinkeruCharacterController.MovementAxes);

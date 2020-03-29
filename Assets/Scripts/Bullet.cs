@@ -9,24 +9,29 @@ public class Bullet : Projectile
     [SerializeField] TimeBasedTrailRenderer timeBasedTrailRenderer;
     [SerializeField] Hittable hittable;
 
-    private void Awake()
+    const float BASE_SPEED = 400f;
+    const float RICOCHET_PROBABILITY = 0.2f;
+
+    float speed = BASE_SPEED;
+    static System.Random random = new System.Random ();
+    bool isARicochet = false;
+
+    protected new void Awake()
     {
-        hittable.OnHitterActivated += onHitterActivated;
+        base.Awake ();
+
+        if (hittable != null)
+        {
+            hittable.OnHitterActivated += onHitterActivated;
+        }
     }
 
     void onHitterActivated (ActivatableHitter activatableHitter)
     {
-        if (activatableHitter.HitterType == HitterType.SWORD)
+        if (activatableHitter.HitterType == HitterType.BLADE)
         {
-            float speed = GetBaseSpeed();
-
-            if (TimeManager.Instance.IsSlowMotionOn)
-            {
-                speed *= GetSlowMoFactor();
-            }
-
-            Vector3 deltaMove = - this.transform.forward * speed;
-            rigidbody.velocity = deltaMove;
+            this.transform.forward = -this.transform.forward;
+            setSpeed ();
         }
     }
 
@@ -37,7 +42,30 @@ public class Bullet : Projectile
             playOnHitParticles();
         }
 
-        base.OnCollisionEnter(collision);
+        if (! isARicochet)
+        {
+            if (random.NextDouble () > RICOCHET_PROBABILITY)
+            {
+                deactivate ();
+            }
+            else
+            {
+                ricochet ();
+            }
+        }
+        else
+        {
+            ricochet ();
+        }
+    }
+
+    void ricochet ()
+    {
+        isARicochet = true;
+        this.speed /= 2f;
+        setSpeed ();
+        rigidbody.angularVelocity = new Vector3 (1f, 1f, 1f);
+        rigidbody.useGravity = true;
     }
 
     protected override void activate()
@@ -45,6 +73,9 @@ public class Bullet : Projectile
         trailRenderer.Clear();
         timeBasedTrailRenderer.Clear();
         timeBasedTrailRenderer.Shoot();
+        isARicochet = false;
+        rigidbody.useGravity = false;
+        speed = BASE_SPEED;
 
         base.activate();
     }
@@ -64,7 +95,7 @@ public class Bullet : Projectile
     }
     public override float GetBaseSpeed()
     {
-        return 400f;
+        return speed;
     }
 
     public override float GetSlowMoFactor()

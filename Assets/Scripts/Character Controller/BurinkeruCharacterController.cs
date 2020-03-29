@@ -16,13 +16,15 @@ public class BurinkeruCharacterController : MonoBehaviour
     int layerMaskToCheckForPushback = 0;
     Vector3 externalDeltaPosition = Vector3.zero;
     SpecialAbility specialAbility = new BulletTime();
+    bool preciseCollisionCalucations = true;
+    const int collisionCalicationsPrecision = 20; //bigger the number more precise the caluclation
 
     public static Vector3 MovementAxes
     {
         get { return new Vector3(1f, 0f, 1f); }
     }
 
-    public const float GRAVITY = 15f; //TODO does not suit in this class
+    
 
     Vector3 velocity = Vector3.zero;
 
@@ -135,12 +137,6 @@ public class BurinkeruCharacterController : MonoBehaviour
         Vector3 startPos = transform.position;
 
         updateMovement();
-
-        if (IsBlinking)
-        {
-            checkForPushback();
-        }
-
         applyForces();
         updatePosition();
         updateIsGrounded();
@@ -178,8 +174,23 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     void updatePosition ()
     {
-        transform.position += externalDeltaPosition;
-        externalDeltaPosition = Vector3.zero;
+        if (preciseCollisionCalucations)
+        {
+            Vector3 d = externalDeltaPosition / (float) collisionCalicationsPrecision;
+
+            for (int i = 0; i < collisionCalicationsPrecision; i ++)
+            {
+                transform.position += d;
+                checkForPushback ();
+            }
+
+            externalDeltaPosition = Vector3.zero;
+        }
+        else
+        {
+            transform.position += externalDeltaPosition;
+            externalDeltaPosition = Vector3.zero;
+        }
     }
 
     void onBlink ()
@@ -293,13 +304,15 @@ public class BurinkeruCharacterController : MonoBehaviour
         }
     }
 
-    void checkForPushback ()
+    bool checkForPushback ()
     {
+        bool result = false;
         Collider[] colliders = Physics.OverlapSphere(transform.position, components.CapsuleCollider.radius, layerMaskToCheckForPushback);
         Vector3 contactPoint = Vector3.zero;
 
         for (int i = 0; i < colliders.Length; i++)
         {
+            result = true;
             contactPoint = colliders[i].GetClosestPoint(transform.position);
             makePushback(contactPoint);
 
@@ -309,6 +322,8 @@ public class BurinkeruCharacterController : MonoBehaviour
                 blinkingController.ForceStop();
             }
         }
+
+        return result;
     }
 
     void makePushback (Vector3 contactPoint)
@@ -320,7 +335,6 @@ public class BurinkeruCharacterController : MonoBehaviour
 
     public void Move(Vector3 deltaPosition)
     {
-        //this.transform.position += deltaPosition;
         externalDeltaPosition += deltaPosition;
     } 
 }

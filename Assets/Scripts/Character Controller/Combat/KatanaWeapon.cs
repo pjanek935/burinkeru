@@ -64,11 +64,13 @@ public class KatanaWeapon : WeaponBase
     {
         Debug.Log("onAttackStarted: " + CurrentState);
 
+        hangInAirIfNeeded ();
+
         switch (CurrentState)
         {
             case KatanaAttackState.UPPERCUT:
 
-                addVelocity(new Vector3 (0, 7f, 0));
+                addVelocity(new Vector3 (0, 15f, 0));
 
                 break;
 
@@ -92,7 +94,7 @@ public class KatanaWeapon : WeaponBase
                 {
                     Vector3 lookDirection = characterController.GetLookDirection();
                     lookDirection.Scale(BurinkeruCharacterController.MovementAxes);
-                    addVelocity(lookDirection * 5f);
+                    //addVelocity(lookDirection * 5f);
                 }
 
                 break;

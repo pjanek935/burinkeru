@@ -107,6 +107,8 @@ public class RevolverWeapon : WeaponBase
             position = rigAnmationController.GunTransform.position;
         }
 
+        hangInAirIfNeeded ();
+
         particleManager.BulletsManager.Shoot(position, forward, upward);
         particleManager.SmokeParticleManager.ShootParticle(position + upward * 1.5f, upward, -forward);
         ShakeEffect.Instance.ShakeIfNotShaking(0.35f);

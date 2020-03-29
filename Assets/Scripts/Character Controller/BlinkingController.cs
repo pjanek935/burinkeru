@@ -48,7 +48,7 @@ public class BlinkingController : MonoBehaviour
 
     public void UpdateBlinkingForces()
     {
-        BlinkingVelocity = BlinkingVelocity * 0.85f;
+        BlinkingVelocity = BlinkingVelocity * CharacterControllerParameters.Instance.BlinkingDrag;
 
         if (IsBlinking)
         {
@@ -62,7 +62,7 @@ public class BlinkingController : MonoBehaviour
 
     public bool CanBlink ()
     {
-        return BlinkCounter < 3 && ! IsBlinking;
+        return BlinkCounter < CharacterControllerParameters.Instance.MaxBlinksInAir && ! IsBlinking;
     }
 
     public void ResetCounter ()
@@ -105,7 +105,7 @@ public class BlinkingController : MonoBehaviour
         if (deltaPosition.magnitude > 0.1f)
         {
             IsBlinking = true;
-            BlinkingVelocity = deltaPosition * 100f;
+            BlinkingVelocity = deltaPosition * CharacterControllerParameters.Instance.BlinkingSpeed;
 
             OnBlink?.Invoke();
             components.BlinkShadePostProcessEffect.StartEffect();

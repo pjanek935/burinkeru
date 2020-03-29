@@ -4,10 +4,15 @@ using UnityEngine;
 
 public enum HitterType
 {
-    BULLET,
-    SWORD,
+    PROJECTILE,
+    BLADE,
 }
 
+/// <summary>
+/// Hitter component can interact with Hittable components.
+/// This component should be attached to a objects such as bullets,
+/// so hittable components can react to collision or trigger events with it.
+/// </summary>
 public class Hitter : MonoBehaviour
 {
     [SerializeField] HitterType hitterType;

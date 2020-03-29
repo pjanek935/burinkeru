@@ -222,7 +222,7 @@ public class InAirState : CharacterControllerStateBase
     {
         if (! characterController.IsBlinking && wallRunState == null)
         {
-            float gravity = -BurinkeruCharacterController.GRAVITY * Time.deltaTime;
+            float gravity = -CharacterControllerParameters.Instance.Gravity * Time.deltaTime;
             addVelocity(new Vector3(0f, gravity, 0));
         }
     }
@@ -267,7 +267,7 @@ public class InAirState : CharacterControllerStateBase
     void jump()
     {
         jumpCounter++;
-        float velocityY = Mathf.Sqrt(CharacterControllerParameters.Instance.DefaultJumpHeight * 2f * BurinkeruCharacterController.GRAVITY);
+        float velocityY = Mathf.Sqrt(CharacterControllerParameters.Instance.DefaultJumpHeight * 2f * CharacterControllerParameters.Instance.Gravity);
         Vector3 currentVelocity = characterController.Velocity;
         currentVelocity.y = velocityY;
         setVelocity (currentVelocity);
