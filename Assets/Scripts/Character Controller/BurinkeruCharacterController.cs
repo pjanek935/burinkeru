@@ -24,8 +24,6 @@ public class BurinkeruCharacterController : MonoBehaviour
         get { return new Vector3(1f, 0f, 1f); }
     }
 
-    
-
     Vector3 velocity = Vector3.zero;
 
     public Vector3 DeltaPosition

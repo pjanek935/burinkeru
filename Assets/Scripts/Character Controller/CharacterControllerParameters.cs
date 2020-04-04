@@ -30,6 +30,8 @@ public class CharacterControllerParameters : MonoBehaviour
     [SerializeField, Range(0f, 1f)] float wallRunDelay = 0.1f;
     [SerializeField, Range(0f, 1f)] float wallRunAllowJumpTime = 0.5f;
     [SerializeField, Range(0f, 5f)] float wallRunDuration = 1f;
+    [SerializeField, Range (0f, 50f)] float minWallRunSpeed = 3f;
+    [SerializeField, Range (0f, 50f)] float maxWallRunSpeed = 5f;
 
     [SerializeField, Range (50f, 1000f)] float blinkingSpeed = 1f;
     [SerializeField, Range (1, 5)] int maxBlinksInAir = 2;
@@ -115,6 +117,16 @@ public class CharacterControllerParameters : MonoBehaviour
     public float WallRunRaycastLength
     {
         get { return wallRunRayCastLength; }
+    }
+
+    public float MinWallRunSpeed
+    {
+        get { return minWallRunSpeed; }
+    }
+
+    public float MaxWallRunSpeed
+    {
+        get { return maxWallRunSpeed; }
     }
 
     public int MaxJumpsInAir

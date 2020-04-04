@@ -136,6 +136,9 @@ public class WallRunState : CharacterControllerStateBase
         Vector3 speed = characterController.Velocity;
         speed.y = 0;
         velocity = speed.sqrMagnitude + characterController.GetMovementSpeed ();
+
+        velocity = Mathf.Clamp (velocity, CharacterControllerParameters.Instance.MinWallRunSpeed,
+            CharacterControllerParameters.Instance.MaxWallRunSpeed);
     }
 
     void applyGravity()
