@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class WallRunState : CharacterControllerStateBase
+public class PlayerWallRunState : PlayerState
 {
     public delegate void RequestExitEventHandler ();
     public event RequestExitEventHandler RequestExit;
@@ -41,7 +41,7 @@ public class WallRunState : CharacterControllerStateBase
         private set;
     }
 
-    public WallRunState(WallRunRaycastResult hitResult) : base ()
+    public PlayerWallRunState(WallRunRaycastResult hitResult) : base ()
     {
         this.hitResult = hitResult;
         collider = hitResult.ObjectThatWasHit.GetComponent<Collider>();

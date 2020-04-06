@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SlideState : CharacterControllerStateBase
+public class PlayerSlideState : PlayerState
 {
     public delegate void SlideStateExitRequestEventHandler();
     public event SlideStateExitRequestEventHandler OnExitSlideStateRequested;

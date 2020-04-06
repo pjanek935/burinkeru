@@ -1,7 +1,7 @@
 ﻿using DG.Tweening;
 using UnityEngine;
 
-public class CrouchState : CharacterControllerStateBase
+public class PlayerCrouchState : PlayerState
 {
     const float crouchHeight = 1f;
     const float crouchCameraHeoght = 0.5f;

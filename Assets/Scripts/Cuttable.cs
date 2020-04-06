@@ -35,7 +35,7 @@ public class Cuttable : MonoBehaviour
         }
     }
 
-    void onHitterActivated (ActivatableHitter hitter)
+    void onHitterActivated (ActivatableHitter hitter, Hashtable parameters)
     {
         if (hitter.HitterType == HitterType.BLADE)
         {

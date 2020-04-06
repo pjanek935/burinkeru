@@ -26,7 +26,7 @@ public class Bullet : Projectile
         }
     }
 
-    void onHitterActivated (ActivatableHitter activatableHitter)
+    void onHitterActivated (ActivatableHitter activatableHitter, Hashtable parameters)
     {
         if (activatableHitter.HitterType == HitterType.BLADE)
         {

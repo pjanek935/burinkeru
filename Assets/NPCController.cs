@@ -2,106 +2,88 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCController : MonoBehaviour
+public class NPCController : CharacterControllerBase
 {
     [SerializeField] CapsuleCollider capsuleCollider;
-    CharacterControllerStateBase mainMovementState;
-    Vector3 velocity = Vector3.zero;
-    int layerMaskToCheckForPushback = 0;
-    Vector3 externalDeltaPosition = Vector3.zero;
+    [SerializeField] Hittable hittable;
+    [SerializeField] Animator animator;
 
-    public bool IsGrounded
+    public override CapsuleCollider CapsuleCollider
     {
-        get;
-        private set;
+        get { return capsuleCollider; }
     }
 
-    void applyForces ()
+    private void Awake ()
     {
-        float friction = 1f - GetMovementDrag ();
-        Vector3 velocitySum = velocity;
-        Move (velocitySum * Time.deltaTime);
-        velocity.Scale (new Vector3 (friction, 1f, friction));
+        layerMaskToCheckForPushback = LayerMask.GetMask ("Default");
+        setNewState<NPCInAirState> ();
+        hittable.OnHitterActivated += onHitterActivated;
+        hittable.OnHitterEnter += onHitterEnter;
+    }
 
-        if (mainMovementState != null)
+    void onHitterEnter (Hitter hitter)
+    {
+        if (hitter.HitterType == HitterType.PROJECTILE)
         {
-            mainMovementState.ApplyForces ();
-        }
-    }
-
-    public void AddVelocity (Vector3 velocityDelta)
-    {
-        velocity += velocityDelta;
-    }
-
-    public void SetVelocity (Vector3 newVelocty)
-    {
-        velocity = newVelocty;
-    }
-
-    public float GetMovementDrag ()
-    {
-        float result = 1f;
-
-        if (mainMovementState != null)
-        {
-            result = mainMovementState.GetMovementDrag ();
-        }
-
-        return result;
-    }
-
-    void updateIsGrounded ()
-    {
-        Vector3 sphereCastPos = transform.position - Vector3.up * capsuleCollider.height / 4f;
-        float sphereCastRadius = capsuleCollider.radius;
-        Collider [] colliders = Physics.OverlapSphere (sphereCastPos, sphereCastRadius, layerMaskToCheckForPushback);
-        IsGrounded = false;
-
-        for (int i = 0; i < colliders.Length; i++)
-        {
-            if (colliders [i] != capsuleCollider)
+            if (! IsGrounded)
             {
-                Vector3 contactPoint = colliders [i].GetClosestPoint (sphereCastPos);
-                Vector3 contactDirectionVector = contactPoint - sphereCastPos;
-                Vector3 pushVector = sphereCastPos - contactPoint;
-                transform.position += Vector3.ClampMagnitude (pushVector, Mathf.Clamp (sphereCastRadius - pushVector.magnitude, 0, sphereCastRadius));
+                Vector3 velocity = this.Velocity;
+                velocity.y = 5.5f;
+                SetVelocity (velocity);
+            }
+        }
+    }
 
-                if (!(Mathf.Abs (contactDirectionVector.y) < 0.1f
-                    || Mathf.Abs (contactDirectionVector.x) > 0.4f
-                    || Mathf.Abs (contactDirectionVector.z) > 0.4)) //TODO magic numbers
+    void onHitterActivated (ActivatableHitter hitter, Hashtable parameters)
+    {
+        if (! IsGrounded)
+        {
+            Vector3 velocity = this.Velocity;
+            velocity.y = 5.5f;
+            SetVelocity (velocity);
+        }
+
+        if (hitter != null && hitter.HitterType == HitterType.BLADE)
+        {
+            if (parameters != null && parameters.ContainsKey ("attackIndex"))
+            {
+                int attackIndex = (int) parameters ["attackIndex"];
+
+                Debug.Log ("Attack Index: " + attackIndex);
+                if (attackIndex == 3)
                 {
-                    IsGrounded = true;
+                    upperCut ();
                 }
             }
         }
     }
 
-    bool checkForPushback ()
+    protected new void Update ()
     {
-        bool result = false;
-        Collider [] colliders = Physics.OverlapSphere (transform.position, capsuleCollider.radius, layerMaskToCheckForPushback);
-        Vector3 contactPoint = Vector3.zero;
+        base.Update ();
+        animator.ResetTrigger ("GetUp");
 
-        for (int i = 0; i < colliders.Length; i++)
+        if (mainMovementState is NPCInAirState)
         {
-            result = true;
-            contactPoint = colliders [i].GetClosestPoint (transform.position);
-            makePushback (contactPoint);
+            if (Velocity.y < 0)
+            {
+                animator.SetTrigger ("FallDown");
+            }
         }
-
-        return result;
+        else if (mainMovementState is NPCGroundState)
+        {
+            if (Mathf.Abs (Velocity.y) < float.Epsilon)
+            {
+                animator.SetTrigger ("GetUp");
+            }
+        }
     }
 
-    void makePushback (Vector3 contactPoint)
+    void upperCut ()
     {
-        Vector3 pushVector = transform.position - contactPoint;
-        transform.position += Vector3.ClampMagnitude (pushVector,
-            Mathf.Clamp (capsuleCollider.radius - pushVector.magnitude, 0, capsuleCollider.radius));
-    }
-
-    public void Move (Vector3 deltaPosition)
-    {
-        externalDeltaPosition += deltaPosition;
+        Vector3 velocity = this.Velocity;
+        velocity.y = 14f;
+        SetVelocity (velocity);
+        animator.SetTrigger ("Uppercut");
     }
 }

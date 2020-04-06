@@ -70,7 +70,7 @@ public class KatanaWeapon : WeaponBase
         {
             case KatanaAttackState.UPPERCUT:
 
-                addVelocity(new Vector3 (0, 15f, 0));
+               // addVelocity(new Vector3 (0, 15f, 0));
 
                 break;
 

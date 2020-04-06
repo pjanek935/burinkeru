@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class Projectile : MonoBehaviour
 {
+    [SerializeField] Collider collider;
     [SerializeField] MeshRenderer model;
     [SerializeField] protected new Rigidbody rigidbody;
 
@@ -67,6 +68,7 @@ public class Projectile : MonoBehaviour
 
         this.gameObject.SetActive(true);
         IsActive = true;
+        collider.enabled = true;
     }
 
     protected virtual void deactivate ()
@@ -78,5 +80,6 @@ public class Projectile : MonoBehaviour
 
         rigidbody.velocity = Vector3.zero;
         IsActive = false;
+        collider.enabled = false;
     }
 }

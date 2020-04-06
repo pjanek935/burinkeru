@@ -1,18 +1,18 @@
 ﻿using UnityEngine;
 
-public class GroundState : CharacterControllerStateBase
+public class PlayerGroundState : PlayerState
 {
-    CharacterControllerStateBase groundedInternalState;
+    PlayerState groundedInternalState;
 
     public override void ApplyForces()
     {
         if (! characterController.IsGrounded)
         {
-            setNewState(new InAirState());
+            setNewState(new PlayerInAirState());
         }
     }
 
-    protected override void setNewState(CharacterControllerStateBase newState)
+    protected override void setNewState(CharacterStateBase newState)
     {
         if (groundedInternalState != null)
         {
@@ -26,7 +26,7 @@ public class GroundState : CharacterControllerStateBase
     {
         bool result = false;
 
-        if (groundedInternalState != null && groundedInternalState is SlideState)
+        if (groundedInternalState != null && groundedInternalState is PlayerSlideState)
         {
             result = true;
         }
@@ -36,7 +36,14 @@ public class GroundState : CharacterControllerStateBase
 
     public override void UpdateMovement()
     {
-        if (groundedInternalState != null && groundedInternalState is SlideState)
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
+        if (groundedInternalState != null && groundedInternalState is PlayerSlideState)
         {
             groundedInternalState.UpdateMovement();
         }
@@ -95,7 +102,7 @@ public class GroundState : CharacterControllerStateBase
             groundedInternalState = null;
         }
 
-        if ( !(groundedInternalState is SlideState))
+        if ( !(groundedInternalState is PlayerSlideState))
         {
             float magnitude = deltaPosition.magnitude;
 
@@ -112,9 +119,16 @@ public class GroundState : CharacterControllerStateBase
 
     void onJumpButtonClicked()
     {
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
         if (characterController.IsCrouching)
         {
-            if (groundedInternalState != null && groundedInternalState is SlideState)
+            if (groundedInternalState != null && groundedInternalState is PlayerSlideState)
             {
                 jump();
             }
@@ -129,6 +143,13 @@ public class GroundState : CharacterControllerStateBase
 
     void switchRun()
     {
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
         if (groundedInternalState == null)
         {
             if (characterController.IsCrouching)
@@ -136,12 +157,18 @@ public class GroundState : CharacterControllerStateBase
                 exitCrouch();
             }
 
-            setNewInternalState(new RunState());
+            setNewInternalState(new PlayerRunState());
         }
     }
 
     protected override void switchCrouch()
     {
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
         if (characterController.IsCrouching)
         {
             exitCrouch();
@@ -154,7 +181,14 @@ public class GroundState : CharacterControllerStateBase
 
     void enterCrouch()
     {
-        if (groundedInternalState != null && groundedInternalState is RunState)
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
+        if (groundedInternalState != null && groundedInternalState is PlayerRunState)
         {
             slide();
         }
@@ -164,7 +198,14 @@ public class GroundState : CharacterControllerStateBase
 
     void exitCrouch()
     {
-        if (groundedInternalState != null && groundedInternalState is SlideState)
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
+        if (groundedInternalState != null && groundedInternalState is PlayerSlideState)
         {
             groundedInternalState.Exit();
             groundedInternalState = null;
@@ -175,6 +216,13 @@ public class GroundState : CharacterControllerStateBase
 
     protected override void onEnter()
     {
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
         Vector3 currentVelocity = characterController.Velocity;
         currentVelocity.y = 0;
         setVelocity(currentVelocity);
@@ -184,6 +232,13 @@ public class GroundState : CharacterControllerStateBase
 
     void switchToSlideIfNeeded ()
     {
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
         if (characterController.IsCrouching)
         {
             Vector3 currentVelocity = characterController.DeltaPosition;
@@ -199,20 +254,27 @@ public class GroundState : CharacterControllerStateBase
 
     void slide ()
     {
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
         if (groundedInternalState != null)
         {
             groundedInternalState.Exit();
         }
         
-        SlideState slideState = new SlideState();
+        PlayerSlideState slideState = new PlayerSlideState();
         slideState.OnExitSlideStateRequested += onExitSlideStateRequested;
-        slideState.Enter(null, inputManager, characterController, components);
+        slideState.Enter(inputManager, characterController, components);
         groundedInternalState = slideState;
     }
 
     void onExitSlideStateRequested ()
     {
-        if (groundedInternalState != null && groundedInternalState is SlideState)
+        if (groundedInternalState != null && groundedInternalState is PlayerSlideState)
         {
             groundedInternalState.Exit();
             groundedInternalState = null;
@@ -255,11 +317,18 @@ public class GroundState : CharacterControllerStateBase
             setVelocity(velocity);
         }
 
-        setNewState(new InAirState ());
+        setNewState(new PlayerInAirState ());
     }
 
-    void setNewInternalState(CharacterControllerStateBase newState)
+    void setNewInternalState(PlayerState newState)
     {
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
         if (groundedInternalState == null || newState.GetType() != groundedInternalState.GetType())
         {
             if (groundedInternalState != null)
@@ -267,7 +336,7 @@ public class GroundState : CharacterControllerStateBase
                 groundedInternalState.Exit();
             }
 
-            newState.Enter(groundedInternalState, inputManager, characterController, components);
+            newState.Enter(inputManager, characterController, components);
             groundedInternalState = newState;
         }
     }

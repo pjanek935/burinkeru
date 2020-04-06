@@ -9,7 +9,7 @@ using UnityEngine;
 /// </summary>
 public class ActivatableHitter : Hitter
 {
-    public delegate void SwordSlashHitterEventHandler(ActivatableHitter hitter);
+    public delegate void SwordSlashHitterEventHandler(ActivatableHitter hitter, Hashtable parameters);
     public event SwordSlashHitterEventHandler OnActivate;
 
     public bool IsActive
@@ -18,9 +18,16 @@ public class ActivatableHitter : Hitter
         protected set;
     }
 
-    public void Activate ()
+    public Hashtable LastParameters
     {
-        OnActivate?.Invoke(this);
+        get;
+        protected set;
+    }
+
+    public void Activate (Hashtable parameters)
+    {
+        LastParameters = parameters;
+        OnActivate?.Invoke(this, parameters);
         IsActive = true;
     }
 

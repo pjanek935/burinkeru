@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InAirState : CharacterControllerStateBase
+public class PlayerInAirState : PlayerState
 {
     int jumpCounter = 0;
     Vector3 onEnterPos;
     Vector3 jumpDirection = Vector3.zero;
-    WallRunState wallRunState = null;
+    PlayerWallRunState wallRunState = null;
 
     bool wallRunToLastColliderAllowed = true;
     Collider lastWallRunCollider = null;
@@ -93,7 +93,14 @@ public class InAirState : CharacterControllerStateBase
     bool tryToWallRun()
     {
         bool success = false;
-        WallRunState.WallRunRaycastResult result = WallRunState.RaycastWalls(characterController.transform);
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return false;
+        }
+
+        PlayerWallRunState.WallRunRaycastResult result = PlayerWallRunState.RaycastWalls(characterController.transform);
 
         if (result.Success)
         {
@@ -114,8 +121,8 @@ public class InAirState : CharacterControllerStateBase
 
                 result.RunDirection = res;
 
-                wallRunState = new WallRunState(result);
-                wallRunState.Enter(this, inputManager, characterController, components);
+                wallRunState = new PlayerWallRunState(result);
+                wallRunState.Enter(inputManager, characterController, components);
                 wallRunState.RequestExit += onExitRequested;
 
                 Debug.DrawRay(result.Hit.point, res * 10, Color.magenta, 1f);
@@ -209,7 +216,7 @@ public class InAirState : CharacterControllerStateBase
     {
         if (characterController.IsGrounded)
         {
-            setNewState(new GroundState());
+            setNewState(new PlayerGroundState());
         }
 
         if (characterController.transform.position.y > onEnterPos.y)
@@ -220,6 +227,13 @@ public class InAirState : CharacterControllerStateBase
 
     void applyGravity ()
     {
+        BurinkeruCharacterController characterController = (BurinkeruCharacterController) this.characterController;
+
+        if (characterController == null)
+        {
+            return;
+        }
+
         if (! characterController.IsBlinking && wallRunState == null)
         {
             float gravity = -CharacterControllerParameters.Instance.Gravity * Time.deltaTime;

@@ -8,7 +8,7 @@ using UnityEngine;
 public class Hittable : MonoBehaviour
 {
     public delegate void HitterEventHandler(Hitter hitter);
-    public delegate void ActivatableHitterEventHandler (ActivatableHitter hitter);
+    public delegate void ActivatableHitterEventHandler (ActivatableHitter hitter, Hashtable parameters);
 
     public event HitterEventHandler OnHitterEnter;
     public event HitterEventHandler OnHitterExit;
@@ -50,7 +50,7 @@ public class Hittable : MonoBehaviour
     {
         Hitter hitter = other.transform.gameObject.GetComponent<Hitter>();
 
-        if (hitter != null)
+        if (hitter != null && hitter.gameObject.activeInHierarchy)
         {
             OnHitterEnter?.Invoke(hitter);
 
@@ -60,7 +60,7 @@ public class Hittable : MonoBehaviour
 
                 if (activatableHitter.IsActive)
                 {
-                    onHitterActivated(activatableHitter);
+                    onHitterActivated(activatableHitter, activatableHitter.LastParameters);
                 }
                 else if (! registeredHitters.Contains(activatableHitter))
                 {
@@ -71,9 +71,9 @@ public class Hittable : MonoBehaviour
         }
     }
 
-    void onHitterActivated (ActivatableHitter hitter)
+    void onHitterActivated (ActivatableHitter hitter, Hashtable parameters)
     {
-        OnHitterActivated?.Invoke(hitter);
+        OnHitterActivated?.Invoke(hitter, parameters);
         ShakeEffect.Instance.ShakeAndClampToGivenValue(0.5f);
         ParticlesManager.Instance.SwordOnHitParticleManager.ShootParticle();
     }

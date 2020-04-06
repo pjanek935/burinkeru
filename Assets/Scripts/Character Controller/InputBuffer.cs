@@ -9,10 +9,10 @@ public class InputBuffer
     public delegate void OnNewInputInsertedEventHandler();
     public event OnNewInputInsertedEventHandler OnNewInputInserted;
 
-    const int BUFFER_SIZE = 5;
+    const int BUFFER_SIZE = 10;
     const int INPUT_INDEX = 0;
     const int COMMAND_INDEX = 1;
-    const float interval = 0.5f;
+    const float interval = 0.25f;
 
     float lastBufferSaveTimeStamp = 0;
     bool[][] buffer;

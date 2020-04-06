@@ -14682,13 +14682,14 @@ GameObject:
   - component: {fileID: 7518908077462726678}
   - component: {fileID: 3267269950284139943}
   - component: {fileID: 1074477992}
+  - component: {fileID: 571719171650342100}
   m_Layer: 9
   m_Name: Bullet
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &769771302891873861
 Transform:
   m_ObjectHideFlags: 0
@@ -14719,7 +14720,7 @@ SphereCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.52
+  m_Radius: 1
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!96 &769771302891873857
 TrailRenderer:
@@ -14924,6 +14925,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b978fa79e15a3114c87e9e6abb16fa7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &571719171650342100
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 769771302891873916}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90a81ca2daaebff48b4d7efa0bf43b2a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hitterType: 0
 --- !u!1 &769771302947974256
 GameObject:
   m_ObjectHideFlags: 0

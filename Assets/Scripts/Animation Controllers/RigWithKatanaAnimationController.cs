@@ -15,7 +15,9 @@ public class RigWithKatanaAnimationController : RigAnimationController
         }
 
         particlesManager.SlashTrailManager.ShootParticle(index);
-        hitter.Activate();
+        Hashtable parameters = new Hashtable ();
+        parameters.Add ("attackIndex", index);
+        hitter.Activate(parameters);
         base.OnStartAttack(index);
     }
 

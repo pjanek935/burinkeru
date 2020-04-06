@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RunState : CharacterControllerStateBase
+public class PlayerRunState : PlayerState
 {
     public override void ApplyForces()
     {
