@@ -81,7 +81,7 @@ public class CharacterControllerBase : MonoBehaviour
         Velocity = newVelocty;
     }
 
-    public float GetMovementDrag ()
+    public virtual float GetMovementDrag ()
     {
         float result = 1f;
 
@@ -218,7 +218,9 @@ public class CharacterControllerBase : MonoBehaviour
         float friction = 1f - GetMovementDrag ();
         Vector3 velocitySum = Velocity;
         Move (velocitySum * Time.deltaTime);
-        Velocity.Scale (new Vector3 (friction, 1f, friction));
+        Vector3 v = Velocity;
+        v.Scale (new Vector3 (friction, 1f, friction));
+        Velocity = v;
 
         if (mainMovementState != null)
         {

@@ -7,6 +7,17 @@ public class NPCController : CharacterControllerBase
     [SerializeField] CapsuleCollider capsuleCollider;
     [SerializeField] Hittable hittable;
     [SerializeField] Animator animator;
+    [SerializeField] Transform playerTransform;
+
+    public Transform PlayerTransform
+    {
+        get { return playerTransform; }
+    }
+
+    public Animator Animator
+    {
+        get { return animator; }
+    }
 
     public override CapsuleCollider CapsuleCollider
     {
@@ -50,9 +61,14 @@ public class NPCController : CharacterControllerBase
                 int attackIndex = (int) parameters ["attackIndex"];
 
                 Debug.Log ("Attack Index: " + attackIndex);
+
                 if (attackIndex == 3)
                 {
                     upperCut ();
+                }
+                else if (attackIndex == 4)
+                {
+                    stab ();
                 }
             }
         }
@@ -81,9 +97,31 @@ public class NPCController : CharacterControllerBase
 
     void upperCut ()
     {
-        Vector3 velocity = this.Velocity;
-        velocity.y = 14f;
-        SetVelocity (velocity);
-        animator.SetTrigger ("Uppercut");
+        if (mainMovementState != null && mainMovementState is NPCState)
+        {
+            NPCState npcState = (NPCState) mainMovementState;
+            npcState.Uppercut ();
+        }
+    }
+
+    void stab ()
+    {
+        if (mainMovementState != null && mainMovementState is NPCState)
+        {
+            NPCState npcState = (NPCState) mainMovementState;
+            npcState.Stab ();
+        }
+    }
+
+    public override float GetMovementDrag ()
+    {
+        float result = 0.02f;
+
+        if (mainMovementState != null)
+        {
+            result = mainMovementState.GetMovementDrag ();
+        }
+
+        return result;
     }
 }

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class NPCGroundState : CharacterStateBase
+public class NPCGroundState : NPCState
 {
     public override void ApplyForces ()
     {
