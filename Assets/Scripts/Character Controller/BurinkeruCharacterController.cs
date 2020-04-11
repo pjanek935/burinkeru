@@ -100,6 +100,10 @@ public class BurinkeruCharacterController : CharacterControllerBase
                 specialAbility.Enter (components);
             }
         }
+        else if (Input.GetKeyDown (KeyCode.P))
+        {
+            components.RigManager.CurrentRig.SetTrigger ("Wave");
+        }
     }
 
     override protected void updateMovement ()

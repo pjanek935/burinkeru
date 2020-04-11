@@ -38,7 +38,7 @@ Shader "Retro3D/LightResoulution"
 				float4 _MainTex_ST;
 				float _GeoRes;
 				uniform float4 _LightColor0;
-				float3 _AmbientColor;
+				float4 _AmbientColor;
 				float _LightRes;
 
 				vertOutput vert(appdata_base v)
@@ -56,8 +56,8 @@ Shader "Retro3D/LightResoulution"
 					float3 l = normalize(_WorldSpaceLightPos0);
 					float NdotL = max(0.0, dot(n, l));
 					NdotL = floor(NdotL * _LightRes) / _LightRes;
-					float3 color = NdotL * _LightColor0.rgb;
-					o.color = color + _AmbientColor;
+					float4 color = NdotL * _LightColor0.rgba;
+					o.color = color;
 
 					float2 uv = TRANSFORM_TEX(v.texcoord, _MainTex);
 					o.texcoord = float3(uv * sp.w, sp.w);

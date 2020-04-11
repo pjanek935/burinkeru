@@ -74,4 +74,12 @@ public class RigAnimationController : MonoBehaviour
     {
         animator.SetFloat("TimeFactor", timeFactor);
     }
+
+    public void SetTrigger (string trigger)
+    {
+        if (animator != null)
+        {
+            animator.SetTrigger (trigger);
+        }
+    }
 }
