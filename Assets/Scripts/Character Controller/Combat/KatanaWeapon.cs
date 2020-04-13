@@ -27,27 +27,25 @@ public class KatanaWeapon : WeaponBase
 
     protected override void initActionsDefinitions ()
     {
-        CombatActionDefinition stab = new CombatActionDefinition();
-        stab.Add(BurinkeruInputManager.InputCommand.FORWARD);
-        stab.Add(BurinkeruInputManager.InputCommand.FORWARD);
-        stab.Add(BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.STAB, stab));
-
-        CombatActionDefinition stab2 = new CombatActionDefinition();
-        stab2.Add(BurinkeruInputManager.InputCommand.FORWARD);
-        stab2.Add(BurinkeruInputManager.InputCommand.FORWARD, BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.STAB, stab2));
+        CombatActionDefinition stab = new CombatActionDefinition ();
+        stab.Add (BurinkeruInputManager.InputCommand.RUN);
+        stab.Add (BurinkeruInputManager.InputCommand.ATTACK);
+        actionDefinitions.Add (new KeyValuePair<int, CombatActionDefinition> ((int) KatanaAttackState.STAB, stab));
 
         CombatActionDefinition uppercut = new CombatActionDefinition();
-        uppercut.Add(BurinkeruInputManager.InputCommand.FORWARD);
         uppercut.Add(BurinkeruInputManager.InputCommand.BACKWARD);
         uppercut.Add(BurinkeruInputManager.InputCommand.ATTACK);
         actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.UPPERCUT, uppercut));
 
         CombatActionDefinition uppercut2 = new CombatActionDefinition();
-        uppercut2.Add(BurinkeruInputManager.InputCommand.FORWARD);
         uppercut2.Add(BurinkeruInputManager.InputCommand.BACKWARD, BurinkeruInputManager.InputCommand.ATTACK);
         actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.UPPERCUT, uppercut2));
+
+        CombatActionDefinition uppercut3 = new CombatActionDefinition ();
+        uppercut3.Add (BurinkeruInputManager.InputCommand.BACKWARD);
+        uppercut3.Add (BurinkeruInputManager.InputCommand.JUMP);
+        uppercut3.Add (BurinkeruInputManager.InputCommand.ATTACK);
+        actionDefinitions.Add (new KeyValuePair<int, CombatActionDefinition> ((int) KatanaAttackState.UPPERCUT, uppercut3));
 
         CombatActionDefinition simpleAttact = new CombatActionDefinition();
         simpleAttact.Add(BurinkeruInputManager.InputCommand.ATTACK);
