@@ -19,7 +19,7 @@ public class NPCGroundState : NPCState
 
     public override void UpdateMovement ()
     {
-
+        
     }
 
     protected override void onEnter ()
@@ -27,10 +27,15 @@ public class NPCGroundState : NPCState
         Vector3 velocity = characterController.Velocity;
         velocity.y = 0;
         characterController.SetVelocity (velocity);
+
+        if (Mathf.Abs (Parent.Velocity.y) < float.Epsilon)
+        {
+            NPCController.Animator.SetTrigger ("GetUp");
+        }
     }
 
     protected override void onExit ()
     {
-
+        NPCController.Animator.ResetTrigger ("GetUp");
     }
 }

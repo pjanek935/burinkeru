@@ -77,22 +77,6 @@ public class NPCController : CharacterControllerBase
     protected new void Update ()
     {
         base.Update ();
-        animator.ResetTrigger ("GetUp");
-
-        if (mainMovementState is NPCInAirState)
-        {
-            if (Velocity.y < 0)
-            {
-                animator.SetTrigger ("FallDown");
-            }
-        }
-        else if (mainMovementState is NPCGroundState)
-        {
-            if (Mathf.Abs (Velocity.y) < float.Epsilon)
-            {
-                animator.SetTrigger ("GetUp");
-            }
-        }
     }
 
     void upperCut ()

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class NPCInAirState : NPCState
 {
+    bool isGoingUp = false;
+
     public override void ApplyForces ()
     {
         
@@ -18,17 +20,25 @@ public class NPCInAirState : NPCState
     {
         applyGravity ();
         updateState ();
-        
     }
 
     protected override void onEnter ()
     {
+        if (Parent.Velocity.y < 0)
+        {
+            isGoingUp = false;
+        }
+        else
+        {
+            isGoingUp = true;
+        }
 
+        NPCController.Animator.ResetTrigger ("FallDown");
     }
 
     protected override void onExit ()
     {
-        
+        NPCController.Animator.ResetTrigger ("FallDown");
     }
 
     void applyGravity ()
@@ -42,6 +52,16 @@ public class NPCInAirState : NPCState
         if (characterController.IsGrounded)
         {
             setNewState (new NPCGroundState ());
+        }
+
+        if (Parent.Velocity.y < 5 && isGoingUp)
+        {
+            isGoingUp = false;
+            Animator.SetTrigger ("FallDown");
+        }
+        else if (Parent.Velocity.y >= 5 && ! isGoingUp)
+        {
+            isGoingUp = true;
         }
     }
 }

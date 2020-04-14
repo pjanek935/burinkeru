@@ -6,6 +6,11 @@ public abstract class CharacterStateBase
 {
     protected CharacterControllerBase characterController;
 
+    public CharacterControllerBase Parent
+    {
+        get { return characterController; }
+    }
+
     public void Enter (CharacterControllerBase parent)
     {
         this.characterController = parent;

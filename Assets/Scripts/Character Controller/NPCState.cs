@@ -9,6 +9,11 @@ public abstract class NPCState : CharacterStateBase
         get { return (NPCController) characterController; }
     }
 
+    public Animator Animator
+    {
+        get { return NPCController.Animator; }
+    }
+
     public virtual void Uppercut ()
     {
         facePlayer ();
