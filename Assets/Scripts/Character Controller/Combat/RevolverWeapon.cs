@@ -33,6 +33,14 @@ public class RevolverWeapon : WeaponBase
         rigAnmationController.OnCustomEvent += onCustomEvent;
 
         Bullets = MAX_BULLETS;
+        CanAttack = true;
+    }
+
+    public override void Enter ()
+    {
+        base.Enter ();
+
+        CanAttack = true;
     }
 
     void onAttackEnded()

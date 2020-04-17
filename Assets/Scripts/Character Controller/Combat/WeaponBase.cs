@@ -27,6 +27,11 @@ public abstract class WeaponBase
         protected set;
     }
 
+    public virtual void Enter ()
+    {
+
+    }
+
     public virtual void Init (RigManager rigManager, BurinkeruCharacterController characterController, ParticlesManager particleManager)
     {
         this.rigManager = rigManager;

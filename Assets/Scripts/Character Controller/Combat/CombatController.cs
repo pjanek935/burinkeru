@@ -95,7 +95,8 @@ public class CombatController : MonoBehaviour
     {
         IsChangingWeapon = true;
         currentWeapon = weapon;
-        
+        currentWeapon.Enter ();
+
         if (weapon.GetType () == typeof (KatanaWeapon))
         {
             rigManager.SwitchToKatana();
