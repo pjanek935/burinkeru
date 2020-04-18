@@ -28,6 +28,11 @@ public abstract class NPCState : CharacterStateBase
         setNewState (new NPCStabbedState ());
     }
 
+    public virtual void OnHit (Hitter hitter)
+    {
+
+    }
+
     protected void facePlayer ()
     {
         Vector3 lookDirection = NPCController.PlayerTransform.position;

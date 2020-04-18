@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class Projectile : MonoBehaviour
 {
@@ -56,7 +57,15 @@ public class Projectile : MonoBehaviour
 
     protected virtual void OnCollisionEnter(Collision collision)
     {
-        deactivate();
+        if (this.gameObject.activeInHierarchy)
+        {
+            //Waiting 2 frames so other hittables has a chance to get triggered
+            StartCoroutine (waitNFramesAndTrigger (2, deactivate));
+        }
+        else
+        {
+            deactivate ();
+        }
     }
 
     protected virtual void activate ()
@@ -81,5 +90,18 @@ public class Projectile : MonoBehaviour
         rigidbody.velocity = Vector3.zero;
         IsActive = false;
         collider.enabled = false;
+    }
+
+    protected IEnumerator waitNFramesAndTrigger (int numberOfFrames, UnityAction action)
+    {
+        if (action != null)
+        {
+            for (int i = 0; i < numberOfFrames; i ++)
+            {
+                yield return new WaitForEndOfFrame ();
+            }
+           
+            action.Invoke ();
+        }
     }
 }

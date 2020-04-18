@@ -38,4 +38,22 @@ public class NPCGroundState : NPCState
     {
         NPCController.Animator.ResetTrigger ("GetUp");
     }
+
+    public override void OnHit (Hitter hitter)
+    {
+        Vector3 forward = Parent.transform.forward;
+        Vector3 hitDirection = Parent.transform.position - hitter.transform.position;
+        hitDirection.Normalize ();
+        float d = Vector3.Dot (forward, hitDirection);
+        Debug.Log (d);
+
+        if (d >= 0)
+        {
+            NPCController.Animator.SetTrigger ("HitFront");
+        }
+        else
+        {
+            NPCController.Animator.SetTrigger ("HitBack");
+        }
+    }
 }

@@ -5,12 +5,12 @@ using UnityEngine;
 public class Bullet : Projectile
 {
     [SerializeField] List<ParticleSystem> onHitParticles = new List<ParticleSystem>();
-    [SerializeField] TrailRenderer trailRenderer;
-    [SerializeField] TimeBasedTrailRenderer timeBasedTrailRenderer;
-    [SerializeField] Hittable hittable;
+    [SerializeField] TrailRenderer trailRenderer = null;
+    [SerializeField] TimeBasedTrailRenderer timeBasedTrailRenderer = null;
+    [SerializeField] Hittable hittable = null;
 
     const float BASE_SPEED = 400f;
-    const float RICOCHET_PROBABILITY = 0.2f;
+    const float RICOCHET_PROBABILITY = 0.05f;
 
     float speed = BASE_SPEED;
     static System.Random random = new System.Random ();
@@ -39,14 +39,22 @@ public class Bullet : Projectile
     {
         if (IsActive)
         {
-            playOnHitParticles();
+            playOnHitParticles ();
         }
 
-        if (! isARicochet)
+        if (!isARicochet)
         {
             if (random.NextDouble () > RICOCHET_PROBABILITY)
             {
-                deactivate ();
+                if (this.gameObject.activeInHierarchy)
+                {
+                    //Waiting 2 frames so other hittables has a chance to get triggered
+                    StartCoroutine (waitNFramesAndTrigger (2, deactivate));
+                }
+                else
+                {
+                    deactivate ();
+                }
             }
             else
             {

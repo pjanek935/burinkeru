@@ -42,6 +42,8 @@ public class NPCController : CharacterControllerBase
                 velocity.y = 5.5f;
                 SetVelocity (velocity);
             }
+
+            onHit (hitter);
         }
     }
 
@@ -70,7 +72,20 @@ public class NPCController : CharacterControllerBase
                 {
                     stab ();
                 }
+                else
+                {
+                    onHit (hitter);
+                }
             }
+        }
+    }
+
+    void onHit (Hitter hitter)
+    {
+        if (mainMovementState != null && mainMovementState is NPCState)
+        {
+            NPCState npcState = (NPCState) mainMovementState;
+            npcState.OnHit (hitter);
         }
     }
 
