@@ -1,14 +1,10 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 public class RevolverWeapon : WeaponBase
 {
-    public enum RevolverAttackState
-    {
-        NONE = 0, SHOOT, RELOAD,
-    }
-
     RigWithGunAnimationController rigAnmationController;
     const int MAX_BULLETS = 6;
     
@@ -18,18 +14,12 @@ public class RevolverWeapon : WeaponBase
         private set;
     }
 
-    public RevolverAttackState CurrentState
-    {
-        get { return (RevolverAttackState)CurrentStateIndex; }
-    }
-
     public override void Init(RigManager rigManager, BurinkeruCharacterController characterController, ParticlesManager particlesManager)
     {
         base.Init(rigManager, characterController, particlesManager);
 
         rigAnmationController = rigManager.RigWithRevolver;
         rigAnmationController.OnAttackEnded += onAttackEnded;
-        rigAnmationController.OnAttackStarted += onAttackStarted;
         rigAnmationController.OnCustomEvent += onCustomEvent;
 
         Bullets = MAX_BULLETS;
@@ -45,14 +35,12 @@ public class RevolverWeapon : WeaponBase
 
     void onAttackEnded()
     {
-        Debug.Log("onAttackEnded");
         CanAttack = true;
 
-        switch (CurrentState)
+        switch (CurrentActionType)
         {
-            case RevolverAttackState.RELOAD:
+            case WeaponActionType.RELOAD:
 
-                Debug.Log("Reload");
                 Bullets = MAX_BULLETS;
 
                 break;
@@ -79,18 +67,6 @@ public class RevolverWeapon : WeaponBase
             {
                 rigAnmationController.ClipGameObject.SetActive(false);
             }
-        }
-    }
-
-    void onAttackStarted()
-    {
-        Debug.Log("onAttackStarted: " + CurrentState);
-
-        switch (CurrentState)
-        {
-            case RevolverAttackState.SHOOT:
-
-                break;
         }
     }
 
@@ -126,16 +102,16 @@ public class RevolverWeapon : WeaponBase
     {
         CombatActionDefinition shoot = new CombatActionDefinition();
         shoot.Add(BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition>((int)RevolverAttackState.SHOOT, shoot));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition>((int) WeaponActionType.SHOOT, shoot));
 
         CombatActionDefinition reload = new CombatActionDefinition();
         reload.Add(BurinkeruInputManager.InputCommand.RELOAD);
-        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition>((int)RevolverAttackState.RELOAD, reload));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition>((int) WeaponActionType.RELOAD, reload));
     }
 
     protected override void requestAction(int actionIndex)
     {
-        RevolverAttackState action = (RevolverAttackState)actionIndex;
+        WeaponActionType actionType = (WeaponActionType) actionIndex;
 
         if (rigAnmationController != null && rigAnmationController == rigManager.CurrentRig)
         {
@@ -143,27 +119,27 @@ public class RevolverWeapon : WeaponBase
             {
                 CanAttack = false;
 
-                switch (action)
+                switch (actionType)
                 {
-                    case RevolverAttackState.SHOOT:
+                    case WeaponActionType.SHOOT:
 
                         if (Bullets > 0)
                         {
-                            CurrentStateIndex = (int)RevolverAttackState.SHOOT;
+                            CurrentActionType = WeaponActionType.SHOOT;
                             rigAnmationController.Attack();
                             shoot();
                         }
                         else
                         {
-                            CurrentStateIndex = (int)RevolverAttackState.RELOAD;
+                            CurrentActionType = WeaponActionType.RELOAD;
                             rigAnmationController.Reload();
                         }
 
                         break;
 
-                    case RevolverAttackState.RELOAD:
+                    case WeaponActionType.RELOAD:
 
-                        CurrentStateIndex = (int)RevolverAttackState.RELOAD;
+                        CurrentActionType = WeaponActionType.RELOAD;
                         rigAnmationController.Reload();
 
                         break;

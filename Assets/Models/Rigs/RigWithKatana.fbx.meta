@@ -133,7 +133,7 @@ ModelImporter:
       takeName: Rig|Swing
       internalID: -7265323363686227118
       firstFrame: 0
-      lastFrame: 110
+      lastFrame: 60
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -153,14 +153,14 @@ ModelImporter:
       bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
       curves: []
       events:
-      - time: 0.14258555
+      - time: 0.25925222
         functionName: OnStartAttack
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
         intParameter: 0
         messageOptions: 0
-      - time: 0.17583144
+      - time: 0.34458145
         functionName: OnEndAttack
         data: 
         objectReferenceParameter: {instanceID: 0}

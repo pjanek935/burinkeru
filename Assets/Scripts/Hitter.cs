@@ -15,7 +15,7 @@ public enum HitterType
 /// </summary>
 public class Hitter : MonoBehaviour
 {
-    [SerializeField] HitterType hitterType;
+    [SerializeField] HitterType hitterType = HitterType.BLADE;
 
     public HitterType HitterType
     {

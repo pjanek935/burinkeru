@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 public abstract class WeaponBase
 {
@@ -15,7 +16,7 @@ public abstract class WeaponBase
     protected List<KeyValuePair<int, CombatActionDefinition>> actionDefinitions = new List<KeyValuePair<int, CombatActionDefinition>>();
     protected const int DEFAULT_STATE_INDEX = 0;
 
-    public int CurrentStateIndex
+    public WeaponActionType CurrentActionType
     {
         get;
         protected set;

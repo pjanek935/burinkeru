@@ -1,20 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 public class KatanaWeapon : WeaponBase
 {
-    public enum KatanaAttackState
-    {
-        NONE = 0, SLASH_1, SLASH_2, SLASH_3, UPPERCUT, STAB, SIMPLE_ATTACK
-    }
-
-    RigWithKatanaAnimationController rigAnmationController;
-
-    public KatanaAttackState CurrentState
-    {
-        get { return (KatanaAttackState)CurrentStateIndex; }
-    }
+    RigWithKatanaController rigAnmationController;
 
     public override void Init(RigManager rigManager, BurinkeruCharacterController characterController, ParticlesManager particlesManager)
     {
@@ -30,49 +21,43 @@ public class KatanaWeapon : WeaponBase
         CombatActionDefinition stab = new CombatActionDefinition ();
         stab.Add (BurinkeruInputManager.InputCommand.RUN);
         stab.Add (BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add (new KeyValuePair<int, CombatActionDefinition> ((int) KatanaAttackState.STAB, stab));
+        actionDefinitions.Add (new KeyValuePair<int, CombatActionDefinition> ((int) WeaponActionType.STAB, stab));
 
         CombatActionDefinition uppercut = new CombatActionDefinition();
         uppercut.Add(BurinkeruInputManager.InputCommand.BACKWARD);
         uppercut.Add(BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.UPPERCUT, uppercut));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int) WeaponActionType.UPPERCUT, uppercut));
 
         CombatActionDefinition uppercut2 = new CombatActionDefinition();
         uppercut2.Add(BurinkeruInputManager.InputCommand.BACKWARD, BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.UPPERCUT, uppercut2));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int) WeaponActionType.UPPERCUT, uppercut2));
 
         CombatActionDefinition uppercut3 = new CombatActionDefinition ();
         uppercut3.Add (BurinkeruInputManager.InputCommand.BACKWARD);
         uppercut3.Add (BurinkeruInputManager.InputCommand.JUMP);
         uppercut3.Add (BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add (new KeyValuePair<int, CombatActionDefinition> ((int) KatanaAttackState.UPPERCUT, uppercut3));
+        actionDefinitions.Add (new KeyValuePair<int, CombatActionDefinition> ((int) WeaponActionType.UPPERCUT, uppercut3));
 
         CombatActionDefinition simpleAttact = new CombatActionDefinition();
         simpleAttact.Add(BurinkeruInputManager.InputCommand.ATTACK);
-        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int)KatanaAttackState.SIMPLE_ATTACK, simpleAttact));
+        actionDefinitions.Add(new KeyValuePair<int, CombatActionDefinition> ((int) WeaponActionType.SLASH, simpleAttact));
     }
 
     void onAttackEnded ()
     {
-        Debug.Log("onAttackEnded");
         CanAttack = true;
     }
 
-    void onAttackStarted ()
+    void onAttackStarted (int attackIndex)
     {
-        Debug.Log("onAttackStarted: " + CurrentState);
-
         hangInAirIfNeeded ();
 
-        switch (CurrentState)
+        switch (CurrentActionType)
         {
-            case KatanaAttackState.UPPERCUT:
-
-               // addVelocity(new Vector3 (0, 15f, 0));
-
+            case WeaponActionType.UPPERCUT:
                 break;
 
-            case KatanaAttackState.STAB:
+            case WeaponActionType.STAB:
                 {
                     Vector3 lookDirection = characterController.GetLookDirection();
                     lookDirection.Normalize();
@@ -87,27 +72,20 @@ public class KatanaWeapon : WeaponBase
 
                 break;
 
-            case KatanaAttackState.SIMPLE_ATTACK:
-
-                {
-                    Vector3 lookDirection = characterController.GetLookDirection();
-                    lookDirection.Scale(BurinkeruCharacterController.MovementAxes);
-                    //addVelocity(lookDirection * 5f);
-                }
-
+            case WeaponActionType.SLASH:
                 break;
         }
 
-        CurrentStateIndex = DEFAULT_STATE_INDEX;
+        CurrentActionType = WeaponActionType.NONE;
     }
 
     protected override void requestAction (int actionIndex)
     {
-        KatanaAttackState action = (KatanaAttackState)actionIndex;
+        WeaponActionType action = (WeaponActionType) actionIndex;
 
         if (rigAnmationController != null && rigAnmationController == rigManager.CurrentRig)
         {
-            RigWithKatanaAnimationController rigWithKatanaAnimationController = (RigWithKatanaAnimationController)rigManager.CurrentRig;
+            RigWithKatanaController rigWithKatanaAnimationController = (RigWithKatanaController)rigManager.CurrentRig;
 
             if (CanAttack)
             {
@@ -115,48 +93,28 @@ public class KatanaWeapon : WeaponBase
 
                 switch (action)
                 {
-                    case KatanaAttackState.SIMPLE_ATTACK:
+                    case WeaponActionType.SLASH:
 
-                        CurrentStateIndex =  (int)KatanaAttackState.SIMPLE_ATTACK;
+                        CurrentActionType = WeaponActionType.SLASH;
                         rigWithKatanaAnimationController.Attack();
 
                         break;
 
-                    case KatanaAttackState.STAB:
+                    case WeaponActionType.STAB:
 
-                        CurrentStateIndex = (int)KatanaAttackState.STAB;
+                        CurrentActionType = WeaponActionType.STAB;
                         rigWithKatanaAnimationController.Stab();
 
                         break;
 
-                    case KatanaAttackState.UPPERCUT:
+                    case WeaponActionType.UPPERCUT:
 
-                        CurrentStateIndex = (int)KatanaAttackState.UPPERCUT;
+                        CurrentActionType = WeaponActionType.UPPERCUT;
                         rigWithKatanaAnimationController.Uppercut();
 
                         break;
                 }
             }
         }
-    }
-
-    void makeSimpleAttack ()
-    {
-
-    }
-
-    void makeUpperCut ()
-    {
-
-    }
-
-    void makePierce ()
-    {
-
-    }
-
-    public void StartCut (int index)
-    {
-
     }
 }

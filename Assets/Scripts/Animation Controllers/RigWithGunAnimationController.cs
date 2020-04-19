@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class RigWithGunAnimationController : RigAnimationController
+public class RigWithGunAnimationController : RigController
 {
     [SerializeField] Transform gunTransform;
     [SerializeField] Transform gunTransformWhileSliding;

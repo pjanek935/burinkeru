@@ -7,19 +7,19 @@ public class RigManager : MonoBehaviour
     public delegate void OnNewRigSetEventHandler();
     public event OnNewRigSetEventHandler OnNewRigSet;
 
-    [SerializeField] RigWithKatanaAnimationController rigWithKatana;
+    [SerializeField] RigWithKatanaController rigWithKatana;
     [SerializeField] RigWithGunAnimationController rigWithRevolver;
 
-    RigAnimationController currentRig;
-    RigAnimationController nextRig = null;
+    RigController currentRig;
+    RigController nextRig = null;
 
-    public RigAnimationController CurrentRig
+    public RigController CurrentRig
     {
         get { return currentRig; }
         set { CurrentRig = value; }
     }
 
-    public RigWithKatanaAnimationController RigWithKatana
+    public RigWithKatanaController RigWithKatana
     {
         get { return rigWithKatana; }
         set { rigWithKatana = value; }

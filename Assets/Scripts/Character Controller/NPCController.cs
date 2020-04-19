@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 public class NPCController : CharacterControllerBase
 {
@@ -58,23 +59,29 @@ public class NPCController : CharacterControllerBase
 
         if (hitter != null && hitter.HitterType == HitterType.BLADE)
         {
-            if (parameters != null && parameters.ContainsKey ("attackIndex"))
+            if (parameters != null && parameters.ContainsKey ("AttackType"))
             {
-                int attackIndex = (int) parameters ["attackIndex"];
+               WeaponActionType attackType = (WeaponActionType) parameters ["AttackType"];
 
-                Debug.Log ("Attack Index: " + attackIndex);
+                switch (attackType)
+                {
+                    case WeaponActionType.SLASH:
 
-                if (attackIndex == 3)
-                {
-                    upperCut ();
-                }
-                else if (attackIndex == 4)
-                {
-                    stab ();
-                }
-                else
-                {
-                    onHit (hitter);
+                        onHit (hitter);
+
+                        break;
+
+                    case WeaponActionType.UPPERCUT:
+
+                        upperCut ();
+
+                        break;
+
+                    case WeaponActionType.STAB:
+
+                        stab ();
+
+                        break;
                 }
             }
         }
