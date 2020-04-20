@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 public abstract class NPCState : CharacterStateBase
 {
@@ -26,6 +27,12 @@ public abstract class NPCState : CharacterStateBase
     public virtual void Stab ()
     {
         setNewState (new NPCStabbedState ());
+    }
+
+    public virtual void Block ()
+    {
+        facePlayer ();
+        NPCController.Animator.SetTrigger (AnimationTrigger.BLOCK.ToString ());
     }
 
     public virtual void OnHit (Hitter hitter)

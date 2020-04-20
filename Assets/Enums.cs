@@ -3,8 +3,23 @@ using System.Collections.Generic;
 
 public static class Enums
 {
+    public enum ParameterType
+    {
+        ATTACK_TYPE, SENDER_TYPE
+    }
+
     public enum WeaponActionType
     {
-        NONE = 0, UPPERCUT, STAB, SLASH, SHOOT, RELOAD
+        NONE = 0, UPPERCUT, STAB, SLASH, SHOOT, RELOAD, BLOCK,
+    }
+        
+    public enum SenderType
+    {
+        OBJECT, NPC
+    }
+
+    public enum AnimationTrigger
+    {
+        BLOCK, 
     }
 }

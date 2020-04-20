@@ -45,7 +45,6 @@ public class NPCGroundState : NPCState
         Vector3 hitDirection = Parent.transform.position - hitter.transform.position;
         hitDirection.Normalize ();
         float d = Vector3.Dot (forward, hitDirection);
-        Debug.Log (d);
 
         if (d >= 0)
         {

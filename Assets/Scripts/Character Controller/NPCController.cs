@@ -59,9 +59,21 @@ public class NPCController : CharacterControllerBase
 
         if (hitter != null && hitter.HitterType == HitterType.BLADE)
         {
-            if (parameters != null && parameters.ContainsKey ("AttackType"))
+            if (parameters != null && parameters.ContainsKey (ParameterType.ATTACK_TYPE))
             {
-               WeaponActionType attackType = (WeaponActionType) parameters ["AttackType"];
+                WeaponActionType attackType = (WeaponActionType) parameters [ParameterType.ATTACK_TYPE];
+                Hashtable feedbackParameters = new Hashtable ();
+                feedbackParameters.Add (ParameterType.SENDER_TYPE, SenderType.NPC);
+                
+                if (mainMovementState != null &&
+                    mainMovementState is NPCGroundState &&
+                    Random.value < 0.5f)
+                {
+                    attackType = WeaponActionType.BLOCK;
+                    feedbackParameters.Add (ParameterType.ATTACK_TYPE, WeaponActionType.BLOCK);
+                }
+
+                hitter.SendMessage (feedbackParameters);
 
                 switch (attackType)
                 {
@@ -82,8 +94,23 @@ public class NPCController : CharacterControllerBase
                         stab ();
 
                         break;
+
+                    case WeaponActionType.BLOCK:
+
+                        block ();
+
+                        break;
                 }
             }
+        }
+    }
+
+    void block ()
+    {
+        if (mainMovementState != null && mainMovementState is NPCGroundState)
+        {
+            NPCState npcState = (NPCState) mainMovementState;
+            npcState.Block ();
         }
     }
 

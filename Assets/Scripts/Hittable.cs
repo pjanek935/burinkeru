@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static Enums;
 
 /// <summary>
 /// Hittable component recives event and reacts to components with Hitter component.
@@ -13,6 +14,9 @@ public class Hittable : MonoBehaviour
     public event HitterEventHandler OnHitterEnter;
     public event HitterEventHandler OnHitterExit;
     public event ActivatableHitterEventHandler OnHitterActivated;
+
+    [SerializeField] bool sendMessageEnabled = true;
+    [SerializeField] SenderType senderType = SenderType.OBJECT;
 
     protected List<ActivatableHitter> registeredHitters = new List<ActivatableHitter>();
 
@@ -74,8 +78,13 @@ public class Hittable : MonoBehaviour
     void onHitterActivated (ActivatableHitter hitter, Hashtable parameters)
     {
         OnHitterActivated?.Invoke(hitter, parameters);
-        ShakeEffect.Instance.ShakeAndClampToGivenValue(0.5f);
-        ParticlesManager.Instance.SwordOnHitParticleManager.ShootParticle();
+
+        if (sendMessageEnabled)
+        {
+            Hashtable feedbackParameters = new Hashtable ();
+            feedbackParameters.Add (ParameterType.SENDER_TYPE, senderType);
+            hitter.SendMessage (feedbackParameters);
+        }
     }
 
     private void OnTriggerExit(Collider other)

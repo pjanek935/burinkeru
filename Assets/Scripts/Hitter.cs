@@ -15,10 +15,18 @@ public enum HitterType
 /// </summary>
 public class Hitter : MonoBehaviour
 {
+    public delegate void OnMessageRecivedEventHandler (Hashtable parameters);
+    public event OnMessageRecivedEventHandler OnMessageRecived;
+
     [SerializeField] HitterType hitterType = HitterType.BLADE;
 
     public HitterType HitterType
     {
         get { return hitterType; }
+    }
+
+    public void SendMessage (Hashtable parameters)
+    {
+        OnMessageRecived?.Invoke (parameters);
     }
 }
