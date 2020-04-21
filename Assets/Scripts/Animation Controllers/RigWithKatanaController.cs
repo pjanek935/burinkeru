@@ -42,6 +42,21 @@ public class RigWithKatanaController : RigController
                         break;
                 }
             }
+
+            if (parameters.ContainsKey (ParameterType.ATTACK_TYPE))
+            {
+                WeaponActionType actionType = (WeaponActionType) parameters [ParameterType.ATTACK_TYPE];
+
+                switch (actionType)
+                {
+                    case WeaponActionType.BLOCK:
+
+                        animator.SetTrigger ("BLOCKED");
+                        OnEndAttack ();
+
+                        break;
+                }
+            }
         }
     }
 
