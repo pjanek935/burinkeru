@@ -509,7 +509,7 @@ ModelImporter:
       takeName: Rig|Blocked01
       internalID: 0
       firstFrame: 0
-      lastFrame: 8
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -538,7 +538,7 @@ ModelImporter:
       takeName: Rig|Blocked02
       internalID: 0
       firstFrame: 0
-      lastFrame: 8
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
@@ -567,7 +567,7 @@ ModelImporter:
       takeName: Rig|Blocked03
       internalID: 0
       firstFrame: 0
-      lastFrame: 8
+      lastFrame: 50
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
