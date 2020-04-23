@@ -67,7 +67,7 @@ public class NPCController : CharacterControllerBase
                 
                 if (mainMovementState != null &&
                     mainMovementState is NPCGroundState &&
-                    Random.value < 0.5f)
+                    Random.value < 1f)
                 {
                     attackType = WeaponActionType.BLOCK;
                     feedbackParameters.Add (ParameterType.ATTACK_TYPE, WeaponActionType.BLOCK);

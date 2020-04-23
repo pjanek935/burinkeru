@@ -14,6 +14,7 @@ public class KatanaWeapon : WeaponBase
         rigAnmationController = rigManager.RigWithKatana;
         rigAnmationController.OnAttackEnded += onAttackEnded;
         rigAnmationController.OnAttackStarted += onAttackStarted;
+        rigAnmationController.OnCustomEvent += onCustomEventOccured;
     }
 
     protected override void initActionsDefinitions ()
@@ -46,6 +47,14 @@ public class KatanaWeapon : WeaponBase
     void onAttackEnded ()
     {
         CanAttack = true;
+    }
+
+    void onCustomEventOccured (string name)
+    {
+        if (string.Equals (name, "EndBlocked"))
+        {
+            onAttackEnded ();
+        }
     }
 
     void onAttackStarted (int attackIndex)

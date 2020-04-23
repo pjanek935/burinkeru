@@ -52,7 +52,7 @@ public class RigWithKatanaController : RigController
                     case WeaponActionType.BLOCK:
 
                         animator.SetTrigger ("BLOCKED");
-                        OnEndAttack ();
+                        hitter.Deactivate ();
 
                         break;
                 }
