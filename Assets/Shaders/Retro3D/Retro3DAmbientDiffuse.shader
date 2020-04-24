@@ -4,7 +4,7 @@
 	{
 		_MainTex("Base", 2D) = "white" {}
 		_GeoRes("Geometric Resolution", Float) = 40
-		_AmbientColor("Ambient Color", Color) = (1, 1, 1, 1)
+		_TintColor("Tint Color", Color) = (1, 1, 1, 1)
 	}
 
 		SubShader
@@ -24,14 +24,15 @@
 				{
 					float4 position : SV_POSITION;
 					float3 texcoord : TEXCOORD;
-					float color : COLOR;
+					half4 color : COLOR;
 				};
 
 				sampler2D _MainTex;
 				float4 _MainTex_ST;
 				float _GeoRes;
 				uniform float4 _LightColor0;
-				float3 _AmbientColor;
+				float3 _TintColor;
+				float _LightIntensity;
 
 				vertOutput vert(appdata_base v)
 				{
@@ -40,9 +41,8 @@
 					float3 n = normalize(mul(v.normal, unity_WorldToObject));
 					float3 l = normalize(_WorldSpaceLightPos0);
 					float NdotL = max(0.0, dot(n, l));
-					float3 color = NdotL * _LightColor0.rgb;
-
-					o.color = color + _AmbientColor;
+					float3 color = NdotL * _LightColor0.rgb + _TintColor;
+					o.color = half4 (color, 1.0);
 
 					float4 wp = mul(UNITY_MATRIX_MV, v.vertex);
 					wp.xyz = floor(wp.xyz * _GeoRes) / _GeoRes;

@@ -26,7 +26,7 @@
 				{
 					float4 position : SV_POSITION;
 					float3 texcoord : TEXCOORD;
-					float color : COLOR;
+					half4 color : COLOR;
 				};
 
 				sampler2D _MainTex;
@@ -48,6 +48,7 @@
 					float RdotV = max(0.0, dot(r, v));
 
 					float3 s = float3(0, 0, 0);
+
 					if (dot(n, l) > 0.0)
 					{
 						s = _LightColor0 * _SpecColor * pow(RdotV, _Shininess);
@@ -56,7 +57,7 @@
 					float NdotL = max(0.0, dot(n, l));
 					float3 color = NdotL * _LightColor0.rgb;
 
-					o.color = color + _AmbientColor + s;
+					o.color = half4 (color + _AmbientColor + s, 1.0);
 
 					float4 wp = mul(UNITY_MATRIX_MV, input.vertex);
 					wp.xyz = floor(wp.xyz * _GeoRes) / _GeoRes;

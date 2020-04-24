@@ -29,7 +29,7 @@ Shader "Retro3D/LightResoulution"
 				{
 					float4 pos : SV_POSITION;
 					float3 texcoord : TEXCOORD;
-					float color : COLOR;
+					half4 color : COLOR;
 					float2 ScreenPos : TEXCOORD1;
 					LIGHTING_COORDS(3, 4)
 				};
@@ -56,8 +56,8 @@ Shader "Retro3D/LightResoulution"
 					float3 l = normalize(_WorldSpaceLightPos0);
 					float NdotL = max(0.0, dot(n, l));
 					NdotL = floor(NdotL * _LightRes) / _LightRes;
-					float4 color = NdotL * _LightColor0.rgba;
-					o.color = color;
+					float3 color = NdotL * _LightColor0.rgba + _AmbientColor;
+					o.color = half4 (color, 1.0);
 
 					float2 uv = TRANSFORM_TEX(v.texcoord, _MainTex);
 					o.texcoord = float3(uv * sp.w, sp.w);

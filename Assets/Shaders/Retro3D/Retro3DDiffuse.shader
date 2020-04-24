@@ -23,7 +23,7 @@
 			{
 				float4 position : SV_POSITION;
 				float3 texcoord : TEXCOORD;
-				float color : COLOR;
+				half4 color : COLOR;
 			};
 
 			sampler2D _MainTex;
@@ -40,7 +40,7 @@
 				float NdotL = max(0.0, dot(n, l));
 				float3 color = NdotL * _LightColor0.rgb;
 
-				o.color = color;
+				o.color = half4 (color, 1.0);
 
 				float4 wp = mul(UNITY_MATRIX_MV, v.vertex);
 				wp.xyz = floor(wp.xyz * _GeoRes) / _GeoRes;
