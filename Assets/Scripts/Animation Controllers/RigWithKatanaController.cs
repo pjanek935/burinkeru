@@ -103,6 +103,11 @@ public class RigWithKatanaController : RigController
         animator.SetTrigger("Uppercut");
     }
 
+    public void DownwardSmash ()
+    {
+        animator.SetTrigger ("DownwardSmash");
+    }
+
     public void Stab()
     {
         animator.SetTrigger("Stab");

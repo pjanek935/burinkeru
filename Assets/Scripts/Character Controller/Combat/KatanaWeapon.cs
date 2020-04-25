@@ -24,6 +24,11 @@ public class KatanaWeapon : WeaponBase
         stab.Add (BurinkeruInputManager.InputCommand.ATTACK);
         actionDefinitions.Add (new KeyValuePair<int, CombatActionDefinition> ((int) WeaponActionType.STAB, stab));
 
+        CombatActionDefinition downwardSmash = new CombatActionDefinition ();
+        downwardSmash.Add (BurinkeruInputManager.InputCommand.CROUCH);
+        downwardSmash.Add (BurinkeruInputManager.InputCommand.ATTACK);
+        actionDefinitions.Add (new KeyValuePair<int, CombatActionDefinition> ((int) WeaponActionType.DOWNWARD_SMASH, downwardSmash));
+
         CombatActionDefinition uppercut = new CombatActionDefinition();
         uppercut.Add(BurinkeruInputManager.InputCommand.BACKWARD);
         uppercut.Add(BurinkeruInputManager.InputCommand.ATTACK);
@@ -57,6 +62,10 @@ public class KatanaWeapon : WeaponBase
         }
     }
 
+    /// <summary>
+    /// This method fires on event from animation
+    /// </summary>
+    /// <param name="attackIndex"></param>
     void onAttackStarted (int attackIndex)
     {
         hangInAirIfNeeded ();
@@ -83,11 +92,24 @@ public class KatanaWeapon : WeaponBase
 
             case WeaponActionType.SLASH:
                 break;
+
+            case WeaponActionType.DOWNWARD_SMASH:
+
+                if (! characterController.IsGrounded)
+                {
+                    setVelocity (new Vector3 (0, -20f, 0));
+                }
+
+                break;
         }
 
         CurrentActionType = WeaponActionType.NONE;
     }
 
+    /// <summary>
+    /// Method fires just after specified key combination is detected
+    /// </summary>
+    /// <param name="actionIndex"></param>
     protected override void requestAction (int actionIndex)
     {
         WeaponActionType action = (WeaponActionType) actionIndex;
@@ -120,6 +142,16 @@ public class KatanaWeapon : WeaponBase
 
                         CurrentActionType = WeaponActionType.UPPERCUT;
                         rigWithKatanaAnimationController.Uppercut();
+
+                        break;
+
+                    case WeaponActionType.DOWNWARD_SMASH:
+
+                        if (! characterController.IsGrounded)
+                        {
+                            CurrentActionType = WeaponActionType.DOWNWARD_SMASH;
+                            rigWithKatanaAnimationController.DownwardSmash ();
+                        }
 
                         break;
                 }
