@@ -5,6 +5,12 @@ public class PlayerCrouchState : PlayerState
 {
     const float crouchHeight = 1f;
     const float crouchCameraHeoght = 0.5f;
+    
+    public float EnterTime
+    {
+        get;
+        private set;
+    }
 
     public override void ApplyForces()
     {
@@ -32,6 +38,7 @@ public class PlayerCrouchState : PlayerState
         }
 
         components.RigManager.CurrentRig.SetWalkSpeed(0.8f);
+        EnterTime = Time.unscaledTime;
     }
 
     protected override void onExit()

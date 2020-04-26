@@ -241,11 +241,15 @@ public class PlayerGroundState : PlayerState
 
         if (characterController.IsCrouching)
         {
+            float enterTime = characterController.CrouchState.EnterTime;
+            float currentTime = Time.unscaledTime;
+            float timeDiff = currentTime - enterTime;
+
             Vector3 currentVelocity = characterController.DeltaPosition;
             currentVelocity.Scale(BurinkeruCharacterController.MovementAxes);
             currentVelocity /= Time.deltaTime;
 
-            if (currentVelocity.sqrMagnitude > 10)
+            if (currentVelocity.sqrMagnitude > 10 && timeDiff < 0.5f)
             {
                 slide();
             }

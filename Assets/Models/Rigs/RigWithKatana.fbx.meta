@@ -658,7 +658,7 @@ ModelImporter:
         data: 
         objectReferenceParameter: {instanceID: 0}
         floatParameter: 0
-        intParameter: 0
+        intParameter: 5
         messageOptions: 0
       transformMask: []
       maskType: 3

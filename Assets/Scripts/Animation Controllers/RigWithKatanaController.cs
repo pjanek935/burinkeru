@@ -81,6 +81,10 @@ public class RigWithKatanaController : RigController
         {
             attackType = WeaponActionType.UPPERCUT;
         }
+        else if (index == 5)
+        {
+            attackType = WeaponActionType.DOWNWARD_SMASH;
+        }
         else
         {
             attackType = WeaponActionType.SLASH;

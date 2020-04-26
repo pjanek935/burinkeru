@@ -55,4 +55,9 @@ public class NPCGroundState : NPCState
             NPCController.Animator.SetTrigger ("HitBack");
         }
     }
+
+    public void Smashed ()
+    {
+        NPCController.Animator.SetTrigger ("Smashed");
+    }
 }

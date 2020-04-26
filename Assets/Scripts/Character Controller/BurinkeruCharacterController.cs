@@ -47,6 +47,11 @@ public class BurinkeruCharacterController : CharacterControllerBase
         get { return crouchState != null; }
     }
 
+    public PlayerCrouchState CrouchState
+    {
+        get { return crouchState; }
+    }
+
     void setListenersToWeapon (WeaponBase weapon)
     {
         if (weapon != null)

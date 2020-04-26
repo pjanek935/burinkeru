@@ -67,7 +67,8 @@ public class NPCController : CharacterControllerBase
                 
                 if (mainMovementState != null &&
                     mainMovementState is NPCGroundState &&
-                    Random.value < 1f)
+                    Random.value < 0.1f &&
+                    attackType != WeaponActionType.DOWNWARD_SMASH)
                 {
                     attackType = WeaponActionType.BLOCK;
                     feedbackParameters.Add (ParameterType.ATTACK_TYPE, WeaponActionType.BLOCK);
@@ -100,6 +101,12 @@ public class NPCController : CharacterControllerBase
                         block ();
 
                         break;
+
+                    case WeaponActionType.DOWNWARD_SMASH:
+
+                        smashed ();
+
+                        break;
                 }
             }
         }
@@ -111,6 +118,15 @@ public class NPCController : CharacterControllerBase
         {
             NPCState npcState = (NPCState) mainMovementState;
             npcState.Block ();
+        }
+    }
+
+    void smashed ()
+    {
+        if (mainMovementState != null && mainMovementState is NPCGroundState)
+        {
+            NPCGroundState npcState = (NPCGroundState) mainMovementState;
+            npcState.Smashed ();
         }
     }
 
